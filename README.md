@@ -52,6 +52,9 @@ sudo dnf install NetworkManager network-manager-applet
 sudo dnf install bluez bluez-tools blueman
 # apply gtk-theme
 sudo dnf install nwg-look
+sudo dnf install adw-gtk3-theme
+sudo flatpak override --filesystem=xdg-data/themes
+sudo flatpak mask org.gtk.Gtk3theme.adw-gtk3-dark
 ```
 
 - Copy all folders in **config** folder to **~/.config**
