@@ -5,7 +5,7 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 ## ✨ Features
 
 - 🪞 Dynamic tiling with **Hyprland**
-- 🖼️ Wallpaper management using **Hyperpaper** _and_ **Waypaper**
+- 🖼️ Wallpaper management using **Hyperpaper** & **Waypaper**
 - 💻 Terminal : **Kitty**, fast and GPU-accelerated
 - 📟 Clean, informative **Waybar**
 - 🔍 Application launcher using **Rofi**
