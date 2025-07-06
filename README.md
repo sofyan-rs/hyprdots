@@ -5,7 +5,7 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 ## ✨ Features
 
 - 🪞 Dynamic tiling with **Hyprland**
-- 🖼️ Wallpaper management with **Hyprpaper**
+- 🖼️ Wallpaper management using **Hyperpaper** _and_ **Waypaper**
 - 💻 Terminal : **Kitty**, fast and GPU-accelerated
 - 📟 Clean, informative **Waybar**
 - 🔍 Application launcher using **Rofi**
@@ -23,7 +23,8 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 - [**Fedora Workstation 42**](https://www.fedoraproject.org/)
 - [**Hyprland**](https://github.com/hyprwm/Hyprland)
 - `kitty` – terminal emulator (GPU-based and themeable)
-- `hyperpaper` – wallpaper manager
+- `hyperpaper` – lightweight wallpaper tool
+- `waypaper` – GUI wallpaper manager
 - `fastfetch` – for fetching system info
 - `waybar`, `rofi` – bar and launcher
 - `network-manager-applet`, `blueman` – for tray support
@@ -43,6 +44,8 @@ sudo dnf install grim slurp wl-clipboard
 sudo dnf install dnf-plugins-core
 sudo dnf copr enable solopasha/hyprland
 sudo dnf install hyprpaper
+# waypaper
+sudo dnf install waypaper
 # network manager
 sudo dnf install NetworkManager network-manager-applet
 # bluetooth manager
