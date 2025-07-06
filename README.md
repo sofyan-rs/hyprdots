@@ -6,6 +6,7 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 
 - 🪞 Dynamic tiling with **Hyprland**
 - 🖼️ Wallpaper management with **Hyprpaper**
+- 💻 Terminal : **Kitty**, fast and GPU-accelerated
 - 📟 Clean, informative **Waybar**
 - 🔍 Application launcher using **Rofi**
 - 🧾 Fast system info via **Fastfetch**
@@ -19,8 +20,9 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 
 ## ⚙️ Requirements
 
-- **Fedora Workstation 42**
-- [Hyprland](https://github.com/hyprwm/Hyprland)
+- [**Fedora Workstation 42**](https://www.fedoraproject.org/)
+- [**Hyprland**](https://github.com/hyprwm/Hyprland)
+- `kitty` – terminal emulator (GPU-based and themeable)
 - `hyperpaper` – wallpaper manager
 - `fastfetch` – for fetching system info
 - `waybar`, `rofi` – bar and launcher
