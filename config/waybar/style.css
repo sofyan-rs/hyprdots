@@ -82,6 +82,7 @@ button:hover {
 #mode,
 #power-profiles-daemon,
 #tray,
+#bluetooth,
 #custom-power {
   padding: 0 14px;
   color: #ffffff;
@@ -161,6 +162,15 @@ label:focus {
 }
 
 #network.disconnected {
+  background-color: #f43f5e;
+  color: #000;
+}
+
+#bluetooth {
+  background-color: #27272a;
+}
+
+#bluetooth.disabled {
   background-color: #f43f5e;
   color: #000;
 }

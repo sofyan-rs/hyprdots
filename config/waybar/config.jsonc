@@ -12,6 +12,7 @@
   "modules-right": [
     "network",
     "tray",
+    "bluetooth",
     "pulseaudio",
     "battery",
     "power-profiles-daemon",
@@ -86,6 +87,15 @@
     "format-disconnected": " Disconnected",
     "tooltip-format": "{ifname} via {gwaddr} ",
     "format-alt": "{ifname}: {ipaddr}/{cidr}"
+  },
+  "bluetooth": {
+    "interval": 5,
+    "format": " {status}",
+    "format-connected": "",
+    "format-connected-battery": " {device_battery_percentage}%",
+    "tooltip-format": "{device_alias} • {device_address}",
+    "on-click": "blueman-manager",
+    "format-no-controller": ""
   },
   "pulseaudio": {
     // "scroll-step": 1, // %, can be a float

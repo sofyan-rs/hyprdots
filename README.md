@@ -30,7 +30,31 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 
 ## 💻 Installation
 
-~ Coming Soon
+- Install requirement
+
+```bash
+# install requirement
+sudo dnf install hyprland
+sudo dnf install rofi
+sudo dnf install waybar
+sudo dnf install power-profiles-daemon
+sudo dnf install grim slurp wl-clipboard
+# hyprpaper
+sudo dnf install dnf-plugins-core
+sudo dnf copr enable solopasha/hyprland
+sudo dnf install hyprpaper
+# network manager
+sudo dnf install NetworkManager network-manager-applet
+# bluetooth manager
+sudo dnf install bluez bluez-tools blueman
+# apply gtk-theme
+sudo dnf install nwg-look
+```
+
+- Copy all folders in **config** folder to **~/.config**
+- Copy all fonts to to **~/.local/share/fonts**
+- Copy all icons to to **~/.icons**
+- Set GTK-Theme using **nwg-look**
 
 ## 🔧 Customization
 
@@ -43,6 +67,8 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 ## ❤️ Credits
 
 ### Special thanks to:
+
+**Fedora** for best Distro
 
 **Hyprland** for the amazing Wayland WM
 
