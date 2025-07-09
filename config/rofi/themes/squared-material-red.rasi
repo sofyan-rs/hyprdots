@@ -1,5 +1,10 @@
+/*
+ * ROFI Red Theme
+ *
+ */
+
 configuration {
-  font: "JetBrainsMono Nerd Font Medium 10";
+  font: "JetBrainsMono Nerd Font Propo Medium 11";
 
   drun {
     display-name: "";
@@ -59,7 +64,7 @@ prompt {
 }
 
 listview {
-  lines: 10;
+  lines: 8;
   scrollbar: true;
 }
 
@@ -74,14 +79,20 @@ element {
 }
 
 element-icon {
-  padding: 10px 10px;
+  padding: 10px;
 }
 
 element-text {
-  padding: 10px;
+  padding: 10px 0;
 }
 
 element-text selected {
   background-color: @bg-alt;
   text-color: @fg;
+  border-radius: 0 4px 4px 0;
+}
+
+element-icon selected {
+  background-color: @bg-alt;
+  border-radius: 4px 0 0 4px;
 }

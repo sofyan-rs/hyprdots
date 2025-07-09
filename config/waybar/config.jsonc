@@ -12,11 +12,12 @@
   "modules-right": [
     "network",
     "tray",
-    "bluetooth",
+    // "bluetooth",
     "pulseaudio",
     "battery",
     "power-profiles-daemon",
     "clock",
+    "custom/notification",
     "custom/power"
   ],
   "tray": {
@@ -24,10 +25,21 @@
     "spacing": 5
   },
   "hyprland/workspaces": {
-    "format": "{name}",
+    "format": "{icon}",
+    // "persistent-workspaces": {
+    //   "eDP-1": 5,
+    //   "DP-3": 4
+    // },
+    "format-icons": {
+      "1": "一",
+      "2": "二",
+      "3": "三",
+      "4": "四",
+      "5": "五",
+      "6": "六"
+    },
     "persistent-workspaces": {
-      "*": 5,
-      "DP-3": 4 // but only three on DP-3
+      "*": [1, 2, 3, 4, 5, 6]
     }
   },
   "clock": {
@@ -100,8 +112,8 @@
   "pulseaudio": {
     // "scroll-step": 1, // %, can be a float
     "format": "{volume}% {icon}",
-    "format-bluetooth": "{volume}% {icon} {format_source}",
-    "format-bluetooth-muted": " {icon} {format_source}",
+    "format-bluetooth": "{volume}% {icon} -  {format_source}",
+    "format-bluetooth-muted": " {icon} -  {format_source}",
     "format-muted": " {format_source}",
     "format-source": "{volume}% ",
     "format-source-muted": "",
@@ -116,16 +128,21 @@
     },
     "on-click": "pavucontrol"
   },
+  "custom/notification": {
+    "exec": "~/.local/bin/waybar-mako-notif.py",
+    "restart-interval": 0,
+    "return-type": "json",
+    "read-stdin": true,
+    "format": " {text}",
+    "tooltip": "{tooltip}",
+    "class": "{class}",
+    "on-click": "makoctl dismiss --all"
+  },
   "custom/power": {
-    "format": "⏻",
-    "tooltip": false,
-    "menu": "on-click",
-    "menu-file": "$HOME/.config/waybar/power_menu.xml", // Menu file in resources folder
-    "menu-actions": {
-      "suspend": "systemctl suspend",
-      "logout": "hyprctl dispatch exit",
-      "shutdown": "systemctl poweroff",
-      "reboot": "systemctl reboot"
-    }
+    "format": "",
+    "tooltip": "Power Menu",
+    "on-click": "~/.config/rofi/powermenu.sh",
+    "on-click-right": "hyprctl dispatch exit",
+    "interval": 60
   }
 }

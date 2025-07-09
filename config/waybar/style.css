@@ -83,7 +83,8 @@ button:hover {
 #power-profiles-daemon,
 #tray,
 #bluetooth,
-#custom-power {
+#custom-power,
+#custom-notification {
   padding: 0 14px;
   color: #ffffff;
   margin: 5px 5px 5px 0;
@@ -195,4 +196,8 @@ label:focus {
 #custom-power {
   background-color: #ef4444;
   color: #000;
+}
+
+#custom-notification {
+  background-color: #27272a;
 }

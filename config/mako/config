@@ -1,0 +1,11 @@
+border-radius=8
+border-size=0
+background-color=#27272a
+text-color=#ffffff
+border-color=#ef4444
+icon-border-radius=8
+max-visible=4
+sort=-time
+anchor=top-right
+margin=10
+padding=15

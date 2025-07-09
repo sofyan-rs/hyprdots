@@ -1,0 +1,61 @@
+/*
+ * ROFI Power Menu Red Theme
+ *
+ */
+
+configuration {
+  font: "JetBrainsMono Nerd Font Medium 13";
+
+  timeout {
+    delay: 10;
+    action: "kb-cancel";
+  }
+}
+
+* {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  spacing: 0;
+
+  bg: #18181b;
+  bg-alt: #27272a;
+  fg: #eeeeee;
+  fg-alt: #777777;
+  accent: #ef4444;
+
+  background-color: @bg;
+  text-color: @fg-alt;
+}
+
+window {
+  padding: 6px;
+  transparency: "real";
+  width: 400;
+}
+
+mainbox {
+  children: [listview];
+}
+
+listview {
+  lines: 5;
+}
+
+element {
+  children: [element-text];
+}
+
+element-icon {
+  padding: 10px 10px;
+}
+
+element-text {
+  padding: 10px 15px;
+}
+
+element-text selected {
+  background-color: @bg-alt;
+  text-color: @fg;
+  border-radius: 5px;
+}
