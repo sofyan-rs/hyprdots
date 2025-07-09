@@ -28,6 +28,7 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 - `fastfetch` – for fetching system info
 - `waybar`, `rofi` – bar and launcher
 - `network-manager-applet`, `blueman` – for tray support
+- `mako` - for notification
 
 ## 💻 Installation
 
@@ -46,6 +47,8 @@ sudo dnf copr enable solopasha/hyprland
 sudo dnf install hyprpaper
 # waypaper
 sudo dnf install waypaper
+# notification daemon
+sudo dnf install mako
 # network manager
 sudo dnf install NetworkManager network-manager-applet
 # bluetooth manager
