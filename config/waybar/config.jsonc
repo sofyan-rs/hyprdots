@@ -44,22 +44,22 @@
   },
   "clock": {
     // "timezone": "America/New_York",
-    "tooltip-format": "<big>{:%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
-    "format-alt": "{:%Y-%m-%d}"
+    "tooltip-format": "<big>{:%A, %d %B %Y}</big>\n<tt><small>{calendar}</small></tt>",
+    "format-alt": "{:%A, %d %B %Y - %H:%m}"
   },
   "cpu": {
-    "format": "{usage}% ",
+    "format": " {usage}%",
     "tooltip": false
   },
   "memory": {
-    "format": "{}% "
+    "format": " {}%"
   },
   "temperature": {
     // "thermal-zone": 2,
     // "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
     "critical-threshold": 80,
     // "format-critical": "{temperatureC}°C {icon}",
-    "format": "{temperatureC}°C {icon}",
+    "format": "{icon} {temperatureC}°C",
     "format-icons": ["", "", ""]
   },
   "battery": {
@@ -68,11 +68,11 @@
       "warning": 30,
       "critical": 15
     },
-    "format": "{capacity}% {icon}",
-    "format-full": "{capacity}% {icon}",
-    "format-charging": "{capacity}% ",
-    "format-plugged": "{capacity}% ",
-    "format-alt": "{time} {icon}",
+    "format": "{icon} {capacity}%",
+    "format-full": "{icon} {capacity}%",
+    "format-charging": " {capacity}%",
+    "format-plugged": " {capacity}%",
+    "format-alt": "{icon} {time}",
     // "format-good": "", // An empty format will hide the module
     // "format-full": "",
     "format-icons": ["", "", "", "", ""]
@@ -94,8 +94,8 @@
     // "format-ethernet": "{ipaddr}/{cidr} ",
     // "format-linked": "{ifname} (No IP) ",
     "interval": 2,
-    "format-wifi": "{bandwidthDownBits} ↓ - {bandwidthUpBits} ↑",
-    "format-ethernet": "{bandwidthDownBits} ↓ - {bandwidthUpBits} ↑",
+    "format-wifi": "↓ {bandwidthDownBits} - ↑ {bandwidthUpBits}",
+    "format-ethernet": "↓ {bandwidthDownBits} - ↑ {bandwidthUpBits}",
     "format-disconnected": " Disconnected",
     "tooltip-format": "{ifname} via {gwaddr} ",
     "format-alt": "{ifname}: {ipaddr}/{cidr}"
@@ -111,11 +111,11 @@
   },
   "pulseaudio": {
     // "scroll-step": 1, // %, can be a float
-    "format": "{volume}% {icon}",
-    "format-bluetooth": "{volume}% {icon} -  {format_source}",
-    "format-bluetooth-muted": " {icon} -  {format_source}",
+    "format": "{icon} {volume}%",
+    "format-bluetooth": "{icon} {volume}% -  {format_source}",
+    "format-bluetooth-muted": "{icon}  -  {format_source}",
     "format-muted": " {format_source}",
-    "format-source": "{volume}% ",
+    "format-source": " {volume}%",
     "format-source-muted": "",
     "format-icons": {
       "headphone": "",
@@ -140,7 +140,7 @@
   },
   "custom/power": {
     "format": "",
-    "tooltip": "Power Menu",
+    "tooltip": false,
     "on-click": "~/.config/rofi/powermenu.sh",
     "on-click-right": "hyprctl dispatch exit",
     "interval": 60
