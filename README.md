@@ -16,7 +16,7 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 
 ## 📸 Screenshots
 
-![Desktop](screenshots/ss-desktop-1.1.png)
+![Desktop](screenshots/ss-desktop-v2.png)
 
 ## ⚙️ Requirements
 
