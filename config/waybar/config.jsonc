@@ -1,7 +1,7 @@
 // -*- mode: jsonc -*-
 {
-  // "layer": "top", // Waybar at top layer
-  // "position": "bottom", // Waybar position (top|bottom|left|right)
+  "layer": "top", // Waybar at top layer
+  "position": "top", // Waybar position (top|bottom|left|right)
   "height": 36, // Waybar height (to be removed for auto height)
   "width": 1900, // Waybar width
   "margin-top": 10,
@@ -21,23 +21,19 @@
     "custom/power"
   ],
   "tray": {
-    "icon-size": 20,
+    "icon-size": 18,
     "spacing": 5
   },
   "hyprland/workspaces": {
     "format": "{icon}",
-    // "persistent-workspaces": {
-    //   "eDP-1": 5,
-    //   "DP-3": 4
+    // "format-icons": {
+    //   "1": "一",
+    //   "2": "二",
+    //   "3": "三",
+    //   "4": "四",
+    //   "5": "五",
+    //   "6": "六"
     // },
-    "format-icons": {
-      "1": "一",
-      "2": "二",
-      "3": "三",
-      "4": "四",
-      "5": "五",
-      "6": "六"
-    },
     "persistent-workspaces": {
       "*": [1, 2, 3, 4, 5, 6]
     }

@@ -4,7 +4,7 @@
  */
 
 configuration {
-  font: "JetBrainsMono Nerd Font Medium 13";
+  font: "CaskaydiaCove Nerd Font Propo Medium 13";
 
   timeout {
     delay: 10;
@@ -17,6 +17,7 @@ configuration {
   margin: 0;
   padding: 0;
   spacing: 0;
+  border-radius: 5px;
 
   bg: #18181b;
   bg-alt: #27272a;

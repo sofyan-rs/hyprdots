@@ -32,6 +32,17 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 
 ## 💻 Installation
 
+### Auto Installation
+
+```bash
+git clone https://github.com/sofyan-rs/hyprdots.git
+cd hyprdots
+chmod +x install.sh
+./install.sh
+```
+
+### Manual Installation
+
 - Install requirement
 
 ```bash
@@ -49,6 +60,7 @@ sudo dnf install hyprpaper
 sudo dnf install waypaper
 # notification daemon
 sudo dnf install mako
+sudo dnf install python3-pydbus
 # network manager
 sudo dnf install NetworkManager network-manager-applet
 # bluetooth manager
@@ -60,14 +72,47 @@ sudo flatpak override --filesystem=xdg-data/themes
 sudo flatpak mask org.gtk.Gtk3theme.adw-gtk3-dark
 ```
 
+- Clone this repository
+
+```bash
+git clone https://github.com/sofyan-rs/hyprdots.git
+cd hyprdots
+```
+
 - Copy all folders in **config** folder to **~/.config**
+
+```bash
+cp -r config/* ~/.config/
+```
+
 - Copy all fonts to to **~/.local/share/fonts**
+
+```bash
+cp -r fonts/* ~/.local/share/fonts/
+fc-cache -fv
+```
+
 - Copy all icons to to **~/.icons**
+
+```bash
+mkdir -p ~/.icons
+cp -r icons/* ~/.icons/
+```
+
+- Copy **config/mako/waybar-mako-notif.py** to **~/.local/bin**
+
+```bash
+mkdir -p ~/.local/bin
+cp config/mako/waybar-mako-notif.py ~/.local/bin/
+chmod +x ~/.local/bin/waybar-mako-notif.py
+```
+
 - Set GTK-Theme using **nwg-look**
+- Reboot
 
 ## 🔧 Customization
 
-**Wallpapers :** Put your favorites in the **Pictures/wallpapers/** folder and configure **hyperpaper.conf**
+**Wallpapers :** Put your favorites in the **Pictures/Wallpapers/** folder and configure using **waypaper**
 
 **Monitors :** Ensure correct monitor names (e.g., eDP-1, HDMI-A-1)
 

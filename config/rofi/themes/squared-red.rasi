@@ -1,0 +1,100 @@
+/*
+ * ROFI Red Theme
+ *
+ */
+
+configuration {
+  font: "CaskaydiaCove Nerd Font Propo Medium 11";
+
+  drun {
+    display-name: "";
+  }
+
+  run {
+    display-name: "";
+  }
+
+  window {
+    display-name: "";
+  }
+
+  timeout {
+    delay: 10;
+    action: "kb-cancel";
+  }
+}
+
+* {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  spacing: 0;
+
+  border-radius: 5px;
+
+  bg: #18181b;
+  bg-alt: #27272a;
+  fg: #eeeeee;
+  fg-alt: #777777;
+  accent: #ef4444;
+
+  background-color: @bg;
+  text-color: @fg-alt;
+}
+
+window {
+  padding: 6px;
+  transparency: "real";
+  width: 600;
+}
+
+mainbox {
+  children: [inputbar, listview];
+}
+
+inputbar {
+  children: [prompt, entry];
+}
+
+entry {
+  padding: 12px;
+}
+
+prompt {
+  background-color: inherit;
+  padding: 12px;
+}
+
+listview {
+  lines: 8;
+  scrollbar: true;
+}
+
+scrollbar {
+  background-color: @bg-alt;
+  handle-color: @accent;
+  margin: 0 0 0 6px;
+}
+
+element {
+  children: [element-icon, element-text];
+}
+
+element-icon {
+  padding: 10px;
+}
+
+element-text {
+  padding: 10px 0;
+}
+
+element-text selected {
+  background-color: @bg-alt;
+  text-color: @fg;
+  border-radius: 0 4px 4px 0;
+}
+
+element-icon selected {
+  background-color: @bg-alt;
+  border-radius: 4px 0 0 4px;
+}
