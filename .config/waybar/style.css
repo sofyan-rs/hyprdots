@@ -84,14 +84,15 @@ button:hover {
 #tray,
 #bluetooth,
 #custom-power,
-#custom-notification {
+#custom-notification,
+#custom-colorpicker {
   padding: 0 14px;
   color: #ffffff;
   margin: 5px 5px 5px 0;
 }
 
 #tray {
-  background-color: #3f3f46;
+  background-color: #27272a;
 }
 
 #clock {
@@ -200,4 +201,8 @@ label:focus {
 
 #custom-notification {
   background-color: #27272a;
+}
+
+#custom-colorpicker {
+  background-color: #3f3f46;
 }

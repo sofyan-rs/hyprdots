@@ -9,3 +9,9 @@ sort=-time
 anchor=top-right
 margin=10
 padding=15
+
+default-timeout=4000
+ignore-timeout=false
+
+[urgency=critical]
+default-timeout=0

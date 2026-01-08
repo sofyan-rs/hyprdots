@@ -81,6 +81,7 @@ install_packages \
   grim \
   slurp \
   wl-clipboard \
+  hyprpicker \
   mako \
   python3-pydbus \
   NetworkManager \
@@ -116,14 +117,14 @@ sudo flatpak mask org.gtk.Gtk3theme.adw-gtk3-dark || true
 # ===============================
 echo "📁 Copying config files..."
 mkdir -p ~/.config
-cp -rn config/* ~/.config/ || true
+cp -rn .config/* ~/.config/ || true
 
 # ===============================
 # FONTS
 # ===============================
 echo "🔤 Installing fonts..."
 mkdir -p ~/.local/share/fonts
-cp -rn fonts/* ~/.local/share/fonts/ || true
+cp -rn .local/share/fonts/* ~/.local/share/fonts/ || true
 fc-cache -fv
 
 # ===============================
@@ -131,7 +132,7 @@ fc-cache -fv
 # ===============================
 echo "🖼 Installing icons..."
 mkdir -p ~/.icons
-cp -rn icons/* ~/.icons/ || true
+cp -rn .icons/* ~/.icons/ || true
 
 # ===============================
 # WAYBAR MAKO SCRIPT
@@ -140,7 +141,7 @@ echo "🔔 Installing Waybar mako notification script..."
 mkdir -p ~/.local/bin
 
 if [[ ! -f ~/.local/bin/waybar-mako-notif.py ]]; then
-  cp config/mako/waybar-mako-notif.py ~/.local/bin/
+  cp .local/bin/waybar-mako-notif.py ~/.local/bin/
   chmod +x ~/.local/bin/waybar-mako-notif.py
 else
   echo "✔ waybar-mako-notif.py already exists — skipping"

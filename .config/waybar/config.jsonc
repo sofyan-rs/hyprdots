@@ -10,9 +10,10 @@
   "modules-left": ["hyprland/workspaces", "hyprland/window"],
   "modules-center": [],
   "modules-right": [
-    "network",
+    // "network",
     "tray",
     // "bluetooth",
+    "custom/colorpicker",
     "pulseaudio",
     "battery",
     "power-profiles-daemon",
@@ -21,8 +22,8 @@
     "custom/power"
   ],
   "tray": {
-    "icon-size": 18,
-    "spacing": 5
+    "icon-size": 15,
+    "spacing": 7
   },
   "hyprland/workspaces": {
     "format": "{icon}",
@@ -140,5 +141,10 @@
     "on-click": "~/.config/rofi/powermenu.sh",
     "on-click-right": "hyprctl dispatch exit",
     "interval": 60
+  },
+  "custom/colorpicker": {
+    "format": "",
+    "tooltip": "Pick a color",
+    "on-click": "hyprpicker -f hex && notify-send 'Color copied to clipboard'"
   }
 }

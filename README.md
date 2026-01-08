@@ -52,6 +52,7 @@ sudo dnf install rofi
 sudo dnf install waybar
 sudo dnf install power-profiles-daemon
 sudo dnf install grim slurp wl-clipboard
+sudo dnf install hyprpicker
 # hyprpaper
 sudo dnf install dnf-plugins-core
 sudo dnf copr enable solopasha/hyprland
@@ -79,16 +80,16 @@ git clone https://github.com/sofyan-rs/hyprdots.git
 cd hyprdots
 ```
 
-- Copy all folders in **config** folder to **~/.config**
+- Copy all config folder to **~/.config**
 
 ```bash
-cp -r config/* ~/.config/
+cp -r .config/* ~/.config/
 ```
 
 - Copy all fonts to to **~/.local/share/fonts**
 
 ```bash
-cp -r fonts/* ~/.local/share/fonts/
+cp -r .local/share/fonts/* ~/.local/share/fonts/
 fc-cache -fv
 ```
 
@@ -96,14 +97,14 @@ fc-cache -fv
 
 ```bash
 mkdir -p ~/.icons
-cp -r icons/* ~/.icons/
+cp -r .icons/* ~/.icons/
 ```
 
-- Copy **config/mako/waybar-mako-notif.py** to **~/.local/bin**
+- Copy **.local/bin/waybar-mako-notif.py** to **~/.local/bin**
 
 ```bash
 mkdir -p ~/.local/bin
-cp config/mako/waybar-mako-notif.py ~/.local/bin/
+cp .local/bin/waybar-mako-notif.py ~/.local/bin/
 chmod +x ~/.local/bin/waybar-mako-notif.py
 ```
 
