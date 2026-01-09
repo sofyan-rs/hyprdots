@@ -7,7 +7,7 @@
   "margin-top": 10,
   "spacing": 0, // Gaps between modules (4px)
   // Choose the order of the modules
-  "modules-left": ["hyprland/workspaces", "hyprland/window"],
+  "modules-left": ["custom/rofi", "hyprland/workspaces", "hyprland/window"],
   "modules-center": [],
   "modules-right": [
     // "network",
@@ -23,22 +23,30 @@
   ],
   "tray": {
     "icon-size": 15,
-    "spacing": 7
+    "spacing": 8
   },
   "hyprland/workspaces": {
     "format": "{icon}",
-    // "format-icons": {
-    //   "1": "一",
-    //   "2": "二",
-    //   "3": "三",
-    //   "4": "四",
-    //   "5": "五",
-    //   "6": "六"
-    // },
+    "format-icons": {
+      // "1": "",
+      // "2": "",
+      // "3": "",
+      // "4": "󰭻",
+      // "5": "",
+      // "6": "",
+      // "7": "",
+      // "8": "󰻃",
+      // "default": "",
+      // "active": ""
+    },
     "persistent-workspaces": {
       "*": [1, 2, 3, 4, 5, 6]
     }
   },
+  // "hyprland/window": {
+  //   "icon": true,
+  //   "icon-size": 16
+  // },
   "clock": {
     // "timezone": "America/New_York",
     "tooltip-format": "<big>{:%A, %d %B %Y}</big>\n<tt><small>{calendar}</small></tt>",
@@ -108,7 +116,7 @@
   },
   "pulseaudio": {
     // "scroll-step": 1, // %, can be a float
-    "format": "{icon} {volume}%",
+    "format": "<span color='#6cc0b7'>{icon}</span> {volume}%",
     "format-bluetooth": "{icon} {volume}% -  {format_source}",
     "format-bluetooth-muted": "{icon}  -  {format_source}",
     "format-muted": " {format_source}",
@@ -130,7 +138,7 @@
     "restart-interval": 0,
     "return-type": "json",
     "read-stdin": true,
-    "format": " {text}",
+    "format": "<span color='#f0932b'></span> {text}",
     "tooltip": "{tooltip}",
     "class": "{class}",
     "on-click": "makoctl dismiss --all"
@@ -145,6 +153,11 @@
   "custom/colorpicker": {
     "format": "",
     "tooltip": "Pick a color",
-    "on-click": "hyprpicker -f hex && notify-send 'Color copied to clipboard'"
+    "on-click": "sleep 0.1 && hyprpicker -a -f hex && notify-send 'Color copied to clipboard'"
+  },
+  "custom/rofi": {
+    "format": "󱗼",
+    "tooltip": "Launch Rofi",
+    "on-click": "rofi -show drun"
   }
 }
