@@ -10,13 +10,17 @@
   "modules-left": ["custom/rofi", "hyprland/workspaces", "hyprland/window"],
   "modules-center": [],
   "modules-right": [
+    "mpris",
     // "network",
+    // "cpu",
+    // "memory",
+    // "temperature",
     "tray",
     // "bluetooth",
     "custom/colorpicker",
     "pulseaudio",
     "battery",
-    "power-profiles-daemon",
+    // "power-profiles-daemon",
     "clock",
     "custom/notification",
     "custom/power"
@@ -53,18 +57,17 @@
     "format-alt": "{:%A, %d %B %Y - %H:%m}"
   },
   "cpu": {
-    "format": " {usage}%",
+    "format": "<span color='#c680e2'></span> {usage}%",
     "tooltip": false
   },
   "memory": {
-    "format": " {}%"
+    "format": "<span color='#6cc0b7'></span> {}%"
   },
   "temperature": {
-    // "thermal-zone": 2,
-    // "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
+    // "thermal-zone": 1,
+    "hwmon-path": "/sys/class/hwmon/hwmon2/temp1_input",
     "critical-threshold": 80,
-    // "format-critical": "{temperatureC}°C {icon}",
-    "format": "{icon} {temperatureC}°C",
+    "format": "<span color='#f43f5e'>{icon}</span> {temperatureC}°C",
     "format-icons": ["", "", ""]
   },
   "battery": {
@@ -75,7 +78,7 @@
     },
     "format": "{icon} {capacity}%",
     "format-full": "{icon} {capacity}%",
-    "format-charging": " {capacity}%",
+    "format-charging": "󰂄 {capacity}%",
     "format-plugged": " {capacity}%",
     "format-alt": "{icon} {time}",
     // "format-good": "", // An empty format will hide the module
@@ -99,8 +102,8 @@
     // "format-ethernet": "{ipaddr}/{cidr} ",
     // "format-linked": "{ifname} (No IP) ",
     "interval": 2,
-    "format-wifi": "↓ {bandwidthDownBits} - ↑ {bandwidthUpBits}",
-    "format-ethernet": "↓ {bandwidthDownBits} - ↑ {bandwidthUpBits}",
+    "format-wifi": "<span color='#6cc0b7'>↓</span> {bandwidthDownBits} - <span color='#f43f5e'>↑</span> {bandwidthUpBits}",
+    "format-ethernet": "<span color='#6cc0b7'>↓</span> {bandwidthDownBits} - <span color='#f43f5e'>↑</span> {bandwidthUpBits}",
     "format-disconnected": " Disconnected",
     "tooltip-format": "{ifname} via {gwaddr} ",
     "format-alt": "{ifname}: {ipaddr}/{cidr}"
@@ -138,7 +141,7 @@
     "restart-interval": 0,
     "return-type": "json",
     "read-stdin": true,
-    "format": "<span color='#f0932b'></span> {text}",
+    "format": "<span color='#e5c078'></span> {text}",
     "tooltip": "{tooltip}",
     "class": "{class}",
     "on-click": "makoctl dismiss --all"
@@ -159,5 +162,17 @@
     "format": "󱗼",
     "tooltip": "Launch Rofi",
     "on-click": "rofi -show drun"
+  },
+  "mpris": {
+    "format": "{player_icon} {title} - {artist}",
+    "format-paused": "{status_icon} <i>{title} - {artist}</i>",
+    "player-icons": {
+      "default": ""
+    },
+    "status-icons": {
+      "paused": ""
+    },
+    "max-length": 35,
+    "interval": 1
   }
 }

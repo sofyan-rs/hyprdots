@@ -1,23 +1,15 @@
-/*
- * ROFI Red Theme
- *
- */
-
 configuration {
-  font: "CaskaydiaCove Nerd Font Propo Medium 11";
-
+  font: "CaskaydiaCove Nerd Font Propo Medium 12";
   drun {
     display-name: "";
   }
-
   run {
     display-name: "";
   }
-
   window {
     display-name: "";
   }
-
+  modi: "drun,run,window";
   timeout {
     delay: 10;
     action: "kb-cancel";
@@ -25,27 +17,29 @@ configuration {
 }
 
 * {
+  bg: #18181bCC;
+  bg-alt: #27272aCC;
+
+  fg: #eeeeee;
+  fg-alt: #777777;
+  accent: #C680E2;
+  secondary: #6CC0B7;
+
+  background-color: transparent;
+  text-color: @fg-alt;
+
   border: 0;
   margin: 0;
   padding: 0;
   spacing: 0;
-
-  border-radius: 5px;
-
-  bg: #18181b;
-  bg-alt: #27272a;
-  fg: #eeeeee;
-  fg-alt: #777777;
-  accent: #ef4444;
-
-  background-color: @bg;
-  text-color: @fg-alt;
+  border-radius: 6px;
 }
 
 window {
-  padding: 6px;
+  background-color: @bg;
+  padding: 8px;
   transparency: "real";
-  width: 600;
+  width: 40%;
 }
 
 mainbox {
@@ -54,15 +48,23 @@ mainbox {
 
 inputbar {
   children: [prompt, entry];
+  background-color: @bg-alt;
+
+  spacing: 0;
+  margin: 0 0 8px 0;
 }
 
 entry {
-  padding: 12px;
+  padding: 13px;
+  background-color: @bg-alt;
+  text-color: @fg;
 }
 
 prompt {
-  background-color: inherit;
-  padding: 12px;
+  background-color: @secondary;
+  text-color: @bg;
+  margin: 5px 0 5px 5px;
+  padding: 8px 10px;
 }
 
 listview {
@@ -82,19 +84,20 @@ element {
 
 element-icon {
   padding: 10px;
+  size: 24;
 }
 
 element-text {
-  padding: 10px 0;
+  padding: 15px 2px;
 }
 
 element-text selected {
   background-color: @bg-alt;
   text-color: @fg;
-  border-radius: 0 4px 4px 0;
+  border-radius: 0 5px 5px 0;
 }
 
 element-icon selected {
   background-color: @bg-alt;
-  border-radius: 4px 0 0 4px;
+  border-radius: 5px 0 0 5px;
 }

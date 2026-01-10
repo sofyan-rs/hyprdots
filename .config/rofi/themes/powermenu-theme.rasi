@@ -1,11 +1,5 @@
-/*
- * ROFI Power Menu Red Theme
- *
- */
-
 configuration {
-  font: "CaskaydiaCove Nerd Font Propo Medium 13";
-
+  font: "CaskaydiaCove Nerd Font Propo Medium 14";
   timeout {
     delay: 10;
     action: "kb-cancel";
@@ -13,26 +7,29 @@ configuration {
 }
 
 * {
+  bg: #18181bCC;
+  bg-alt: #27272aCC;
+
+  fg: #eeeeee;
+  fg-alt: #777777;
+  accent: #C680E2;
+  secondary: #6CC0B7;
+
+  background-color: transparent;
+  text-color: @fg-alt;
+
   border: 0;
   margin: 0;
   padding: 0;
   spacing: 0;
-  border-radius: 5px;
-
-  bg: #18181b;
-  bg-alt: #27272a;
-  fg: #eeeeee;
-  fg-alt: #777777;
-  accent: #ef4444;
-
-  background-color: @bg;
-  text-color: @fg-alt;
+  border-radius: 6px;
 }
 
 window {
-  padding: 6px;
+  background-color: @bg;
+  padding: 8px;
   transparency: "real";
-  width: 400;
+  width: 300;
 }
 
 mainbox {
@@ -56,7 +53,7 @@ element-text {
 }
 
 element-text selected {
-  background-color: @bg-alt;
-  text-color: @fg;
+  background-color: @accent;
+  text-color: @bg;
   border-radius: 5px;
 }

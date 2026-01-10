@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# List of options with emoji or icons
+# List of options
 options=(
   "  Lock"
   "  Suspend"
@@ -9,8 +9,8 @@ options=(
   "  Reboot"
 )
 
-# Turn array into newline-separated string
-choice=$(printf "%s\n" "${options[@]}" | rofi -dmenu -theme ~/.config/rofi/themes/powermenu-grid.rasi -p "Power Menu")
+# Show the menu and get the user's choice
+choice=$(printf "%s\n" "${options[@]}" | rofi -dmenu -theme ~/.config/rofi/themes/powermenu-theme.rasi -p "Power Menu")
 
 case "$choice" in
   "  Lock") swaylock ;;

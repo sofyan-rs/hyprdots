@@ -85,6 +85,7 @@ button:hover {
 #bluetooth,
 #custom-power,
 #custom-notification,
+#mpris,
 #custom-colorpicker {
   padding: 0 10px;
   color: #ffffff;
@@ -147,16 +148,15 @@ label:focus {
 }
 
 #cpu {
-  background-color: #2ecc71;
-  color: #222;
+  background-color: #27272a;
 }
 
 #memory {
-  background-color: #c680e2;
+  background-color: #27272a;
 }
 
 #disk {
-  background-color: #cc9053;
+  background-color: #27272a;
 }
 
 #network {
@@ -187,11 +187,7 @@ label:focus {
 }
 
 #temperature {
-  background-color: #f0932b;
-}
-
-#temperature.critical {
-  background-color: #f43f5e;
+  background-color: #27272a;
 }
 
 #custom-power {
@@ -213,4 +209,14 @@ label:focus {
   color: #222;
   padding: 0 10px;
   margin: 5px 0 5px 5px;
+}
+
+#mpris {
+  background-color: #27272a;
+  color: #c680e2;
+}
+
+#mpris.paused {
+  color: #777;
+  font-style: italic;
 }
