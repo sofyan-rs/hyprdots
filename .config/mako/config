@@ -1,8 +1,8 @@
 border-radius=8
-border-size=0
-background-color=#27272a
-text-color=#ffffff
-border-color=#ef4444
+border-size=2
+background-color=#241416ee
+text-color=#f5e6dc
+border-color=#4a2a28ff
 icon-border-radius=8
 max-visible=4
 sort=-time
@@ -14,4 +14,5 @@ default-timeout=4000
 ignore-timeout=false
 
 [urgency=critical]
+border-color=#b45544ff
 default-timeout=0

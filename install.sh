@@ -92,17 +92,29 @@ install_packages \
   nwg-look \
   adw-gtk3-theme \
   waypaper \
+  papirus-icon-theme \
   dnf-plugins-core
 
 # ===============================
-# HYPRPAPER (COPR)
+# HYPRLOCK (COPR)
 # ===============================
-if ! is_installed hyprpaper; then
-  echo "🧩 Enabling COPR repository for hyprpaper..."
+if ! is_installed hyprlock; then
+  echo "🧩 Enabling COPR repository for hyprlock..."
   sudo dnf copr enable -y solopasha/hyprland
-  sudo dnf install -y hyprpaper
+  sudo dnf install -y hyprlock
 else
-  echo "✔ hyprpaper already installed — skipping"
+  echo "✔ hyprlock already installed — skipping"
+fi
+
+# ===============================
+# AWWW (COPR)
+# ===============================
+if ! is_installed awww; then
+  echo "🧩 Enabling COPR repository for awww..."
+  sudo dnf copr enable -y alebastr/sway-extras
+  sudo dnf install -y awww
+else
+  echo "✔ awww already installed — skipping"
 fi
 
 # ===============================
@@ -128,11 +140,18 @@ cp -rn .local/share/fonts/* ~/.local/share/fonts/ || true
 fc-cache -fv
 
 # ===============================
-# ICONS
+# CURSOR THEME
 # ===============================
-echo "🖼 Installing icons..."
-mkdir -p ~/.icons
-cp -rn .icons/* ~/.icons/ || true
+echo "🖱 Installing cursor theme..."
+mkdir -p ~/.local/share/icons
+cp -rn .local/share/icons/* ~/.local/share/icons/ || true
+
+# ===============================
+# WALLPAPERS
+# ===============================
+echo "🖼 Installing wallpapers..."
+mkdir -p ~/Pictures/Wallpapers
+cp -rn wallpapers/* ~/Pictures/Wallpapers/ || true
 
 # ===============================
 # WAYBAR MAKO SCRIPT
@@ -157,5 +176,6 @@ fi
 
 echo
 echo "✅ Installation completed successfully!"
+echo "➡️ Open waypaper once and pick 'awww' as the backend to set your wallpaper."
 echo "➡️ Reboot or log out / log in is recommended."
 echo "➡️ Enjoy this Hyprland setup!"

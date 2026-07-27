@@ -1,14 +1,14 @@
 * {
-  font-family: "CaskaydiaCove Nerd Font Propo", sans-serif;
-  font-size: 15px;
+  font-family: "CaskaydiaCove Nerd Font Propo", "Noto Sans Mono CJK SC", sans-serif;
+  font-size: 16px;
   font-weight: bold;
-  border-radius: 5px;
+  border-radius: 2px;
 }
 
 window#waybar {
-  background-color: #18181b;
-  color: #ffffff;
-  border-radius: 10px;
+  background-color: rgba(20, 12, 13, 0.55);
+  color: #f5e6dc;
+  /*border-radius: 10px;*/
 }
 
 window#waybar.hidden {
@@ -32,191 +32,108 @@ button:hover {
 
 #workspaces {
   margin: 5px;
-  background-color: #27272a;
+  background-color: #241416;
+  border: 1px solid #4a2a28;
+  border-radius: 2px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.35);
 }
 
 #workspaces button {
   padding: 0 5px;
   background-color: transparent;
-  color: #ffffff;
-  border-radius: 5px;
+  color: #f5e6dc;
+  border-radius: 2px;
   transition: 0.3s ease-in-out;
 }
 
 #workspaces button:hover {
-  background: #3f3f46;
+  background: #4a2a28;
 }
 
 #workspaces button.focused {
-  background-color: #64727d;
-  box-shadow: inset 0 -3px #ffffff;
+  background-color: #6b4f4e;
+  box-shadow: inset 0 -3px #f5e6dc;
 }
 
 #workspaces button.active {
-  background-color: #6cc0b7;
-  color: #222;
+  background-color: #b45544;
+  color: #1a0f11;
 }
 
 #workspaces button.empty {
-  color: #777;
+  color: #8a7c85;
 }
 
 #workspaces button.empty.active {
-  background-color: #6cc0b7;
-  color: #222;
-}
-
-#mode {
-  background-color: #64727d;
-  box-shadow: inset 0 -3px #ffffff;
+  background-color: #b45544;
+  color: #1a0f11;
 }
 
 #clock,
-#battery,
-#cpu,
-#memory,
-#disk,
-#temperature,
-#network,
 #pulseaudio,
-#mode,
-#power-profiles-daemon,
-#tray,
-#bluetooth,
+#tray-expander,
 #custom-power,
 #custom-notification,
 #mpris,
-#custom-colorpicker {
+#custom-colorpicker,
+#custom-wallpaper {
   padding: 0 10px;
-  color: #ffffff;
+  color: #f5e6dc;
   margin: 5px 5px 5px 0;
+  background-color: #241416;
+  border: 1px solid #4a2a28;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.35);
+}
+
+#custom-expand-icon {
+  background: none;
 }
 
 #tray {
-  background-color: #27272a;
+  color: #f5e6dc;
+  padding-left: 10px;
 }
 
 #clock {
-  background-color: #3f3f46;
-}
-
-#battery {
-  background-color: #ffffff;
-  color: #27272a;
-}
-
-#battery.charging,
-#battery.plugged {
-  color: #ffffff;
-  background-color: #27272a;
-}
-
-@keyframes blink {
-  to {
-    background-color: #ffffff;
-    color: #222;
-  }
-}
-
-#battery.critical:not(.charging) {
-  background-color: #f43f5e;
-  color: #ffffff;
-  animation-name: blink;
-  animation-duration: 0.5s;
-  animation-timing-function: steps(12);
-  animation-iteration-count: infinite;
-  animation-direction: alternate;
-}
-
-#power-profiles-daemon.performance {
-  background-color: #f43f5e;
-  color: #222;
-}
-
-#power-profiles-daemon.balanced {
-  background-color: #4881dd;
-  color: #222;
-}
-
-#power-profiles-daemon.power-saver {
-  background-color: #52c87d;
-  color: #222;
+  background-color: #4a2a28;
 }
 
 label:focus {
-  background-color: #222;
-}
-
-#cpu {
-  background-color: #27272a;
-}
-
-#memory {
-  background-color: #27272a;
-}
-
-#disk {
-  background-color: #27272a;
-}
-
-#network {
-  background-color: #27272a;
-}
-
-#network.disconnected {
-  background-color: #f43f5e;
-  color: #222;
-}
-
-#bluetooth {
-  background-color: #27272a;
-}
-
-#bluetooth.disabled {
-  background-color: #f43f5e;
-  color: #222;
-}
-
-#pulseaudio {
-  background-color: #27272a;
+  background-color: #1a0f11;
 }
 
 #pulseaudio.muted {
-  background-color: #f43f5e;
-  color: #222;
-}
-
-#temperature {
-  background-color: #27272a;
+  background-color: #b45544;
+  color: #1a0f11;
 }
 
 #custom-power {
-  background-color: #f43f5e;
-  color: #222;
-}
-
-#custom-notification {
-  background-color: #27272a;
+  background-color: #b45544;
+  color: #1a0f11;
 }
 
 #custom-colorpicker {
-  background-color: #27272a;
-  color: #c680e2;
+  color: #d9a25f;
+}
+
+#custom-wallpaper {
+  color: #d6a9a0;
 }
 
 #custom-rofi {
-  background-color: #c680e2;
-  color: #222;
+  background-color: #d9a25f;
+  color: #1a0f11;
   padding: 0 10px;
   margin: 5px 0 5px 5px;
+  border: 1px solid #4a2a28;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.35);
 }
 
 #mpris {
-  background-color: #27272a;
-  color: #c680e2;
+  color: #d6a9a0;
 }
 
 #mpris.paused {
-  color: #777;
+  color: #8a7c85;
   font-style: italic;
 }

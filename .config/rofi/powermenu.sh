@@ -13,7 +13,7 @@ options=(
 choice=$(printf "%s\n" "${options[@]}" | rofi -dmenu -theme ~/.config/rofi/themes/powermenu-theme.rasi -p "Power Menu")
 
 case "$choice" in
-  "  Lock") swaylock ;;
+  "  Lock") hyprlock ;;
   "  Suspend") systemctl suspend ;;
   "  Logout") hyprctl dispatch exit ;;
   "  Shutdown") systemctl poweroff ;;

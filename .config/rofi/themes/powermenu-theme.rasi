@@ -1,28 +1,11 @@
+@import "colors.rasi"
+
 configuration {
   font: "CaskaydiaCove Nerd Font Propo Medium 14";
   timeout {
     delay: 10;
     action: "kb-cancel";
   }
-}
-
-* {
-  bg: #18181bCC;
-  bg-alt: #27272aCC;
-
-  fg: #eeeeee;
-  fg-alt: #777777;
-  accent: #C680E2;
-  secondary: #6CC0B7;
-
-  background-color: transparent;
-  text-color: @fg-alt;
-
-  border: 0;
-  margin: 0;
-  padding: 0;
-  spacing: 0;
-  border-radius: 6px;
 }
 
 window {

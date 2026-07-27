@@ -4,9 +4,10 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 
 ## ✨ Features
 
-- 🪞 Dynamic tiling with **Hyprland**
-- 🖼️ Wallpaper management using **Hyperpaper** & **Waypaper**
-- 💻 Terminal : **Kitty**, fast and GPU-accelerated
+- 🪞 Dynamic tiling with **Hyprland**, configured via its native **Lua** config (`hyprland.lua`)
+- 🖼️ Wallpaper management using **awww** (swww's successor) & **Waypaper**
+- 🔒 Screen locking with **Hyprlock**
+- 💻 Terminal : **Kitty**, fast and GPU-accelerated (Sakura Ember theme)
 - 📟 Clean, informative **Waybar**
 - 🔍 Application launcher using **Rofi**
 - 🧾 Fast system info via **Fastfetch**
@@ -16,19 +17,21 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 
 ## 📸 Screenshots
 
-![Desktop](screenshots/ss-desktop-v2.png)
+![Desktop](screenshots/ss.png)
 
 ## ⚙️ Requirements
 
-- [**Fedora Workstation 42**](https://www.fedoraproject.org/)
+- [**Fedora Workstation**](https://www.fedoraproject.org/) 39+
 - [**Hyprland**](https://github.com/hyprwm/Hyprland)
 - `kitty` – terminal emulator (GPU-based and themeable)
-- `hyperpaper` – lightweight wallpaper tool
+- `hyprlock` – GPU-accelerated screen locker
+- `awww` – efficient animated wallpaper daemon (swww's successor)
 - `waypaper` – GUI wallpaper manager
 - `fastfetch` – for fetching system info
 - `waybar`, `rofi` – bar and launcher
 - `network-manager-applet`, `blueman` – for tray support
-- `mako` - for notification
+- `mako` – for notifications
+- `papirus-icon-theme` – icon theme
 
 ## 💻 Installation
 
@@ -43,29 +46,40 @@ chmod +x install.sh
 
 ### Manual Installation
 
-- Install requirement
+- Install requirements
 
 ```bash
-# install requirement
+# core packages
 sudo dnf install hyprland
 sudo dnf install rofi
 sudo dnf install waybar
 sudo dnf install power-profiles-daemon
 sudo dnf install grim slurp wl-clipboard
 sudo dnf install hyprpicker
-# hyprpaper
+sudo dnf install papirus-icon-theme
+
+# hyprlock (COPR)
 sudo dnf install dnf-plugins-core
 sudo dnf copr enable solopasha/hyprland
-sudo dnf install hyprpaper
-# waypaper
+sudo dnf install hyprlock
+
+# awww - wallpaper daemon (COPR)
+sudo dnf copr enable alebastr/sway-extras
+sudo dnf install awww
+
+# waypaper - wallpaper GUI
 sudo dnf install waypaper
+
 # notification daemon
 sudo dnf install mako
 sudo dnf install python3-pydbus
+
 # network manager
 sudo dnf install NetworkManager network-manager-applet
+
 # bluetooth manager
 sudo dnf install bluez bluez-tools blueman
+
 # apply gtk-theme
 sudo dnf install nwg-look
 sudo dnf install adw-gtk3-theme
@@ -80,24 +94,26 @@ git clone https://github.com/sofyan-rs/hyprdots.git
 cd hyprdots
 ```
 
-- Copy all config folder to **~/.config**
+- Copy all config folders to **~/.config**
 
 ```bash
 cp -r .config/* ~/.config/
 ```
 
-- Copy all fonts to to **~/.local/share/fonts**
+- Copy fonts and the cursor theme to **~/.local/share**
 
 ```bash
+mkdir -p ~/.local/share/fonts ~/.local/share/icons
 cp -r .local/share/fonts/* ~/.local/share/fonts/
+cp -r .local/share/icons/* ~/.local/share/icons/
 fc-cache -fv
 ```
 
-- Copy all icons to to **~/.icons**
+- Copy wallpapers to **~/Pictures/Wallpapers**
 
 ```bash
-mkdir -p ~/.icons
-cp -r .icons/* ~/.icons/
+mkdir -p ~/Pictures/Wallpapers
+cp -r wallpapers/* ~/Pictures/Wallpapers/
 ```
 
 - Copy **.local/bin/waybar-mako-notif.py** to **~/.local/bin**
@@ -109,15 +125,20 @@ chmod +x ~/.local/bin/waybar-mako-notif.py
 ```
 
 - Set GTK-Theme using **nwg-look**
+- Open **waypaper** once and pick **awww** as the backend (this also sets your wallpaper)
 - Reboot
 
 ## 🔧 Customization
 
-**Wallpapers :** Put your favorites in the **Pictures/Wallpapers/** folder and configure using **waypaper**
+**Wallpapers :** Put your favorites in **~/Pictures/Wallpapers/** and pick one via **waypaper** — the wallpaper button on Waybar opens the picker, and `awww-daemon` / `waypaper --restore` bring it back on login.
 
-**Monitors :** Ensure correct monitor names (e.g., eDP-1, HDMI-A-1)
+**Monitors :** Ensure correct monitor output name and mode in `hyprland.lua` (`hl.monitor({ ... })`).
 
-**Keybindings :** Adjust **bind=** lines in **hyprland.conf**
+**Keybindings :** Adjust the `hl.bind(...)` calls in `hyprland.lua`.
+
+**Lock screen wallpaper :** Set the `$wallpaper` variable in `hyprlock.conf`.
+
+**Terminal theme :** Swap the `include` line at the top of `kitty.conf` between `SakuraEmber.conf` and `SpaceGray.conf`.
 
 ## ❤️ Credits
 
