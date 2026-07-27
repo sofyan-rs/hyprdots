@@ -138,6 +138,7 @@ chmod +x ~/.local/bin/waybar-mako-notif.py
 | `SUPER + V` | Toggle floating |
 | `SUPER + P` | Toggle pseudotile |
 | `SUPER + J` | Toggle split (dwindle) |
+| `SUPER + W` | Toggle layout (dwindle ↔ scrolling) |
 | `SUPER + R` | Restart Waybar |
 | `SUPER + M` | Exit Hyprland |
 | `ALT + Space` | App launcher (Rofi) |
@@ -146,6 +147,8 @@ chmod +x ~/.local/bin/waybar-mako-notif.py
 | `SUPER + scroll` | Cycle through workspaces |
 | `SUPER + [0-9]` | Switch to workspace 1-10 |
 | `SUPER + SHIFT + [0-9]` | Move active window to workspace 1-10 |
+| `SUPER + SHIFT + ←/→/↑/↓` | Move window position in layout |
+| `SUPER + CTRL + ←/→/↑/↓` | Resize active window |
 | `SUPER + S` | Toggle special workspace (scratchpad) |
 | `SUPER + SHIFT + S` | Move active window to special workspace |
 | `SUPER + LMB drag` | Move window |

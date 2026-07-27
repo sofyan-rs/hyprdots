@@ -271,6 +271,15 @@ hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit")) -- dwindle only
 
+-- Toggle between dwindle (tiling) and scrolling layout
+-- See https://wiki.hypr.land/Configuring/Layouts/Scrolling-Layout/
+local layouts     = { "dwindle", "scrolling" }
+local layoutIndex = 1 -- keep in sync with general.layout above
+hl.bind(mainMod .. " + W", function ()
+    layoutIndex = layoutIndex % #layouts + 1
+    hl.config({ general = { layout = layouts[layoutIndex] } })
+end)
+
 hl.bind(mainMod .. " + R", hl.dsp.exec_cmd("~/.config/waybar/scripts/launch.sh"))
 
 hl.bind(secondMod .. " + SPACE", hl.dsp.exec_cmd(menu))
@@ -300,6 +309,18 @@ hl.bind(mainMod .. " + mouse_up",   hl.dsp.focus({ workspace = "e-1" }))
 -- Switch workspaces with mainMod + arrow keys
 hl.bind(mainMod .. " + left",  hl.dsp.focus({ workspace = "e-1" }))
 hl.bind(mainMod .. " + right", hl.dsp.focus({ workspace = "e+1" }))
+
+-- Move window position (swap in layout) with mainMod + SHIFT + arrow keys
+hl.bind(mainMod .. " + SHIFT + left",  hl.dsp.window.move({ direction = "left" }))
+hl.bind(mainMod .. " + SHIFT + right", hl.dsp.window.move({ direction = "right" }))
+hl.bind(mainMod .. " + SHIFT + up",    hl.dsp.window.move({ direction = "up" }))
+hl.bind(mainMod .. " + SHIFT + down",  hl.dsp.window.move({ direction = "down" }))
+
+-- Resize active window with mainMod + CTRL + arrow keys
+hl.bind(mainMod .. " + CTRL + left",  hl.dsp.window.resize({ x = -30, y = 0,   relative = true }), { repeating = true })
+hl.bind(mainMod .. " + CTRL + right", hl.dsp.window.resize({ x = 30,  y = 0,   relative = true }), { repeating = true })
+hl.bind(mainMod .. " + CTRL + up",    hl.dsp.window.resize({ x = 0,   y = -30, relative = true }), { repeating = true })
+hl.bind(mainMod .. " + CTRL + down",  hl.dsp.window.resize({ x = 0,   y = 30,  relative = true }), { repeating = true })
 
 -- Move/resize windows with mainMod + LMB/RMB and dragging
 hl.bind(mainMod .. " + mouse:272", hl.dsp.window.drag(),   { mouse = true })
