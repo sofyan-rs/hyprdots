@@ -414,7 +414,7 @@ hl.window_rule({
 -- Blur waybar and rofi (their backgrounds are semi-transparent, so blur is
 -- only visible here if layer blur is enabled)
 hl.layer_rule({ name = "blur-waybar",        match = { namespace = "^waybar$" },        blur = true })
-hl.layer_rule({ name = "blur-rofi",          match = { namespace = "^rofi$" },          blur = true })
+hl.layer_rule({ name = "blur-rofi",          match = { namespace = "^rofi$" },          blur = true, animation = "popin 80%" })
 
 -- Hyprland-run windowrule
 hl.window_rule({
