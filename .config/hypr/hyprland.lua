@@ -64,6 +64,26 @@ end)
 hl.env("XCURSOR_SIZE", "28")
 hl.env("HYPRCURSOR_SIZE", "28")
 
+-- Steam's own UI doesn't handle fractional monitor scaling, so it renders
+-- blurry over XWayland (unlike Discord, which can run natively on Wayland).
+-- Force it to render its UI at the monitor's scale directly instead of being
+-- upscaled after the fact.
+hl.env("STEAM_FORCE_DESKTOPUI_SCALING", "1.33")
+
+-----------------------
+----- XWAYLAND -----
+-----------------------
+
+-- See https://wiki.hypr.land/Configuring/XWayland/
+-- Fixes blurry XWayland apps (Steam, etc.) on fractional-scaled monitors by
+-- rendering them at scale 1 and letting Hyprland scale the result smoothly,
+-- instead of XWayland doing its own blurry internal scaling.
+hl.config({
+    xwayland = {
+        force_zero_scaling = true,
+    },
+})
+
 -----------------------
 ----- PERMISSIONS -----
 -----------------------
