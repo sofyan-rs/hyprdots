@@ -171,6 +171,10 @@ Full list (and how to change binds) lives in `hl.bind(...)` calls inside `hyprla
 
 **Terminal theme :** Swap the `include` line at the top of `kitty.conf` between `SakuraEmber.conf` and `SpaceGray.conf`.
 
+## 🛠️ Troubleshooting
+
+**Hyprlock always says "Wrong Password" :** Usually caused by `pam_fprintd` or `pam_faillock` interfering with the auth stack in `/etc/pam.d/hyprlock`, not `hyprlock.conf` itself. See [`.config/hypr/README-hyprlock-wrong-password.md`](.config/hypr/README-hyprlock-wrong-password.md) for the full diagnosis and fix.
+
 ## ❤️ Credits
 
 ### Special thanks to:
