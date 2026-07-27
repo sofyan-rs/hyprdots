@@ -128,13 +128,40 @@ chmod +x ~/.local/bin/waybar-mako-notif.py
 - Open **waypaper** once and pick **awww** as the backend (this also sets your wallpaper)
 - Reboot
 
+## ⌨️ Keybindings
+
+| Keybind | Action |
+|---|---|
+| `SUPER + Return` | Open terminal (Kitty) |
+| `SUPER + Q` | Close active window |
+| `SUPER + E` | Open file manager (Nautilus) |
+| `SUPER + V` | Toggle floating |
+| `SUPER + P` | Toggle pseudotile |
+| `SUPER + J` | Toggle split (dwindle) |
+| `SUPER + R` | Restart Waybar |
+| `SUPER + M` | Exit Hyprland |
+| `ALT + Space` | App launcher (Rofi) |
+| `ALT + ←/→/↑/↓` | Move focus |
+| `SUPER + ←/→` | Switch to previous/next workspace |
+| `SUPER + scroll` | Cycle through workspaces |
+| `SUPER + [0-9]` | Switch to workspace 1-10 |
+| `SUPER + SHIFT + [0-9]` | Move active window to workspace 1-10 |
+| `SUPER + S` | Toggle special workspace (scratchpad) |
+| `SUPER + SHIFT + S` | Move active window to special workspace |
+| `SUPER + LMB drag` | Move window |
+| `SUPER + RMB drag` | Resize window |
+| `Print` | Screenshot region to clipboard |
+| Volume/brightness/media keys | Handled via `wpctl`, `brightnessctl`, `playerctl` |
+
+Full list (and how to change binds) lives in `hl.bind(...)` calls inside `hyprland.lua`.
+
 ## 🔧 Customization
 
 **Wallpapers :** Put your favorites in **~/Pictures/Wallpapers/** and pick one via **waypaper** — the wallpaper button on Waybar opens the picker, and `awww-daemon` / `waypaper --restore` bring it back on login.
 
 **Monitors :** Ensure correct monitor output name and mode in `hyprland.lua` (`hl.monitor({ ... })`).
 
-**Keybindings :** Adjust the `hl.bind(...)` calls in `hyprland.lua`.
+**Keybindings :** See the table above, or adjust the `hl.bind(...)` calls in `hyprland.lua` directly.
 
 **Lock screen wallpaper :** Set the `$wallpaper` variable in `hyprlock.conf`.
 
