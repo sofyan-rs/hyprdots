@@ -5,56 +5,56 @@
   "height": 38, // Waybar height (to be removed for auto height)
   "margin-top": 0,
   "spacing": 0, // Gaps between modules
-  "modules-left": ["custom/rofi", "hyprland/workspaces", "hyprland/window"],
+  "modules-left": ["custom/rofi", "ext/workspaces", "hyprland/window"],
   "modules-center": [],
   "modules-right": [
-    "mpris",
+    // "mpris",
     "group/tray-expander",
     "custom/colorpicker",
     "custom/wallpaper",
     "pulseaudio",
     "clock",
     "custom/notification",
-    "custom/power"
+    "custom/power",
   ],
   "group/tray-expander": {
     "orientation": "inherit",
     "drawer": {
       "transition-duration": 500,
-      "children-class": "tray-group-item"
+      "children-class": "tray-group-item",
     },
-    "modules": ["custom/expand-icon", "tray"]
+    "modules": ["custom/expand-icon", "tray"],
   },
   "custom/expand-icon": {
     "format": "",
-    "tooltip": false
+    "tooltip": false,
   },
   "tray": {
     "icon-size": 15,
-    "spacing": 8
+    "spacing": 8,
   },
-  "hyprland/workspaces": {
-    "format": "{icon}",
-    "format-icons": {
-      "1": "一",
-      "2": "二",
-      "3": "三",
-      "4": "四",
-      "5": "五",
-      "6": "六",
-      "7": "七",
-      "8": "八",
-      "9": "九",
-      "10": "十"
-    },
-    "persistent-workspaces": {
-      "*": [1, 2, 3, 4, 5, 6]
-    },
+  "ext/workspaces": {
+    "enable-bar-scroll": true,
+    "sort-by-id": true,
+    "on-click": "activate",
+    // "format": "{icon}",
+    // "format-icons": {
+    //   "1": "一",
+    //   "2": "二",
+    //   "3": "三",
+    //   "4": "四",
+    //   "5": "五",
+    //   "6": "六",
+    //   "7": "七",
+    //   "8": "八",
+    //   "9": "九",
+    //   "10": "十",
+    // },
   },
   "clock": {
     // "timezone": "America/New_York",
     "tooltip-format": "<big>{:%A, %d %B %Y}</big>\n<tt><small>{calendar}</small></tt>",
-    "format-alt": "{:%A, %d %B %Y - %H:%m}"
+    "format-alt": "{:%A, %d %B %Y - %H:%m}",
   },
   "pulseaudio": {
     // "scroll-step": 1, // %, can be a float
@@ -71,9 +71,9 @@
       "phone": "",
       "portable": "",
       "car": "",
-      "default": ["", "", ""]
+      "default": ["", "", ""],
     },
-    "on-click": "pavucontrol"
+    "on-click": "pavucontrol",
   },
   "custom/notification": {
     "exec": "~/.local/bin/waybar-mako-notif.py",
@@ -83,41 +83,41 @@
     "format": "<span color='#d9a25f'></span> {text}",
     "tooltip": "{tooltip}",
     "class": "{class}",
-    "on-click": "makoctl dismiss --all"
+    "on-click": "makoctl dismiss --all",
   },
   "custom/power": {
     "format": "",
     "tooltip": false,
     "on-click": "~/.config/rofi/powermenu.sh",
     "on-click-right": "hyprctl dispatch exit",
-    "interval": 60
+    "interval": 60,
   },
   "custom/colorpicker": {
     "format": "",
     "tooltip": "Pick a color",
-    "on-click": "sleep 0.1 && hyprpicker -a -f hex && notify-send 'Color copied to clipboard'"
+    "on-click": "sleep 0.1 && hyprpicker -a -f hex && notify-send 'Color copied to clipboard'",
   },
   "custom/wallpaper": {
     "format": "",
     "tooltip-format": "Change Wallpaper",
     "on-click": "waypaper --random",
-    "on-click-right": "waypaper"
+    "on-click-right": "waypaper",
   },
   "custom/rofi": {
     "format": "󱗼",
     "tooltip": "Launch Rofi",
-    "on-click": "rofi -show drun"
+    "on-click": "rofi -show drun",
   },
   "mpris": {
     "format": "{player_icon} {title} - {artist}",
     "format-paused": "{status_icon} <i>{title} - {artist}</i>",
     "player-icons": {
-      "default": ""
+      "default": "",
     },
     "status-icons": {
-      "paused": ""
+      "paused": "",
     },
     "max-length": 35,
-    "interval": 1
-  }
+    "interval": 1,
+  },
 }
