@@ -5,6 +5,7 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 ## ✨ Features
 
 - 🪞 Dynamic tiling with **Hyprland**, configured via its native **Lua** config (`hyprland.lua`)
+- 🌀 Switchable **dwindle** / **scrolling** layout (`SUPER + W`)
 - 🖼️ Wallpaper management using **awww** (swww's successor) & **Waypaper**
 - 🔒 Screen locking with **Hyprlock**
 - 💻 Terminal : **Kitty**, fast and GPU-accelerated (Sakura Ember theme)
