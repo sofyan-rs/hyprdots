@@ -131,6 +131,28 @@ cat > "$HOME/.config/hypr/hyprlock-colors.conf" <<EOF
 \$lock_accent = $(hex_to_rgb "$ACCENT")
 EOF
 
+# ---- Mako ----
+cat > "$HOME/.config/mako/config" <<EOF
+border-radius=8
+border-size=2
+background-color=${BG_ALT}ee
+text-color=$FG
+border-color=${BORDER}ff
+icon-border-radius=8
+max-visible=4
+sort=-time
+anchor=top-right
+margin=10
+padding=15
+
+default-timeout=4000
+ignore-timeout=false
+
+[urgency=critical]
+border-color=${SECONDARY}ff
+default-timeout=0
+EOF
+
 # ---- Reload running apps ----
 pkill -SIGUSR1 kitty 2>/dev/null
 
@@ -138,6 +160,10 @@ if pgrep -x waybar >/dev/null 2>&1; then
   killall -9 waybar 2>/dev/null
   setsid waybar >/dev/null 2>&1 &
   disown
+fi
+
+if pgrep -x mako >/dev/null 2>&1; then
+  makoctl reload >/dev/null 2>&1
 fi
 
 echo "apply-theme: applied '$palette_name' for wallpaper '$base'"
