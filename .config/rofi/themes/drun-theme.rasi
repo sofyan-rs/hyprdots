@@ -3,13 +3,13 @@
 configuration {
   font: "CaskaydiaCove Nerd Font Propo Medium 12";
   drun {
-    display-name: "";
+    display-name: " Search";
   }
   run {
-    display-name: "";
+    display-name: " Run";
   }
   window {
-    display-name: "";
+    display-name: " Window";
   }
   modi: "drun,run,window";
   timeout {

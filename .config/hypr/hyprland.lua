@@ -310,6 +310,8 @@ end)
 
 hl.bind(mainMod .. " + R", hl.dsp.exec_cmd("~/.config/waybar/scripts/launch.sh"))
 
+hl.bind(mainMod .. " + SHIFT + W", hl.dsp.exec_cmd("~/.config/rofi/wallpaper.sh"))
+
 hl.bind(secondMod .. " + SPACE", hl.dsp.exec_cmd(menu))
 
 -- Move focus with secondMod + arrow keys

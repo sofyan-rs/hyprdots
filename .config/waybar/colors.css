@@ -1,0 +1,12 @@
+@define-color bg #e4eaf5;
+@define-color bg-alt #d0dceb;
+@define-color fg #232838;
+@define-color fg-alt #5c6a85;
+@define-color accent #4a7ed6;
+@define-color secondary #8a6fc4;
+@define-color border #b8c8e0;
+@define-color on-accent #f2f6fc;
+@define-color workspace-focused-bg #aac0e8;
+@define-color clock-bg #b8c8e0;
+@define-color wallpaper-icon #4a7ed6;
+@define-color shadow rgba(0, 0, 0, 0.12);

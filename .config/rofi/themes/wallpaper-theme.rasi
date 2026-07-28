@@ -1,0 +1,58 @@
+@import "colors.rasi"
+
+configuration {
+  font: "CaskaydiaCove Nerd Font Propo Medium 11";
+  show-icons: true;
+}
+
+window {
+  background-color: @bg;
+  padding: 12px;
+  transparency: "real";
+  width: 55%;
+}
+
+mainbox {
+  children: [listview];
+}
+
+listview {
+  columns: 3;
+  lines: 2;
+  flow: horizontal;
+  spacing: 10px;
+  scrollbar: true;
+  fixed-height: true;
+}
+
+scrollbar {
+  background-color: @bg-alt;
+  handle-color: @accent;
+  margin: 0 0 0 6px;
+}
+
+element {
+  orientation: vertical;
+  padding: 6px;
+  border-radius: 8px;
+}
+
+element-icon {
+  size: 160px;
+  horizontal-align: 0.5;
+  border-radius: 8px;
+}
+
+element-text {
+  horizontal-align: 0.5;
+  padding: 0px 2px 2px;
+  text-color: @fg-alt;
+}
+
+element selected {
+  background-color: @bg-alt;
+}
+
+element-text selected {
+  text-color: @fg;
+}
