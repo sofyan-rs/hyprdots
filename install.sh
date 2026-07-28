@@ -177,5 +177,6 @@ fi
 echo
 echo "✅ Installation completed successfully!"
 echo "➡️ Open waypaper once and pick 'awww' as the backend to set your wallpaper."
+echo "➡️ Wallpaper changes auto-apply matching kitty/rofi/waybar colors (wired via waypaper's post_command, see ~/.config/theme/apply-theme.sh)."
 echo "➡️ Reboot or log out / log in is recommended."
 echo "➡️ Enjoy this Hyprland setup!"
