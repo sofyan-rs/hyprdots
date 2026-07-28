@@ -38,6 +38,7 @@
     "on-click": "activate",
     "on-scroll-up": "hyprctl dispatch \"hl.dsp.focus({workspace = 'e-1'})\"",
     "on-scroll-down": "hyprctl dispatch \"hl.dsp.focus({workspace = 'e+1'})\"",
+    "smooth-scrolling-threshold": 1,
     // "format": "{icon}",
     // "format-icons": {
     //   "1": "一",
@@ -90,7 +91,7 @@
     "format": "",
     "tooltip": false,
     "on-click": "~/.config/rofi/powermenu.sh",
-    "on-click-right": "hyprctl dispatch exit",
+    // "on-click-right": "hyprctl dispatch 'hl.dsp.exit()'",
     "interval": 60,
   },
   "custom/colorpicker": {

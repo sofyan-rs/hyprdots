@@ -15,7 +15,7 @@ choice=$(printf "%s\n" "${options[@]}" | rofi -dmenu -theme ~/.config/rofi/theme
 case "$choice" in
   "  Lock") hyprlock ;;
   "  Suspend") systemctl suspend ;;
-  "  Logout") hyprctl dispatch exit ;;
+  "  Logout") hyprctl dispatch 'hl.dsp.exit()' ;;
   "  Shutdown") systemctl poweroff ;;
   "  Reboot") systemctl reboot ;;
 esac
