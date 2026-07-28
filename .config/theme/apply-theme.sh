@@ -115,6 +115,22 @@ cat > "$HOME/.config/waybar/colors.css" <<EOF
 @define-color shadow $SHADOW;
 EOF
 
+# ---- Hyprlock ----
+hex_to_rgb() {
+  local hex="${1#\#}"
+  printf "%d, %d, %d" "0x${hex:0:2}" "0x${hex:2:2}" "0x${hex:4:2}"
+}
+
+cat > "$HOME/.config/hypr/hyprlock-colors.conf" <<EOF
+\$wallpaper = $wallpaper
+\$lock_outer = $(hex_to_rgb "$BORDER")
+\$lock_inner = $(hex_to_rgb "$BG")
+\$lock_font = $(hex_to_rgb "$FG")
+\$lock_check = $(hex_to_rgb "$ACCENT")
+\$lock_fail = $(hex_to_rgb "$SECONDARY")
+\$lock_accent = $(hex_to_rgb "$ACCENT")
+EOF
+
 # ---- Reload running apps ----
 pkill -SIGUSR1 kitty 2>/dev/null
 
