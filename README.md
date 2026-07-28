@@ -136,6 +136,7 @@ chmod +x ~/.local/bin/waybar-mako-notif.py
 | `SUPER + Return` | Open terminal (Kitty) |
 | `SUPER + Q` | Close active window |
 | `SUPER + E` | Open file manager (Nautilus) |
+| `SUPER + B` | Open browser (Brave) |
 | `SUPER + V` | Toggle floating |
 | `SUPER + P` | Toggle pseudotile |
 | `SUPER + J` | Toggle split (dwindle) |
@@ -174,6 +175,8 @@ Full list (and how to change binds) lives in `hl.bind(...)` calls inside `hyprla
 ## 🛠️ Troubleshooting
 
 **Hyprlock always says "Wrong Password" :** Usually caused by `pam_fprintd` or `pam_faillock` interfering with the auth stack in `/etc/pam.d/hyprlock`, not `hyprlock.conf` itself. See [`.config/hypr/README-hyprlock-wrong-password.md`](.config/hypr/README-hyprlock-wrong-password.md) for the full diagnosis and fix.
+
+**Steam game won't launch on a dual-boot NTFS partition :** Caused by `ntfs-3g` mounting the partition without `uid=`/`gid=` options, so Proton refuses to run because its prefix isn't owned by you. See [`FIX-STEAM-DUAL-PARTITION.md`](FIX-STEAM-DUAL-PARTITION.md) for the fix.
 
 ## ❤️ Credits
 
