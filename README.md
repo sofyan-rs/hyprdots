@@ -7,6 +7,7 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 - 🪞 Dynamic tiling with **Hyprland**, configured via its native **Lua** config (`hyprland.lua`)
 - 🌀 Switchable **dwindle** / **scrolling** layout (`SUPER + W`)
 - 🖼️ Wallpaper management using **awww** (swww's successor) & **Waypaper**
+- 🎨 Dynamic theming — kitty, rofi and waybar colors auto-switch to match your wallpaper
 - 🔒 Screen locking with **Hyprlock**
 - 💻 Terminal : **Kitty**, fast and GPU-accelerated (Sakura Ember theme)
 - 📟 Clean, informative **Waybar**
@@ -127,6 +128,7 @@ chmod +x ~/.local/bin/waybar-mako-notif.py
 
 - Set GTK-Theme using **nwg-look**
 - Open **waypaper** once and pick **awww** as the backend (this also sets your wallpaper)
+- Confirm `post_command = ~/.config/theme/apply-theme.sh "$wallpaper"` is set in `~/.config/waypaper/config.ini` (already copied above) so switching wallpapers auto-updates kitty/rofi/waybar colors — see **Dynamic Theme** under Customization below
 - Reboot
 
 ## ⌨️ Keybindings
@@ -141,6 +143,7 @@ chmod +x ~/.local/bin/waybar-mako-notif.py
 | `SUPER + P` | Toggle pseudotile |
 | `SUPER + J` | Toggle split (dwindle) |
 | `SUPER + W` | Toggle layout (dwindle ↔ scrolling) |
+| `SUPER + SHIFT + W` | Open wallpaper picker (Rofi) — also applies the matching theme |
 | `SUPER + R` | Restart Waybar |
 | `SUPER + M` | Exit Hyprland |
 | `ALT + Space` | App launcher (Rofi) |
@@ -171,6 +174,12 @@ Full list (and how to change binds) lives in `hl.bind(...)` calls inside `hyprla
 **Lock screen wallpaper :** Set the `$wallpaper` variable in `hyprlock.conf`.
 
 **Terminal theme :** Swap the `include` line at the top of `kitty.conf` between `SakuraEmber.conf` and `SpaceGray.conf`.
+
+**Dynamic theme :** `~/.config/theme/apply-theme.sh` picks a color palette based on the active wallpaper and regenerates `kitty/theme.conf`, `rofi/themes/colors.rasi` and `waybar/colors.css`, then reloads kitty and restarts Waybar. It's triggered automatically by waypaper's `post_command` (see Installation), no matter how the wallpaper was changed — the Waybar wallpaper button, `SUPER + SHIFT + W`, or the waypaper GUI itself.
+
+- Palettes live in `.config/theme/palettes/*.sh`. Add a new one by copying an existing file and adjusting the colors.
+- `.config/theme/wallpapers.conf` maps `<wallpaper filename>=<palette name>`. Unmapped wallpapers fall back to `sakura-ember`.
+- Run `~/.config/theme/apply-theme.sh` with no arguments to reapply the theme for whatever wallpaper is currently set.
 
 ## 🛠️ Troubleshooting
 
