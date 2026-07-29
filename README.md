@@ -9,7 +9,7 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 - 🖼️ Wallpaper management using **awww** (swww's successor) & **Waypaper**
 - 🎨 Dynamic theming — kitty, rofi and waybar colors auto-switch to match your wallpaper
 - 🔒 Screen locking with **Hyprlock**
-- 💻 Terminal : **Kitty**, fast and GPU-accelerated (Sakura Ember theme)
+- 💻 Terminal : **Kitty**, fast and GPU-accelerated
 - 📟 Clean, informative **Waybar**
 - 🔍 Application launcher using **Rofi**
 - 🧾 Fast system info via **Fastfetch**
@@ -58,7 +58,6 @@ sudo dnf install waybar
 sudo dnf install power-profiles-daemon
 sudo dnf install grim slurp wl-clipboard
 sudo dnf install hyprpicker
-sudo dnf install papirus-icon-theme
 
 # hyprlock (COPR)
 sudo dnf install dnf-plugins-core
@@ -87,6 +86,7 @@ sudo dnf install nwg-look
 sudo dnf install adw-gtk3-theme
 sudo flatpak override --filesystem=xdg-data/themes
 sudo flatpak mask org.gtk.Gtk3theme.adw-gtk3-dark
+sudo dnf install papirus-icon-theme
 ```
 
 - Clone this repository
@@ -133,49 +133,47 @@ chmod +x ~/.local/bin/waybar-mako-notif.py
 
 ## ⌨️ Keybindings
 
-| Keybind | Action |
-|---|---|
-| `SUPER + Return` | Open terminal (Kitty) |
-| `SUPER + Q` | Close active window |
-| `SUPER + E` | Open file manager (Nautilus) |
-| `SUPER + B` | Open browser (Brave) |
-| `SUPER + V` | Toggle floating |
-| `SUPER + P` | Toggle pseudotile |
-| `SUPER + J` | Toggle split (dwindle) |
-| `SUPER + W` | Toggle layout (dwindle ↔ scrolling) |
-| `SUPER + SHIFT + W` | Open wallpaper picker (Rofi) — also applies the matching theme |
-| `SUPER + R` | Restart Waybar |
-| `SUPER + M` | Exit Hyprland |
-| `ALT + Space` | App launcher (Rofi) |
-| `ALT + ←/→/↑/↓` | Move focus |
-| `SUPER + ←/→` | Switch to previous/next workspace |
-| `SUPER + scroll` | Cycle through workspaces |
-| `SUPER + [0-9]` | Switch to workspace 1-10 |
-| `SUPER + SHIFT + [0-9]` | Move active window to workspace 1-10 |
-| `SUPER + SHIFT + ←/→/↑/↓` | Move window position in layout |
-| `SUPER + CTRL + ←/→/↑/↓` | Resize active window |
-| `SUPER + S` | Toggle special workspace (scratchpad) |
-| `SUPER + SHIFT + S` | Move active window to special workspace |
-| `SUPER + LMB drag` | Move window |
-| `SUPER + RMB drag` | Resize window |
-| `Print` | Screenshot region to clipboard |
-| Volume/brightness/media keys | Handled via `wpctl`, `brightnessctl`, `playerctl` |
+| Keybind                      | Action                                                         |
+| ---------------------------- | -------------------------------------------------------------- |
+| `SUPER + Return`             | Open terminal (Kitty)                                          |
+| `SUPER + Q`                  | Close active window                                            |
+| `SUPER + E`                  | Open file manager (Nautilus)                                   |
+| `SUPER + B`                  | Open browser (Brave)                                           |
+| `SUPER + V`                  | Toggle floating                                                |
+| `SUPER + P`                  | Toggle pseudotile                                              |
+| `SUPER + J`                  | Toggle split (dwindle)                                         |
+| `SUPER + W`                  | Toggle layout (dwindle ↔ scrolling)                            |
+| `SUPER + SHIFT + W`          | Open wallpaper picker (Rofi) — also applies the matching theme |
+| `SUPER + R`                  | Restart Waybar                                                 |
+| `SUPER + M`                  | Exit Hyprland                                                  |
+| `ALT + Space`                | App launcher (Rofi)                                            |
+| `ALT + ←/→/↑/↓`              | Move focus                                                     |
+| `SUPER + ←/→`                | Switch to previous/next workspace                              |
+| `SUPER + scroll`             | Cycle through workspaces                                       |
+| `SUPER + [0-9]`              | Switch to workspace 1-10                                       |
+| `SUPER + SHIFT + [0-9]`      | Move active window to workspace 1-10                           |
+| `SUPER + SHIFT + ←/→/↑/↓`    | Move window position in layout                                 |
+| `SUPER + CTRL + ←/→/↑/↓`     | Resize active window                                           |
+| `SUPER + S`                  | Toggle special workspace (scratchpad)                          |
+| `SUPER + SHIFT + S`          | Move active window to special workspace                        |
+| `SUPER + LMB drag`           | Move window                                                    |
+| `SUPER + RMB drag`           | Resize window                                                  |
+| `Print`                      | Screenshot region to clipboard                                 |
+| Volume/brightness/media keys | Handled via `wpctl`, `brightnessctl`, `playerctl`              |
 
-Full list (and how to change binds) lives in `hl.bind(...)` calls inside `hyprland.lua`.
+Full list (and how to change binds) lives in `hl.bind(...)` calls inside `hypr/config/keybinds.lua`.
 
 ## 🔧 Customization
 
+`hyprland.lua` just `require()`s per-topic files under `hypr/config/` (monitors, keybinds, appearance, layouts, input, window rules, etc.) — see the comment at the top of `hyprland.lua` for the full list.
+
 **Wallpapers :** Put your favorites in **~/Pictures/Wallpapers/** and pick one via **waypaper** — the wallpaper button on Waybar opens the picker, and `awww-daemon` / `waypaper --restore` bring it back on login.
 
-**Monitors :** Ensure correct monitor output name and mode in `hyprland.lua` (`hl.monitor({ ... })`).
+**Monitors :** Ensure correct monitor output name and mode in `hypr/config/monitors.lua` (`hl.monitor({ ... })`).
 
-**Keybindings :** See the table above, or adjust the `hl.bind(...)` calls in `hyprland.lua` directly.
+**Keybindings :** See the table above, or adjust the `hl.bind(...)` calls in `hypr/config/keybinds.lua` directly.
 
-**Lock screen wallpaper :** Set the `$wallpaper` variable in `hyprlock.conf`.
-
-**Terminal theme :** Swap the `include` line at the top of `kitty.conf` between `SakuraEmber.conf` and `SpaceGray.conf`.
-
-**Dynamic theme :** `~/.config/theme/apply-theme.sh` picks a color palette based on the active wallpaper and regenerates `kitty/theme.conf`, `rofi/themes/colors.rasi` and `waybar/colors.css`, then reloads kitty and restarts Waybar. It's triggered automatically by waypaper's `post_command` (see Installation), no matter how the wallpaper was changed — the Waybar wallpaper button, `SUPER + SHIFT + W`, or the waypaper GUI itself.
+**Dynamic theme :** `~/.config/theme/apply-theme.sh` picks a color palette based on the active wallpaper and regenerates `kitty/theme.conf`, `rofi/themes/colors.rasi`, `waybar/colors.css`, `hypr/hyprlock-colors.conf` and `mako/config`, then reloads kitty, mako, hyprlock and restarts Waybar. It's triggered automatically by waypaper's `post_command` (see Installation), no matter how the wallpaper was changed — the Waybar wallpaper button, `SUPER + SHIFT + W`, or the waypaper GUI itself. Kitty and hyprlock no longer have static per-theme config files — colors are only set through this system.
 
 - Palettes live in `.config/theme/palettes/*.sh`. Add a new one by copying an existing file and adjusting the colors.
 - `.config/theme/wallpapers.conf` maps `<wallpaper filename>=<palette name>`. Unmapped wallpapers fall back to `sakura-ember`.

@@ -1,11 +1,11 @@
 * {
-  bg: #0c1a3a99;
-  bg-alt: #16295acc;
+  bg: #0a0a1299;
+  bg-alt: #161622cc;
 
-  fg: #e8eef8;
-  fg-alt: #8ba0c8;
-  accent: #4a8fd4;
-  secondary: #d4b06a;
+  fg: #e8f5f2;
+  fg-alt: #8f96b8;
+  accent: #3ee8c8;
+  secondary: #b569e0;
 
   background-color: transparent;
   text-color: @fg-alt;
