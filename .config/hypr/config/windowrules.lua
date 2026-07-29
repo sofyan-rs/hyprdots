@@ -52,3 +52,18 @@ hl.window_rule({
     move  = "20 monitor_h-120",
     float = true,
 })
+
+-- Android Studio + its emulator: float instead of tiling
+hl.window_rule({
+    name  = "float-android-studio",
+    match = { class = "^jetbrains-studio$" },
+
+    float = true,
+})
+
+hl.window_rule({
+    name  = "float-android-emulator",
+    match = { class = "^Emulator$" },
+
+    float = true,
+})
