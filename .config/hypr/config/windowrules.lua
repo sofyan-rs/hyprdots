@@ -53,14 +53,20 @@ hl.window_rule({
     float = true,
 })
 
--- Android Studio + its emulator: float instead of tiling
+-- Android Studio: float its dialogs/utility windows (Welcome screen, Device
+-- Manager, Settings, etc.), but leave the main project window tiling, since
+-- it shares the same class with no other way to tell them apart.
 hl.window_rule({
-    name  = "float-android-studio",
-    match = { class = "^jetbrains-studio$" },
+    name  = "float-android-studio-dialogs",
+    match = {
+        class = "^jetbrains-studio$",
+        title = "^(Welcome to Android Studio|Device Manager|Settings|Preferences|New Project)$",
+    },
 
     float = true,
 })
 
+-- Its emulator: always float
 hl.window_rule({
     name  = "float-android-emulator",
     match = { class = "^Emulator$" },
