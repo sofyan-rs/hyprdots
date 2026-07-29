@@ -19,7 +19,10 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 
 ## 📸 Screenshots
 
-![Desktop](screenshots/ss.png)
+![Desktop](screenshots/ss-1.png)
+![Desktop](screenshots/ss-2.png)
+![Desktop](screenshots/ss-3.png)
+![Desktop](screenshots/ss-4.png)
 
 ## ⚙️ Requirements
 
