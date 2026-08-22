@@ -5,6 +5,7 @@ import "bar"
 import "notifications"
 import "launcher"
 import "wallpaper"
+import "dock"
 
 ShellRoot {
     Variants {
@@ -20,4 +21,6 @@ ShellRoot {
     AppLauncher {}
 
     WallpaperPicker {}
+
+    Dock {}
 }

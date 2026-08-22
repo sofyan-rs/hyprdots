@@ -11,6 +11,7 @@ import "../notifications"
 import "../power"
 import "../wallpaper"
 import "../media"
+import "../dock"
 
 PanelWindow {
     id: bar
@@ -48,6 +49,10 @@ PanelWindow {
         spacing: 5
 
         LauncherButton {
+            barScreen: bar.barScreen
+        }
+
+        DockToggle {
             barScreen: bar.barScreen
         }
 

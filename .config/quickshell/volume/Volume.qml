@@ -32,7 +32,7 @@ Pill {
             text: root.muted ? "\ue04f" : (root.volume <= 0.5 ? "\ue04d" : "\ue050")
             font.family: Colors.iconFontFamily
             font.pixelSize: Colors.fontSize + 2
-            color: root.muted ? Colors.accentText : Colors.fg
+            color: root.muted ? Colors.accentText : Colors.accent
         }
 
         Text {
