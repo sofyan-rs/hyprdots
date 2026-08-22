@@ -52,23 +52,21 @@ chmod +x install.sh
 - Install requirements
 
 ```bash
+# Hyprland + hyprlock (COPR)
+sudo dnf install dnf-plugins-core
+sudo dnf copr enable lionheartp/Hyprland
+sudo dnf install hyprland hyprlock
+
 # core packages
-sudo dnf install hyprland
 sudo dnf install power-profiles-daemon
 sudo dnf install grim slurp wl-clipboard
 sudo dnf install hyprpicker
-
-# hyprlock (COPR)
-sudo dnf install dnf-plugins-core
-sudo dnf copr enable solopasha/hyprland
-sudo dnf install hyprlock
 
 # awww - wallpaper daemon (COPR)
 sudo dnf copr enable alebastr/sway-extras
 sudo dnf install awww
 
-# quickshell - bar, notifications, launcher, wallpaper picker, power menu (COPR)
-sudo dnf copr enable lionheartp/Hyprland
+# quickshell - bar, notifications, launcher, wallpaper picker, power menu
 sudo dnf install quickshell
 
 # waypaper - wallpaper GUI
@@ -124,33 +122,33 @@ cp -r wallpapers/* ~/Pictures/Wallpapers/
 
 ## ⌨️ Keybindings
 
-| Keybind                      | Action                                                         |
-| ---------------------------- | -------------------------------------------------------------- |
-| `SUPER + Return`             | Open terminal (Kitty)                                          |
-| `SUPER + Q`                  | Close active window                                            |
-| `SUPER + E`                  | Open file manager (Nautilus)                                   |
-| `SUPER + B`                  | Open browser (Brave)                                           |
-| `SUPER + V`                  | Toggle floating                                                |
-| `SUPER + P`                  | Toggle pseudotile                                              |
-| `SUPER + J`                  | Toggle split (dwindle)                                         |
-| `SUPER + W`                  | Toggle layout (dwindle ↔ scrolling)                            |
+| Keybind                      | Action                                                               |
+| ---------------------------- | -------------------------------------------------------------------- |
+| `SUPER + Return`             | Open terminal (Kitty)                                                |
+| `SUPER + Q`                  | Close active window                                                  |
+| `SUPER + E`                  | Open file manager (Nautilus)                                         |
+| `SUPER + B`                  | Open browser (Brave)                                                 |
+| `SUPER + V`                  | Toggle floating                                                      |
+| `SUPER + P`                  | Toggle pseudotile                                                    |
+| `SUPER + J`                  | Toggle split (dwindle)                                               |
+| `SUPER + W`                  | Toggle layout (dwindle ↔ scrolling)                                  |
 | `SUPER + SHIFT + W`          | Open wallpaper picker (Quickshell) — also applies the matching theme |
-| `SUPER + R`                  | Restart Quickshell                                             |
-| `SUPER + M`                  | Exit Hyprland                                                  |
-| `ALT + Space`                | App launcher (Quickshell)                                      |
-| `ALT + ←/→/↑/↓`              | Move focus                                                     |
-| `SUPER + ←/→`                | Switch to previous/next workspace                              |
-| `SUPER + scroll`             | Cycle through workspaces                                       |
-| `SUPER + [0-9]`              | Switch to workspace 1-10                                       |
-| `SUPER + SHIFT + [0-9]`      | Move active window to workspace 1-10                           |
-| `SUPER + SHIFT + ←/→/↑/↓`    | Move window position in layout                                 |
-| `SUPER + CTRL + ←/→/↑/↓`     | Resize active window                                           |
-| `SUPER + S`                  | Toggle special workspace (scratchpad)                          |
-| `SUPER + SHIFT + S`          | Move active window to special workspace                        |
-| `SUPER + LMB drag`           | Move window                                                    |
-| `SUPER + RMB drag`           | Resize window                                                  |
-| `Print`                      | Screenshot region to clipboard                                 |
-| Volume/brightness/media keys | Handled via `wpctl`, `brightnessctl`, `playerctl`              |
+| `SUPER + R`                  | Restart Quickshell                                                   |
+| `SUPER + M`                  | Exit Hyprland                                                        |
+| `ALT + Space`                | App launcher (Quickshell)                                            |
+| `ALT + ←/→/↑/↓`              | Move focus                                                           |
+| `SUPER + ←/→`                | Switch to previous/next workspace                                    |
+| `SUPER + scroll`             | Cycle through workspaces                                             |
+| `SUPER + [0-9]`              | Switch to workspace 1-10                                             |
+| `SUPER + SHIFT + [0-9]`      | Move active window to workspace 1-10                                 |
+| `SUPER + SHIFT + ←/→/↑/↓`    | Move window position in layout                                       |
+| `SUPER + CTRL + ←/→/↑/↓`     | Resize active window                                                 |
+| `SUPER + S`                  | Toggle special workspace (scratchpad)                                |
+| `SUPER + SHIFT + S`          | Move active window to special workspace                              |
+| `SUPER + LMB drag`           | Move window                                                          |
+| `SUPER + RMB drag`           | Resize window                                                        |
+| `Print`                      | Screenshot region to clipboard                                       |
+| Volume/brightness/media keys | Handled via `wpctl`, `brightnessctl`, `playerctl`                    |
 
 Full list (and how to change binds) lives in `hl.bind(...)` calls inside `hypr/config/keybinds.lua`.
 

@@ -69,12 +69,25 @@ install_packages() {
 }
 
 # ===============================
+# PLUGIN CORE (needed for copr)
+# ===============================
+install_packages dnf-plugins-core
+
+# ===============================
+# HYPRLAND + HYPRLOCK + QUICKSHELL (COPR)
+# ===============================
+if ! is_installed hyprland || ! is_installed hyprlock || ! is_installed quickshell; then
+  echo "🧩 Enabling COPR repository for hyprland/hyprlock/quickshell..."
+  sudo dnf copr enable -y lionheartp/Hyprland
+fi
+install_packages hyprland hyprlock quickshell
+
+# ===============================
 # BASE PACKAGES
 # ===============================
 echo "📦 Installing required packages..."
 
 install_packages \
-  hyprland \
   power-profiles-daemon \
   grim \
   slurp \
@@ -88,19 +101,7 @@ install_packages \
   nwg-look \
   adw-gtk3-theme \
   waypaper \
-  papirus-icon-theme \
-  dnf-plugins-core
-
-# ===============================
-# HYPRLOCK (COPR)
-# ===============================
-if ! is_installed hyprlock; then
-  echo "🧩 Enabling COPR repository for hyprlock..."
-  sudo dnf copr enable -y solopasha/hyprland
-  sudo dnf install -y hyprlock
-else
-  echo "✔ hyprlock already installed — skipping"
-fi
+  papirus-icon-theme
 
 # ===============================
 # AWWW (COPR)
@@ -111,17 +112,6 @@ if ! is_installed awww; then
   sudo dnf install -y awww
 else
   echo "✔ awww already installed — skipping"
-fi
-
-# ===============================
-# QUICKSHELL (COPR)
-# ===============================
-if ! is_installed quickshell; then
-  echo "🧩 Enabling COPR repository for quickshell..."
-  sudo dnf copr enable -y lionheartp/Hyprland
-  sudo dnf install -y quickshell
-else
-  echo "✔ quickshell already installed — skipping"
 fi
 
 # ===============================
