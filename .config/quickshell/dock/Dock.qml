@@ -75,7 +75,9 @@ PanelWindow {
         const toplevels = Hyprland.toplevels ? Hyprland.toplevels.values : []
         for (const tl of toplevels) {
             const appId = (tl.wayland && tl.wayland.appId) ? tl.wayland.appId : ""
-            const entry = appId ? DesktopEntries.heuristicLookup(appId) : null
+            if (!appId)
+                continue
+            const entry = DesktopEntries.heuristicLookup(appId)
             const id = entry ? entry.id : null
 
             if (id && byId[id]) {
@@ -85,7 +87,7 @@ PanelWindow {
                 continue
             }
 
-            const key = id || ("running:" + tl.address)
+            const key = id || ("appid:" + appId)
             if (byId[key]) {
                 byId[key].running = true
                 byId[key].toplevel = tl
