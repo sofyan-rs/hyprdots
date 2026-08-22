@@ -94,10 +94,8 @@ install_packages \
   wl-clipboard \
   hyprpicker \
   NetworkManager \
-  network-manager-applet \
   bluez \
   bluez-tools \
-  blueman \
   nwg-look \
   adw-gtk3-theme \
   waypaper \

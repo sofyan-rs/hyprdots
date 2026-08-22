@@ -14,7 +14,7 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 - 🧾 Fast system info via **Fastfetch**
 - 💨 Smooth transitions and animations
 - 👆 Touchpad gestures for workspace switching
-- 📡 Network and 🔵 Bluetooth tray applets
+- 📡 Native Network and 🔵 Bluetooth widgets built with Quickshell
 
 ## 📸 Screenshots
 
@@ -32,8 +32,8 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 - `awww` – efficient animated wallpaper daemon (swww's successor)
 - `waypaper` – GUI wallpaper manager
 - `fastfetch` – for fetching system info
-- `quickshell` – bar, notifications, app launcher, wallpaper picker and power menu
-- `network-manager-applet`, `blueman` – for tray support
+- `quickshell` – bar, notifications, app launcher, wallpaper picker, power menu, and native network/bluetooth widgets
+- `NetworkManager`, `bluez`, `bluez-tools` – backend services for the Network/Bluetooth widgets
 - `papirus-icon-theme` – icon theme
 
 ## 💻 Installation
@@ -72,11 +72,11 @@ sudo dnf install quickshell
 # waypaper - wallpaper GUI
 sudo dnf install waypaper
 
-# network manager
-sudo dnf install NetworkManager network-manager-applet
+# network manager (backend for Quickshell's Network widget)
+sudo dnf install NetworkManager
 
-# bluetooth manager
-sudo dnf install bluez bluez-tools blueman
+# bluetooth (backend for Quickshell's Bluetooth widget)
+sudo dnf install bluez bluez-tools
 
 # apply gtk-theme
 sudo dnf install nwg-look
