@@ -39,7 +39,11 @@ Item {
 
     transformOrigin: Item.TopRight
 
-    implicitWidth: 360
+    implicitWidth: hasPlayer ? 360 : 220
+
+    Behavior on implicitWidth {
+        NumberAnimation { duration: 160; easing.type: Easing.OutCubic }
+    }
     implicitHeight: column.implicitHeight + 32
 
     opacity: open ? 1 : 0
@@ -143,27 +147,33 @@ Item {
             }
         }
 
-        ColumnLayout {
+        Item {
             Layout.fillWidth: true
+            Layout.preferredHeight: emptyCol.implicitHeight
             visible: !root.hasPlayer
             Layout.topMargin: 14
             Layout.bottomMargin: 14
-            spacing: 4
 
-            Text {
-                Layout.alignment: Qt.AlignHCenter
-                text: ""
-                font.family: Colors.iconFontFamily
-                font.pixelSize: 26
-                color: Colors.fgAlt
-            }
+            Column {
+                id: emptyCol
+                anchors.centerIn: parent
+                spacing: 4
 
-            Text {
-                Layout.alignment: Qt.AlignHCenter
-                text: "No media playing"
-                font.family: Colors.fontFamily
-                font.pixelSize: Colors.fontSize - 4
-                color: Colors.fgAlt
+                Text {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    text: "\uf01f"
+                    font.family: Colors.iconFontFamily
+                    font.pixelSize: 26
+                    color: Colors.fgAlt
+                }
+
+                Text {
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    text: "No media playing"
+                    font.family: Colors.fontFamily
+                    font.pixelSize: Colors.fontSize - 4
+                    color: Colors.fgAlt
+                }
             }
         }
 
