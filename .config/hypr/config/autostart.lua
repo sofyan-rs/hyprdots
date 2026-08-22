@@ -12,10 +12,10 @@ hl.on("hyprland.start", function ()
   hl.exec_cmd("/usr/libexec/xdg-desktop-portal-gtk")
   hl.exec_cmd("/usr/libexec/xdg-desktop-portal")
 
-  hl.exec_cmd("nm-applet")
-  hl.exec_cmd("blueman-applet")
-
-  hl.exec_cmd("quickshell")
+  -- QT_QPA_PLATFORMTHEME=gtk3 makes Qt's native platform popups (e.g. the
+  -- right-click tray menu) pick up the GTK dark palette instead of default
+  -- white Fusion styling.
+  hl.exec_cmd("env QT_QPA_PLATFORMTHEME=gtk3 quickshell")
 
   -- Wallpaper: awww-daemon does the rendering (swww's successor, package "swww"
   -- was renamed to "awww" upstream/in the copr). waypaper --restore re-applies

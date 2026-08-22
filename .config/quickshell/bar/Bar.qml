@@ -4,10 +4,13 @@ import QtQuick.Layouts
 import "../core"
 import "../launcher"
 import "../volume"
+import "../network"
+import "../bluetooth"
 import "../clock"
 import "../notifications"
 import "../power"
 import "../wallpaper"
+import "../media"
 
 PanelWindow {
     id: bar
@@ -63,6 +66,10 @@ PanelWindow {
         anchors.verticalCenter: parent.verticalCenter
         spacing: 5
 
+        Media {
+            barScreen: bar.barScreen
+        }
+
         Tray {
             barWindow: bar
         }
@@ -78,6 +85,14 @@ PanelWindow {
         }
 
         Volume {
+            barScreen: bar.barScreen
+        }
+
+        Bluetooth {
+            barScreen: bar.barScreen
+        }
+
+        Network {
             barScreen: bar.barScreen
         }
 

@@ -62,10 +62,12 @@ Row {
                         anchors.fill: parent
                         acceptedButtons: Qt.LeftButton | Qt.RightButton
                         onClicked: mouse => {
-                            if (mouse.button === Qt.RightButton)
-                                trayIcon.modelData.display(root.barWindow, mouse.x, mouse.y)
-                            else
+                            if (mouse.button === Qt.RightButton) {
+                                const pos = trayIcon.mapToItem(root.barWindow.contentItem, mouse.x, mouse.y)
+                                trayIcon.modelData.display(root.barWindow, pos.x, pos.y)
+                            } else {
                                 trayIcon.modelData.activate()
+                            }
                         }
                     }
                 }

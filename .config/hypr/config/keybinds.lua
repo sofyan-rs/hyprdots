@@ -28,7 +28,7 @@ hl.bind(mainMod .. " + W", function ()
     hl.config({ general = { layout = layouts[layoutIndex] } })
 end)
 
-hl.bind(mainMod .. " + R", hl.dsp.exec_cmd("pkill -9 -x qs; qs &"))
+hl.bind(mainMod .. " + R", hl.dsp.exec_cmd("pkill -9 -x qs; env QT_QPA_PLATFORMTHEME=gtk3 qs &"))
 
 hl.bind(mainMod .. " + SHIFT + W", hl.dsp.exec_cmd("qs ipc call wallpaper toggle"))
 
