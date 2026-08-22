@@ -32,6 +32,7 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 - `awww` – efficient animated wallpaper daemon (swww's successor)
 - `waypaper` – GUI wallpaper manager
 - `fastfetch` – for fetching system info
+- `cava` – audio visualizer for the media widget
 - `quickshell` – bar, notifications, app launcher, wallpaper picker, power menu, and native network/bluetooth widgets
 - `NetworkManager`, `bluez`, `bluez-tools` – backend services for the Network/Bluetooth widgets
 - `papirus-icon-theme` – icon theme
@@ -61,6 +62,8 @@ sudo dnf install hyprland hyprlock
 sudo dnf install power-profiles-daemon
 sudo dnf install grim slurp wl-clipboard
 sudo dnf install hyprpicker
+sudo dnf install fastfetch
+sudo dnf install cava
 
 # awww - wallpaper daemon (COPR)
 sudo dnf copr enable alebastr/sway-extras

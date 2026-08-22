@@ -93,6 +93,8 @@ install_packages \
   slurp \
   wl-clipboard \
   hyprpicker \
+  fastfetch \
+  cava \
   NetworkManager \
   bluez \
   bluez-tools \
