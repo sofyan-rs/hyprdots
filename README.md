@@ -11,6 +11,7 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 - 🔒 Screen locking with **Hyprlock**
 - 💻 Terminal : **Kitty**, fast and GPU-accelerated
 - 📟 Clean, informative status bar built with **Quickshell** (native QML — bar, notifications, app launcher, wallpaper picker, power menu)
+- 🚢 macOS-style app **dock**, toggled from the bar
 - 🧾 Fast system info via **Fastfetch**
 - 💨 Smooth transitions and animations
 - 👆 Touchpad gestures for workspace switching
@@ -33,7 +34,7 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 - `waypaper` – GUI wallpaper manager
 - `fastfetch` – for fetching system info
 - `cava` – audio visualizer for the media widget
-- `quickshell` – bar, notifications, app launcher, wallpaper picker, power menu, and native network/bluetooth widgets
+- `quickshell` – bar, notifications, app launcher, wallpaper picker, power menu, dock, and native network/bluetooth widgets
 - `NetworkManager`, `bluez`, `bluez-tools` – backend services for the Network/Bluetooth widgets
 - `papirus-icon-theme` – icon theme
 
@@ -165,7 +166,9 @@ Full list (and how to change binds) lives in `hl.bind(...)` calls inside `hypr/c
 
 **Keybindings :** See the table above, or adjust the `hl.bind(...)` calls in `hypr/config/keybinds.lua` directly.
 
-**Quickshell :** Lives in `.config/quickshell/`, organized per feature (`bar/`, `clock/`, `volume/`, `notifications/`, `power/`, `launcher/`, `wallpaper/`, plus shared singletons in `core/`). Edits hot-reload automatically while it's running — no restart needed, except after adding or moving files (`SUPER + R` restarts it). The app launcher and wallpaper picker are also reachable from any script via `qs ipc call launcher toggle` / `qs ipc call wallpaper toggle`.
+**Quickshell :** Lives in `.config/quickshell/`, organized per feature (`bar/`, `clock/`, `volume/`, `notifications/`, `power/`, `launcher/`, `wallpaper/`, `dock/`, plus shared singletons in `core/`). Edits hot-reload automatically while it's running — no restart needed, except after adding or moving files (`SUPER + R` restarts it). The app launcher and wallpaper picker are also reachable from any script via `qs ipc call launcher toggle` / `qs ipc call wallpaper toggle`.
+
+**Dock :** A macOS-style app dock, toggled by clicking its icon on the bar. Pinned apps persist to `~/.cache/quickshell/dock-pinned.json`.
 
 **Dynamic theme :** `~/.config/theme/apply-theme.sh` picks a color palette based on the active wallpaper and regenerates `kitty/theme.conf`, `theme/quickshell-colors.css` and `hypr/hyprlock-colors.conf`, then reloads kitty and hyprlock. Quickshell picks up its color file changes live (no restart). It's triggered automatically by waypaper's `post_command` (see Installation), no matter how the wallpaper was changed — the bar's wallpaper menu, `SUPER + SHIFT + W`, or the waypaper GUI itself. Kitty and hyprlock no longer have static per-theme config files — colors are only set through this system.
 
