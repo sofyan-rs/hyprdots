@@ -3,7 +3,7 @@
 ----------------------
 
 -- Ref https://wiki.hypr.land/Configuring/Basics/Workspace-Rules/
--- Keep workspaces 1-6 always present (needed for ext/workspaces in waybar,
+-- Keep workspaces 1-6 always present (needed for ext/workspaces in quickshell,
 -- which has no client-side persistent-workspaces option of its own).
 for i = 1, 6 do
     hl.workspace_rule({ workspace = tostring(i), persistent = true })

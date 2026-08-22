@@ -75,15 +75,11 @@ echo "📦 Installing required packages..."
 
 install_packages \
   hyprland \
-  rofi \
-  waybar \
   power-profiles-daemon \
   grim \
   slurp \
   wl-clipboard \
   hyprpicker \
-  mako \
-  python3-pydbus \
   NetworkManager \
   network-manager-applet \
   bluez \
@@ -115,6 +111,17 @@ if ! is_installed awww; then
   sudo dnf install -y awww
 else
   echo "✔ awww already installed — skipping"
+fi
+
+# ===============================
+# QUICKSHELL (COPR)
+# ===============================
+if ! is_installed quickshell; then
+  echo "🧩 Enabling COPR repository for quickshell..."
+  sudo dnf copr enable -y lionheartp/Hyprland
+  sudo dnf install -y quickshell
+else
+  echo "✔ quickshell already installed — skipping"
 fi
 
 # ===============================
@@ -154,19 +161,6 @@ mkdir -p ~/Pictures/Wallpapers
 cp -rn wallpapers/* ~/Pictures/Wallpapers/ || true
 
 # ===============================
-# WAYBAR MAKO SCRIPT
-# ===============================
-echo "🔔 Installing Waybar mako notification script..."
-mkdir -p ~/.local/bin
-
-if [[ ! -f ~/.local/bin/waybar-mako-notif.py ]]; then
-  cp .local/bin/waybar-mako-notif.py ~/.local/bin/
-  chmod +x ~/.local/bin/waybar-mako-notif.py
-else
-  echo "✔ waybar-mako-notif.py already exists — skipping"
-fi
-
-# ===============================
 # PATH CHECK
 # ===============================
 if ! echo "$PATH" | grep -q "$HOME/.local/bin"; then
@@ -177,6 +171,6 @@ fi
 echo
 echo "✅ Installation completed successfully!"
 echo "➡️ Open waypaper once and pick 'awww' as the backend to set your wallpaper."
-echo "➡️ Wallpaper changes auto-apply matching kitty/rofi/waybar colors (wired via waypaper's post_command, see ~/.config/theme/apply-theme.sh)."
+echo "➡️ Wallpaper changes auto-apply matching kitty/quickshell colors (wired via waypaper's post_command, see ~/.config/theme/apply-theme.sh)."
 echo "➡️ Reboot or log out / log in is recommended."
 echo "➡️ Enjoy this Hyprland setup!"

@@ -7,11 +7,10 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 - 🪞 Dynamic tiling with **Hyprland**, configured via its native **Lua** config (`hyprland.lua`)
 - 🌀 Switchable **dwindle** / **scrolling** layout (`SUPER + W`)
 - 🖼️ Wallpaper management using **awww** (swww's successor) & **Waypaper**
-- 🎨 Dynamic theming — kitty, rofi and waybar colors auto-switch to match your wallpaper
+- 🎨 Dynamic theming — kitty and quickshell colors auto-switch to match your wallpaper
 - 🔒 Screen locking with **Hyprlock**
 - 💻 Terminal : **Kitty**, fast and GPU-accelerated
-- 📟 Clean, informative **Waybar**
-- 🔍 Application launcher using **Rofi**
+- 📟 Clean, informative status bar built with **Quickshell** (native QML — bar, notifications, app launcher, wallpaper picker, power menu)
 - 🧾 Fast system info via **Fastfetch**
 - 💨 Smooth transitions and animations
 - 👆 Touchpad gestures for workspace switching
@@ -33,9 +32,8 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 - `awww` – efficient animated wallpaper daemon (swww's successor)
 - `waypaper` – GUI wallpaper manager
 - `fastfetch` – for fetching system info
-- `waybar`, `rofi` – bar and launcher
+- `quickshell` – bar, notifications, app launcher, wallpaper picker and power menu
 - `network-manager-applet`, `blueman` – for tray support
-- `mako` – for notifications
 - `papirus-icon-theme` – icon theme
 
 ## 💻 Installation
@@ -56,8 +54,6 @@ chmod +x install.sh
 ```bash
 # core packages
 sudo dnf install hyprland
-sudo dnf install rofi
-sudo dnf install waybar
 sudo dnf install power-profiles-daemon
 sudo dnf install grim slurp wl-clipboard
 sudo dnf install hyprpicker
@@ -71,12 +67,12 @@ sudo dnf install hyprlock
 sudo dnf copr enable alebastr/sway-extras
 sudo dnf install awww
 
+# quickshell - bar, notifications, launcher, wallpaper picker, power menu (COPR)
+sudo dnf copr enable lionheartp/Hyprland
+sudo dnf install quickshell
+
 # waypaper - wallpaper GUI
 sudo dnf install waypaper
-
-# notification daemon
-sudo dnf install mako
-sudo dnf install python3-pydbus
 
 # network manager
 sudo dnf install NetworkManager network-manager-applet
@@ -121,17 +117,9 @@ mkdir -p ~/Pictures/Wallpapers
 cp -r wallpapers/* ~/Pictures/Wallpapers/
 ```
 
-- Copy **.local/bin/waybar-mako-notif.py** to **~/.local/bin**
-
-```bash
-mkdir -p ~/.local/bin
-cp .local/bin/waybar-mako-notif.py ~/.local/bin/
-chmod +x ~/.local/bin/waybar-mako-notif.py
-```
-
 - Set GTK-Theme using **nwg-look**
 - Open **waypaper** once and pick **awww** as the backend (this also sets your wallpaper)
-- Confirm `post_command = ~/.config/theme/apply-theme.sh "$wallpaper"` is set in `~/.config/waypaper/config.ini` (already copied above) so switching wallpapers auto-updates kitty/rofi/waybar colors — see **Dynamic Theme** under Customization below
+- Confirm `post_command = ~/.config/theme/apply-theme.sh "$wallpaper"` is set in `~/.config/waypaper/config.ini` (already copied above) so switching wallpapers auto-updates kitty/quickshell colors — see **Dynamic Theme** under Customization below
 - Reboot
 
 ## ⌨️ Keybindings
@@ -146,10 +134,10 @@ chmod +x ~/.local/bin/waybar-mako-notif.py
 | `SUPER + P`                  | Toggle pseudotile                                              |
 | `SUPER + J`                  | Toggle split (dwindle)                                         |
 | `SUPER + W`                  | Toggle layout (dwindle ↔ scrolling)                            |
-| `SUPER + SHIFT + W`          | Open wallpaper picker (Rofi) — also applies the matching theme |
-| `SUPER + R`                  | Restart Waybar                                                 |
+| `SUPER + SHIFT + W`          | Open wallpaper picker (Quickshell) — also applies the matching theme |
+| `SUPER + R`                  | Restart Quickshell                                             |
 | `SUPER + M`                  | Exit Hyprland                                                  |
-| `ALT + Space`                | App launcher (Rofi)                                            |
+| `ALT + Space`                | App launcher (Quickshell)                                      |
 | `ALT + ←/→/↑/↓`              | Move focus                                                     |
 | `SUPER + ←/→`                | Switch to previous/next workspace                              |
 | `SUPER + scroll`             | Cycle through workspaces                                       |
@@ -170,13 +158,15 @@ Full list (and how to change binds) lives in `hl.bind(...)` calls inside `hypr/c
 
 `hyprland.lua` just `require()`s per-topic files under `hypr/config/` (monitors, keybinds, appearance, layouts, input, window rules, etc.) — see the comment at the top of `hyprland.lua` for the full list.
 
-**Wallpapers :** Put your favorites in **~/Pictures/Wallpapers/** and pick one via **waypaper** — the wallpaper button on Waybar opens the picker, and `awww-daemon` / `waypaper --restore` bring it back on login.
+**Wallpapers :** Put your favorites in **~/Pictures/Wallpapers/** and pick one via **waypaper** — the wallpaper button on the bar opens Quickshell's own grid picker, and `awww-daemon` / `waypaper --restore` bring it back on login.
 
 **Monitors :** Ensure correct monitor output name and mode in `hypr/config/monitors.lua` (`hl.monitor({ ... })`).
 
 **Keybindings :** See the table above, or adjust the `hl.bind(...)` calls in `hypr/config/keybinds.lua` directly.
 
-**Dynamic theme :** `~/.config/theme/apply-theme.sh` picks a color palette based on the active wallpaper and regenerates `kitty/theme.conf`, `rofi/themes/colors.rasi`, `waybar/colors.css`, `hypr/hyprlock-colors.conf` and `mako/config`, then reloads kitty, mako, hyprlock and restarts Waybar. It's triggered automatically by waypaper's `post_command` (see Installation), no matter how the wallpaper was changed — the Waybar wallpaper button, `SUPER + SHIFT + W`, or the waypaper GUI itself. Kitty and hyprlock no longer have static per-theme config files — colors are only set through this system.
+**Quickshell :** Lives in `.config/quickshell/`, organized per feature (`bar/`, `clock/`, `volume/`, `notifications/`, `power/`, `launcher/`, `wallpaper/`, plus shared singletons in `core/`). Edits hot-reload automatically while it's running — no restart needed, except after adding or moving files (`SUPER + R` restarts it). The app launcher and wallpaper picker are also reachable from any script via `qs ipc call launcher toggle` / `qs ipc call wallpaper toggle`.
+
+**Dynamic theme :** `~/.config/theme/apply-theme.sh` picks a color palette based on the active wallpaper and regenerates `kitty/theme.conf`, `theme/quickshell-colors.css` and `hypr/hyprlock-colors.conf`, then reloads kitty and hyprlock. Quickshell picks up its color file changes live (no restart). It's triggered automatically by waypaper's `post_command` (see Installation), no matter how the wallpaper was changed — the bar's wallpaper menu, `SUPER + SHIFT + W`, or the waypaper GUI itself. Kitty and hyprlock no longer have static per-theme config files — colors are only set through this system.
 
 - Palettes live in `.config/theme/palettes/*.sh`. Add a new one by copying an existing file and adjusting the colors.
 - `.config/theme/wallpapers.conf` maps `<wallpaper filename>=<palette name>`. Unmapped wallpapers fall back to `sakura-ember`.

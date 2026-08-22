@@ -28,9 +28,9 @@ hl.bind(mainMod .. " + W", function ()
     hl.config({ general = { layout = layouts[layoutIndex] } })
 end)
 
-hl.bind(mainMod .. " + R", hl.dsp.exec_cmd("~/.config/waybar/scripts/launch.sh"))
+hl.bind(mainMod .. " + R", hl.dsp.exec_cmd("pkill -9 -x qs; qs &"))
 
-hl.bind(mainMod .. " + SHIFT + W", hl.dsp.exec_cmd("~/.config/rofi/wallpaper.sh"))
+hl.bind(mainMod .. " + SHIFT + W", hl.dsp.exec_cmd("qs ipc call wallpaper toggle"))
 
 hl.bind(secondMod .. " + SPACE", hl.dsp.exec_cmd(programs.menu))
 

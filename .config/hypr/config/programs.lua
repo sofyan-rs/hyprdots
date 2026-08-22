@@ -6,6 +6,6 @@
 return {
     terminal    = "kitty",
     fileManager = "nautilus",
-    menu        = "rofi -show drun",
-    browser     = "brave-browser",
+    menu        = "qs ipc call launcher toggle",
+    browser     = "brave-origin",
 }

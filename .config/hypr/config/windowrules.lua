@@ -39,10 +39,9 @@ hl.window_rule({
 -- })
 -- overlayLayerRule:set_enabled(false)
 
--- Blur waybar and rofi (their backgrounds are semi-transparent, so blur is
+-- Blur quickshell (their backgrounds are semi-transparent, so blur is
 -- only visible here if layer blur is enabled)
-hl.layer_rule({ name = "blur-waybar",        match = { namespace = "^waybar$" },        blur = true })
-hl.layer_rule({ name = "blur-rofi",          match = { namespace = "^rofi$" },          blur = true, animation = "popin 80%" })
+hl.layer_rule({ name = "blur-quickshell",    match = { namespace = "^quickshell$" },    blur = true })
 
 -- Hyprland-run windowrule
 hl.window_rule({
@@ -73,3 +72,4 @@ hl.window_rule({
 
     float = true,
 })
+

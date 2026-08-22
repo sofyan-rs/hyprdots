@@ -14,12 +14,12 @@ hl.on("hyprland.start", function ()
 
   hl.exec_cmd("nm-applet")
   hl.exec_cmd("blueman-applet")
-  hl.exec_cmd("mako")
-  hl.exec_cmd("waybar")
+
+  hl.exec_cmd("quickshell")
 
   -- Wallpaper: awww-daemon does the rendering (swww's successor, package "swww"
   -- was renamed to "awww" upstream/in the copr). waypaper --restore re-applies
-  -- whatever wallpaper is set in ~/.config/waypaper/config.ini (waybar's
+  -- whatever wallpaper is set in ~/.config/waypaper/config.ini (quickshell
   -- wallpaper button opens the picker). Give the daemon a moment to come up.
   hl.exec_cmd("awww-daemon")
   hl.exec_cmd("sleep 1 && waypaper --restore")

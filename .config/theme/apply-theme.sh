@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Applies a color palette (chosen by wallpaper) to kitty, rofi and waybar.
+# Applies a color palette (chosen by wallpaper) to kitty and quickshell.
 #
 # Called automatically by waypaper's post_command with the new wallpaper
 # path ($wallpaper), so it fires no matter how the wallpaper was changed:
-# waybar's wallpaper button, rofi's wallpaper.sh, `waypaper --wallpaper`,
-# `waypaper --random`, or the waypaper GUI.
+# quickshell's wallpaper picker, `waypaper --wallpaper`, `waypaper --random`,
+# or the waypaper GUI.
 #
 # Usage: apply-theme.sh [/path/to/wallpaper]
 #   With no argument, reads the current wallpaper from waypaper's config.ini.
@@ -77,30 +77,8 @@ color7                 $COLOR7
 color15                $COLOR15
 EOF
 
-# ---- Rofi ----
-cat > "$HOME/.config/rofi/themes/colors.rasi" <<EOF
-* {
-  bg: ${BG}99;
-  bg-alt: ${BG_ALT}cc;
-
-  fg: $FG;
-  fg-alt: $FG_ALT;
-  accent: $ACCENT;
-  secondary: $SECONDARY;
-
-  background-color: transparent;
-  text-color: @fg-alt;
-
-  border: 0;
-  margin: 0;
-  padding: 0;
-  spacing: 0;
-  border-radius: 6px;
-}
-EOF
-
-# ---- Waybar ----
-cat > "$HOME/.config/waybar/colors.css" <<EOF
+# ---- Quickshell ----
+cat > "$THEME_DIR/quickshell-colors.css" <<EOF
 @define-color bg $BG;
 @define-color bg-alt $BG_ALT;
 @define-color fg $FG;
@@ -131,39 +109,7 @@ cat > "$HOME/.config/hypr/hyprlock-colors.conf" <<EOF
 \$lock_accent = $(hex_to_rgb "$ACCENT")
 EOF
 
-# ---- Mako ----
-cat > "$HOME/.config/mako/config" <<EOF
-border-radius=8
-border-size=2
-background-color=${BG_ALT}ee
-text-color=$FG
-border-color=${BORDER}ff
-icon-border-radius=8
-max-visible=4
-sort=-time
-anchor=top-right
-margin=10
-padding=15
-
-default-timeout=4000
-ignore-timeout=false
-
-[urgency=critical]
-border-color=${SECONDARY}ff
-default-timeout=0
-EOF
-
 # ---- Reload running apps ----
 pkill -SIGUSR1 kitty 2>/dev/null
-
-if pgrep -x waybar >/dev/null 2>&1; then
-  killall -9 waybar 2>/dev/null
-  setsid waybar >/dev/null 2>&1 &
-  disown
-fi
-
-if pgrep -x mako >/dev/null 2>&1; then
-  makoctl reload >/dev/null 2>&1
-fi
 
 echo "apply-theme: applied '$palette_name' for wallpaper '$base'"
