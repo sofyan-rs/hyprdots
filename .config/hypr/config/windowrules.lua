@@ -16,6 +16,37 @@ local suppressMaximizeRule = hl.window_rule({
 })
 -- suppressMaximizeRule:set_enabled(false)
 
+-- Keep Brave video and Google Meet picture-in-picture windows clear.
+hl.window_rule({
+    name  = "brave-pip-no-blur",
+    match = {
+        class = "^[Bb]rave(-.*)?$",
+        title = "^([Pp]icture[- ][Ii]n[- ][Pp]icture|meet[.]google[.]com)$",
+    },
+
+    border_size = 0,
+    decorate = false,
+    no_shadow = true,
+    no_blur = true,
+    opacity = "1.0 override 1.0 override 1.0 override",
+})
+
+-- Meet's document PiP uses the meeting title rather than "Picture-in-Picture".
+hl.window_rule({
+    name  = "brave-meet-pip-no-blur",
+    match = {
+        class = "^[Bb]rave(-.*)?$",
+        title = "^Meet - .*",
+        float = true,
+    },
+
+    border_size = 0,
+    decorate = false,
+    no_shadow = true,
+    no_blur = true,
+    opacity = "1.0 override 1.0 override 1.0 override",
+})
+
 hl.window_rule({
     -- Fix some dragging issues with XWayland
     name  = "fix-xwayland-drags",
@@ -72,4 +103,3 @@ hl.window_rule({
 
     float = true,
 })
-

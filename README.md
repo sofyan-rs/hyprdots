@@ -40,17 +40,6 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 
 ## 💻 Installation
 
-### Auto Installation
-
-```bash
-git clone https://github.com/sofyan-rs/hyprdots.git
-cd hyprdots
-chmod +x install.sh
-./install.sh
-```
-
-### Manual Installation
-
 - Install requirements
 
 ```bash
@@ -60,7 +49,7 @@ sudo dnf copr enable lionheartp/Hyprland
 sudo dnf install hyprland hyprlock
 
 # core packages
-sudo dnf install power-profiles-daemon
+sudo dnf install hyprland-guiutils
 sudo dnf install grim slurp wl-clipboard
 sudo dnf install hyprpicker
 sudo dnf install fastfetch
@@ -87,7 +76,6 @@ sudo dnf install nwg-look
 sudo dnf install adw-gtk3-theme
 sudo flatpak override --filesystem=xdg-data/themes
 sudo flatpak mask org.gtk.Gtk3theme.adw-gtk3-dark
-sudo dnf install papirus-icon-theme
 ```
 
 - Clone this repository
@@ -180,7 +168,7 @@ Full list (and how to change binds) lives in `hl.bind(...)` calls inside `hypr/c
 
 **Hyprlock always says "Wrong Password" :** Usually caused by `pam_fprintd` or `pam_faillock` interfering with the auth stack in `/etc/pam.d/hyprlock`, not `hyprlock.conf` itself. See [`.config/hypr/README-hyprlock-wrong-password.md`](.config/hypr/README-hyprlock-wrong-password.md) for the full diagnosis and fix.
 
-**Steam game won't launch on a dual-boot NTFS partition :** Caused by `ntfs-3g` mounting the partition without `uid=`/`gid=` options, so Proton refuses to run because its prefix isn't owned by you. See [`FIX-STEAM-DUAL-PARTITION.md`](FIX-STEAM-DUAL-PARTITION.md) for the fix.
+**Steam game won't launch on a dual-boot NTFS partition :** Caused by `ntfs-3g` mounting the partition without `uid=`/`gid=` options, so Proton refuses to run because its prefix isn't owned by you. See [`docs/FIX-STEAM-DUAL-PARTITION.md`](docs/FIX-STEAM-DUAL-PARTITION.md) for the fix.
 
 ## ❤️ Credits
 
