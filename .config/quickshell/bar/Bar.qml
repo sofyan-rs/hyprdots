@@ -7,6 +7,7 @@ import "../clock"
 import "../controlcenter"
 import "../globalmenu"
 import "../volume"
+import "../aiusage"
 
 PanelWindow {
     id: bar
@@ -119,6 +120,10 @@ PanelWindow {
             }
         }
 
+
+        Usage {
+            barScreen: bar.barScreen
+        }
 
         Repeater {
             model: ["wifi", "bluetooth"]
