@@ -5,6 +5,8 @@
 -- See https://wiki.hypr.land/Configuring/Basics/Autostart/
 
 hl.on("hyprland.start", function ()
+  -- Automatic suspend after 30 minutes idle (configured in hypridle.conf).
+  hl.exec_cmd("command -v hypridle >/dev/null 2>&1 && hypridle")
   -- xdg-desktop-portal doesn't start on its own unless the session was launched
   -- via uwsm (systemd graphical-session.target never activates otherwise), which
   -- breaks color-scheme (dark theme) for GTK4/libadwaita apps, screen sharing, etc.

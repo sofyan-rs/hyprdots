@@ -4,18 +4,19 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 
 ## ✨ Features
 
-- 🪞 Dynamic tiling with **Hyprland**, configured via its native **Lua** config (`hyprland.lua`)
+- 🪞 Dynamic tiling with **Hyprland**, using native **Lua** config (`hyprland.lua`)
 - 🌀 Switchable **dwindle** / **scrolling** layout (`SUPER + W`)
-- 🖼️ Wallpaper management using **awww** (swww's successor) & **Waypaper**
-- 🎨 Dynamic theming — kitty and quickshell colors auto-switch to match your wallpaper
-- 🔒 Screen locking with **Hyprlock**
-- 💻 Terminal : **Kitty**, fast and GPU-accelerated
-- 📟 Clean, informative status bar built with **Quickshell** (native QML — bar, notifications, app launcher, wallpaper picker, power menu)
-- 🚢 macOS-style app **dock**, toggled from the bar
-- 🧾 Fast system info via **Fastfetch**
-- 💨 Smooth transitions and animations
-- 👆 Touchpad gestures for workspace switching
-- 📡 Native Network and 🔵 Bluetooth widgets built with Quickshell
+- 📟 **Quickshell** bar with centered workspaces, system tray, calendar, volume popup, and app launcher
+- 🎛️ **Control Center** for Wi-Fi, saved networks, Bluetooth pairing, volume, media playback, and notifications
+- 🔒 Power dialog with lock, sleep, sign out, restart, and shutdown; session-ending actions ask for confirmation
+- 🖼️ **Personalization** panel with searchable wallpaper previews, shuffle, and dock settings, backed by **awww** and **Waypaper**
+- 🎨 Shared **Nothing** palette for Kitty, Quickshell, and Hyprlock, with support for custom wallpaper-to-palette mappings
+- 🚢 App **dock** with pinned apps, a running-window picker, left/bottom/right placement, and position locking
+- 📋 **Global menu** for compatible applications
+- 🕒 Dot-matrix desktop clock and date on each monitor
+- ☕ **Caffeine** toggle to inhibit idle sleep; **Hypridle** otherwise suspends after 30 minutes of inactivity
+- 💻 **Kitty** terminal with Maple Mono NF and a cursor trail; **Fastfetch** for system information
+- 💨 Desktop animations and touchpad workspace gestures
 
 ## 📸 Screenshots
 
@@ -23,20 +24,26 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 ![Desktop](screenshots/ss-2.png)
 ![Desktop](screenshots/ss-3.png)
 ![Desktop](screenshots/ss-4.png)
+![Desktop](screenshots/ss-5.png)
+![Desktop](screenshots/ss-6.png)
 
 ## ⚙️ Requirements
 
-- [**Fedora Workstation**](https://www.fedoraproject.org/) 39+
-- [**Hyprland**](https://github.com/hyprwm/Hyprland)
-- `kitty` – terminal emulator (GPU-based and themeable)
-- `hyprlock` – GPU-accelerated screen locker
-- `awww` – efficient animated wallpaper daemon (swww's successor)
-- `waypaper` – GUI wallpaper manager
-- `fastfetch` – for fetching system info
-- `cava` – audio visualizer for the media widget
-- `quickshell` – bar, notifications, app launcher, wallpaper picker, power menu, dock, and native network/bluetooth widgets
-- `NetworkManager`, `bluez`, `bluez-tools` – backend services for the Network/Bluetooth widgets
-- `papirus-icon-theme` – icon theme
+- [**Fedora Workstation**](https://www.fedoraproject.org/) — the installation commands below use `dnf` and COPR
+- [**Hyprland**](https://github.com/hyprwm/Hyprland) with native Lua configuration and the scrolling layout supported by this config
+- `quickshell` with Hyprland, PipeWire, MPRIS, notification, and Bluetooth modules
+- `kitty`, `fastfetch`, `hyprlock`, and `hypridle`
+- `awww` and `waypaper` for wallpaper rendering and selection
+- `NetworkManager` (`nmcli`) and `bluez` (`bluetoothctl`) for connection management
+- PipeWire and `wireplumber` (`wpctl`) for audio; `playerctl` for media keys
+- `python3`, `python3-dbus`, and `python3-gobject` for the network and global-menu helpers
+- `ImageMagick` (`magick`) for WebP wallpaper previews; `binutils` (`objcopy`) for the Nautilus menu integration
+- `grim`, `slurp`, `wl-clipboard`, and `brightnessctl` for screenshot and hardware keybindings
+- `xdg-desktop-portal`, `xdg-desktop-portal-hyprland`, and `xdg-desktop-portal-gtk` for desktop integration
+- `qt6-qtbase-gui` for the GTK platform theme used when launching Quickshell
+- Default applications: Nautilus and Brave Origin (`brave-origin`); change them in `.config/hypr/config/programs.lua`
+- Optional quick-settings tools: `pavucontrol`, `nm-connection-editor`, `hyprpicker`, and `libnotify` (`notify-send`)
+- [**Hatter**](https://github.com/Mibea/Hatter) icon theme
 
 ## 💻 Installation
 
@@ -46,30 +53,39 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 # Hyprland + hyprlock (COPR)
 sudo dnf install dnf-plugins-core
 sudo dnf copr enable lionheartp/Hyprland
-sudo dnf install hyprland hyprlock
+sudo dnf install hyprland hyprland-guiutils hyprlock hypridle
 
-# core packages
-sudo dnf install hyprland-guiutils
-sudo dnf install grim slurp wl-clipboard
-sudo dnf install hyprpicker
-sudo dnf install fastfetch
-sudo dnf install cava
+# terminal, system information, screenshots, and hardware keys
+sudo dnf install kitty fastfetch grim slurp wl-clipboard brightnessctl playerctl
+
+# Python helpers, wallpaper previews, and global-menu integration
+sudo dnf install python3 python3-dbus python3-gobject ImageMagick binutils
+
+# audio and optional settings tools
+sudo dnf install pipewire wireplumber pavucontrol nm-connection-editor hyprpicker libnotify
+
+# desktop portals and Qt's GTK platform theme
+sudo dnf install xdg-desktop-portal xdg-desktop-portal-hyprland xdg-desktop-portal-gtk qt6-qtbase-gui
+
+# optional shell setup (no zsh dotfiles are bundled)
+sudo dnf install zsh
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
 # awww - wallpaper daemon (COPR)
 sudo dnf copr enable alebastr/sway-extras
 sudo dnf install awww
 
-# quickshell - bar, notifications, launcher, wallpaper picker, power menu
+# quickshell - bar, control center, launcher, personalization, and dock
 sudo dnf install quickshell
 
 # waypaper - wallpaper GUI
 sudo dnf install waypaper
 
-# network manager (backend for Quickshell's Network widget)
+# NetworkManager - control center network backend
 sudo dnf install NetworkManager
 
-# bluetooth (backend for Quickshell's Bluetooth widget)
-sudo dnf install bluez bluez-tools
+# Bluetooth - Quickshell integration and pairing agent
+sudo dnf install bluez
 
 # apply gtk-theme
 sudo dnf install nwg-look
@@ -88,6 +104,7 @@ cd hyprdots
 - Copy all config folders to **~/.config**
 
 ```bash
+mkdir -p ~/.config
 cp -r .config/* ~/.config/
 ```
 
@@ -107,66 +124,81 @@ mkdir -p ~/Pictures/Wallpapers
 cp -r wallpapers/* ~/Pictures/Wallpapers/
 ```
 
-- Set GTK-Theme using **nwg-look**
-- Open **waypaper** once and pick **awww** as the backend (this also sets your wallpaper)
-- Confirm `post_command = ~/.config/theme/apply-theme.sh "$wallpaper"` is set in `~/.config/waypaper/config.ini` (already copied above) so switching wallpapers auto-updates kitty/quickshell colors — see **Dynamic Theme** under Customization below
-- Reboot
+- Set your GTK theme and Hatter icon theme using **nwg-look**.
+- Adjust `~/.config/hypr/config/monitors.lua` for your displays. The copied config targets `DP-1` and `DP-2` with fractional scaling.
+- Review `~/.config/hypr/config/programs.lua` for your terminal, file manager, and browser commands.
+- Open **Waypaper**, select **awww**, and choose a wallpaper from `~/Pictures/Wallpapers`.
+- Keep `post_command = ~/.config/theme/apply-theme.sh "$wallpaper"` in `~/.config/waypaper/config.ini` so wallpaper changes regenerate the shared theme files. Remove or replace the copied `stylesheet = /home/kuro/.config/waypaper/style.css` path if it does not exist on your machine.
+- Log out and start Hyprland, or reboot. The session starts Quickshell, Hypridle, the desktop portals, `awww-daemon`, and `waypaper --restore`.
 
 ## ⌨️ Keybindings
 
-| Keybind                      | Action                                                               |
-| ---------------------------- | -------------------------------------------------------------------- |
-| `SUPER + Return`             | Open terminal (Kitty)                                                |
-| `SUPER + Q`                  | Close active window                                                  |
-| `SUPER + E`                  | Open file manager (Nautilus)                                         |
-| `SUPER + B`                  | Open browser (Brave)                                                 |
-| `SUPER + V`                  | Toggle floating                                                      |
-| `SUPER + P`                  | Toggle pseudotile                                                    |
-| `SUPER + J`                  | Toggle split (dwindle)                                               |
-| `SUPER + W`                  | Toggle layout (dwindle ↔ scrolling)                                  |
-| `SUPER + SHIFT + W`          | Open wallpaper picker (Quickshell) — also applies the matching theme |
-| `SUPER + R`                  | Restart Quickshell                                                   |
-| `SUPER + M`                  | Exit Hyprland                                                        |
-| `ALT + Space`                | App launcher (Quickshell)                                            |
-| `ALT + ←/→/↑/↓`              | Move focus                                                           |
-| `SUPER + ←/→`                | Switch to previous/next workspace                                    |
-| `SUPER + scroll`             | Cycle through workspaces                                             |
-| `SUPER + [0-9]`              | Switch to workspace 1-10                                             |
-| `SUPER + SHIFT + [0-9]`      | Move active window to workspace 1-10                                 |
-| `SUPER + SHIFT + ←/→/↑/↓`    | Move window position in layout                                       |
-| `SUPER + CTRL + ←/→/↑/↓`     | Resize active window                                                 |
-| `SUPER + S`                  | Toggle special workspace (scratchpad)                                |
-| `SUPER + SHIFT + S`          | Move active window to special workspace                              |
-| `SUPER + LMB drag`           | Move window                                                          |
-| `SUPER + RMB drag`           | Resize window                                                        |
-| `Print`                      | Screenshot region to clipboard                                       |
-| Volume/brightness/media keys | Handled via `wpctl`, `brightnessctl`, `playerctl`                    |
+| Keybind                      | Action                                              |
+| ---------------------------- | --------------------------------------------------- |
+| `SUPER + Return`             | Open terminal (Kitty)                               |
+| `SUPER + Q`                  | Close active window                                 |
+| `SUPER + E`                  | Open file manager (Nautilus)                        |
+| `SUPER + B`                  | Open browser (Brave Origin)                         |
+| `SUPER + V`                  | Toggle floating                                     |
+| `SUPER + P`                  | Toggle pseudotile                                   |
+| `SUPER + J`                  | Toggle split (dwindle)                              |
+| `SUPER + W`                  | Toggle layout (dwindle ↔ scrolling)                 |
+| `SUPER + SHIFT + W`          | Open Personalization (wallpapers and dock settings) |
+| `SUPER + R`                  | Restart Quickshell                                  |
+| `SUPER + M`                  | Exit Hyprland (uses `hyprshutdown` if available)    |
+| `ALT + Space`                | App launcher (Quickshell)                           |
+| `ALT + ←/→/↑/↓`              | Move focus                                          |
+| `SUPER + ←/→`                | Switch to previous/next workspace                   |
+| `SUPER + scroll`             | Cycle through workspaces                            |
+| `SUPER + [0-9]`              | Switch to workspace 1-10                            |
+| `SUPER + SHIFT + [0-9]`      | Move active window to workspace 1-10                |
+| `SUPER + SHIFT + ←/→/↑/↓`    | Move window position in layout                      |
+| `SUPER + CTRL + ←/→/↑/↓`     | Resize active window                                |
+| `SUPER + S`                  | Toggle special workspace (scratchpad)               |
+| `SUPER + SHIFT + S`          | Move active window to special workspace             |
+| `SUPER + LMB drag`           | Move window                                         |
+| `SUPER + RMB drag`           | Resize window                                       |
+| `Print`                      | Screenshot region to clipboard                      |
+| Volume/brightness/media keys | Handled via `wpctl`, `brightnessctl`, `playerctl`   |
 
 Full list (and how to change binds) lives in `hl.bind(...)` calls inside `hypr/config/keybinds.lua`.
 
 ## 🔧 Customization
 
-`hyprland.lua` just `require()`s per-topic files under `hypr/config/` (monitors, keybinds, appearance, layouts, input, window rules, etc.) — see the comment at the top of `hyprland.lua` for the full list.
+**Hyprland:** `.config/hypr/hyprland.lua` loads the topic files under `hypr/config/`. Adjust `monitors.lua` for display modes and scaling, `programs.lua` for application commands, `keybinds.lua` for shortcuts, and `appearance.lua` for borders, blur, curves, and animations. `env.lua` also sets Steam UI scaling to `1.33`; adjust that for your displays.
 
-**Wallpapers :** Put your favorites in **~/Pictures/Wallpapers/** and pick one via **waypaper** — the wallpaper button on the bar opens Quickshell's own grid picker, and `awww-daemon` / `waypaper --restore` bring it back on login.
+**Quickshell:** `.config/quickshell/` is organized into `bar/`, `clock/`, `controlcenter/`, `globalmenu/`, `volume/`, `notifications/`, `launcher/`, `wallpaper/`, `dock/`, and shared state in `core/`. After copying changes into `~/.config/quickshell`, use `SUPER + R` to restart Quickshell if they have not reloaded. Editing this repository alone does not change the running desktop.
 
-**Monitors :** Ensure correct monitor output name and mode in `hypr/config/monitors.lua` (`hl.monitor({ ... })`).
+**Control Center:** Click the control center icon at the right of the bar. The home page contains connection tiles, volume, media controls, and notifications. The Wi-Fi and Bluetooth icons open their connection pages directly. Wi-Fi supports saved profiles and autojoin; Bluetooth supports pairing prompts. Use the power button inside the control center for lock, sleep, sign out, restart, or shutdown. Sign out, restart, and shutdown require confirmation.
 
-**Keybindings :** See the table above, or adjust the `hl.bind(...)` calls in `hypr/config/keybinds.lua` directly.
+**Launcher and global menu:** Click the `⌘` icon or press `ALT + Space` to search apps. The launcher supports recent-use and alphabetical sorting. The left side of the bar shows menus from compatible focused applications; availability depends on the application exposing a supported menu. The bridge lives in `globalmenu/`.
 
-**Quickshell :** Lives in `.config/quickshell/`, organized per feature (`bar/`, `clock/`, `volume/`, `notifications/`, `power/`, `launcher/`, `wallpaper/`, `dock/`, plus shared singletons in `core/`). Edits hot-reload automatically while it's running — no restart needed, except after adding or moving files (`SUPER + R` restarts it). The app launcher and wallpaper picker are also reachable from any script via `qs ipc call launcher toggle` / `qs ipc call wallpaper toggle`.
+**Wallpapers and dock:** Open Personalization with `SUPER + SHIFT + W` or the personalization button in the control center. Browse or search wallpapers, shuffle the selection, and show/hide the dock, choose its left/bottom/right position, or lock app positions. Dock appearance settings persist in `~/.config/quickshell/dock/settings.json`; the copied settings initially hide the dock and lock its positions. Pinned apps and ordering persist in `~/.cache/quickshell/dock-pinned.json`. Unlock the dock to change app ordering or pinning.
 
-**Dock :** A macOS-style app dock, toggled by clicking its icon on the bar. Pinned apps persist to `~/.cache/quickshell/dock-pinned.json`.
+**Desktop clock:** `clock/DesktopClock.qml` places a date and dot-matrix clock near the top left of each monitor. Adjust its margins there; typography and dot sizes live in `DesktopClockContent.qml` and `DotMatrixClock.qml`.
 
-**Dynamic theme :** `~/.config/theme/apply-theme.sh` picks a color palette based on the active wallpaper and regenerates `kitty/theme.conf`, `theme/quickshell-colors.css` and `hypr/hyprlock-colors.conf`, then reloads kitty and hyprlock. Quickshell picks up its color file changes live (no restart). It's triggered automatically by waypaper's `post_command` (see Installation), no matter how the wallpaper was changed — the bar's wallpaper menu, `SUPER + SHIFT + W`, or the waypaper GUI itself. Kitty and hyprlock no longer have static per-theme config files — colors are only set through this system.
+**Idle sleep and caffeine:** `~/.config/hypr/hypridle.conf` suspends after 1,800 seconds of inactivity and respects idle inhibitors. The caffeine icon on the bar toggles a `systemd-inhibit` process to block idle sleep while enabled.
 
-- Palettes live in `.config/theme/palettes/*.sh`. Add a new one by copying an existing file and adjusting the colors.
-- `.config/theme/wallpapers.conf` maps `<wallpaper filename>=<palette name>`. Unmapped wallpapers fall back to `sakura-ember`.
-- Run `~/.config/theme/apply-theme.sh` with no arguments to reapply the theme for whatever wallpaper is currently set.
+**Shared theme:** The only bundled palette is `.config/theme/palettes/nothing.sh`. All wallpapers currently use it; choosing another wallpaper keeps the same colors. `apply-theme.sh` regenerates `kitty/theme.conf`, `theme/quickshell-colors.css`, and `hypr/hyprlock-colors.conf`. It signals Kitty to reload, Quickshell watches its color file, and Hyprlock uses the generated colors and wallpaper when started.
+
+- Add a palette by copying `nothing.sh` and adjusting its colors.
+- Map a wallpaper to it in `.config/theme/wallpapers.conf` using `<wallpaper filename>=<palette name>`. Unmapped wallpapers and missing palette files fall back to `nothing`.
+- Run `~/.config/theme/apply-theme.sh` to regenerate the theme for the current Waypaper wallpaper.
+
+The following IPC commands are also available:
+
+```bash
+qs ipc call launcher toggle
+qs ipc call wallpaper toggle
+qs ipc call caffeine toggle
+qs ipc call caffeine status
+qs ipc call volume display
+qs ipc call globalmenu status
+```
 
 ## 🛠️ Troubleshooting
 
-**Hyprlock always says "Wrong Password" :** Usually caused by `pam_fprintd` or `pam_faillock` interfering with the auth stack in `/etc/pam.d/hyprlock`, not `hyprlock.conf` itself. See [`.config/hypr/README-hyprlock-wrong-password.md`](.config/hypr/README-hyprlock-wrong-password.md) for the full diagnosis and fix.
+**Hyprlock always says "Wrong Password" :** Usually caused by `pam_fprintd` or `pam_faillock` interfering with the auth stack in `/etc/pam.d/hyprlock`, not `hyprlock.conf` itself. See [`docs/README-hyprlock-wrong-password.md`](docs/README-hyprlock-wrong-password.md) for the full diagnosis and fix.
 
 **Steam game won't launch on a dual-boot NTFS partition :** Caused by `ntfs-3g` mounting the partition without `uid=`/`gid=` options, so Proton refuses to run because its prefix isn't owned by you. See [`docs/FIX-STEAM-DUAL-PARTITION.md`](docs/FIX-STEAM-DUAL-PARTITION.md) for the fix.
 

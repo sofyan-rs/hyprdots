@@ -35,8 +35,8 @@ PanelWindow {
     WlrLayershell.namespace: "quickshell-launcher"
     WlrLayershell.layer: WlrLayer.Overlay
 
-    implicitWidth: 560
-    implicitHeight: 420
+    implicitWidth: Math.min(590, screen ? screen.width - 32 : 590)
+    implicitHeight: Math.min(564, screen ? screen.height - 64 : 564)
 
     property string query: ""
     property int selectedIndex: 0
@@ -147,164 +147,280 @@ PanelWindow {
             NumberAnimation { duration: 220; easing.type: Easing.OutCubic }
         }
 
-    Rectangle {
-        anchors.fill: parent
-        radius: Colors.radius
-        color: Colors.bgAlt
-        border.width: 1
-        border.color: Colors.border
-    }
+        Rectangle {
+            anchors.fill: parent
+            radius: 20
+            color: Colors.bgAlt
+            border.width: 1
+            border.color: Colors.border
+        }
 
-    ColumnLayout {
-        anchors.fill: parent
-        anchors.margins: 14
-        spacing: 10
-
-        RowLayout {
-            Layout.fillWidth: true
+        ColumnLayout {
+            anchors.fill: parent
+            anchors.margins: 16
             spacing: 8
 
-            Text {
-                text: ""
-                font.family: Colors.iconFontFamily
-                font.pixelSize: Colors.fontSize + 2
-                color: Colors.fgAlt
-            }
-
-            TextInput {
-                id: searchInput
+            Rectangle {
                 Layout.fillWidth: true
-                text: root.query
-                font.family: Colors.fontFamily
-                font.pixelSize: Colors.fontSize
-                color: Colors.fg
-                clip: true
-                selectByMouse: true
+                Layout.preferredHeight: 52
+                radius: 12
+                color: Colors.surface
 
-                onTextChanged: root.query = text
+                RowLayout {
+                    anchors.fill: parent
+                    anchors.leftMargin: 14
+                    anchors.rightMargin: 12
+                    spacing: 12
 
-                Keys.onPressed: event => {
-                    if (event.key === Qt.Key_Down) {
-                        root.moveSelection(1)
-                        event.accepted = true
-                    } else if (event.key === Qt.Key_Up) {
-                        root.moveSelection(-1)
-                        event.accepted = true
-                    } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
-                        root.launch(root.sortedFiltered[root.selectedIndex])
-                        event.accepted = true
-                    } else if (event.key === Qt.Key_Escape) {
-                        PopupManager.close()
-                        event.accepted = true
+                    Text {
+                        text: "\ue8b6"
+                        font.family: Colors.iconFontFamily
+                        font.pixelSize: 22
+                        color: Colors.fg
+                    }
+
+                    TextInput {
+                        id: searchInput
+                        Layout.fillWidth: true
+                        text: root.query
+                        font.family: Colors.fontFamily
+                        font.pixelSize: 18
+                        color: Colors.fg
+                        clip: true
+                        selectByMouse: true
+                        onTextChanged: root.query = text
+
+                        Keys.onPressed: event => {
+                            if (event.key === Qt.Key_Down) {
+                                root.moveSelection(1)
+                                event.accepted = true
+                            } else if (event.key === Qt.Key_Up) {
+                                root.moveSelection(-1)
+                                event.accepted = true
+                            } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter) {
+                                root.launch(root.sortedFiltered[root.selectedIndex])
+                                event.accepted = true
+                            } else if (event.key === Qt.Key_Escape) {
+                                PopupManager.close()
+                                event.accepted = true
+                            }
+                        }
+
+                        Text {
+                            visible: searchInput.text.length === 0
+                            text: "Search apps..."
+                            font.family: Colors.fontFamily
+                            font.pixelSize: 18
+                            color: Colors.fgAlt
+                        }
+                    }
+
+                    Rectangle {
+                        Layout.preferredWidth: 30
+                        Layout.preferredHeight: 30
+                        radius: 8
+                        color: sortToggleArea.containsMouse ? Colors.border : "transparent"
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: root.sortMode === "recent" ? "\ue8b3" : "\ue053"
+                            font.family: Colors.iconFontFamily
+                            font.pixelSize: 20
+                            color: Colors.fgAlt
+                        }
+
+                        MouseArea {
+                            id: sortToggleArea
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: root.toggleSortMode()
+                        }
                     }
                 }
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.leftMargin: 8
+                Layout.rightMargin: 8
+                Layout.preferredHeight: 20
 
                 Text {
-                    visible: searchInput.text.length === 0
-                    text: "Search apps..."
+                    text: "APPLICATIONS"
                     font.family: Colors.fontFamily
-                    font.pixelSize: Colors.fontSize
+                    font.pixelSize: 10
+                    color: Colors.accent
+                }
+
+                Item { Layout.fillWidth: true }
+
+                Text {
+                    text: root.sortedFiltered.length + (root.sortedFiltered.length === 1 ? " result" : " results")
+                    font.family: Colors.fontFamily
+                    font.pixelSize: 11
                     color: Colors.fgAlt
+                }
+            }
+
+            ListView {
+                id: list
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                clip: true
+                model: root.sortedFiltered
+                currentIndex: root.selectedIndex
+                spacing: 2
+                boundsBehavior: Flickable.StopAtBounds
+
+                Text {
+                    anchors.centerIn: parent
+                    visible: list.count === 0
+                    text: "No applications found"
+                    font.family: Colors.fontFamily
+                    font.pixelSize: 14
+                    color: Colors.fgAlt
+                }
+
+                delegate: Rectangle {
+                    id: appRow
+                    required property var modelData
+                    required property int index
+                    readonly property bool selected: index === root.selectedIndex
+
+                    width: list.width
+                    height: 56
+                    radius: 10
+                    color: selected ? Colors.fg : "transparent"
+
+                    RowLayout {
+                        anchors.fill: parent
+                        anchors.leftMargin: 12
+                        anchors.rightMargin: 14
+                        spacing: 14
+
+                        Rectangle {
+                            Layout.preferredWidth: 36
+                            Layout.preferredHeight: 36
+                            radius: 10
+                            color: appRow.selected ? Qt.alpha(Colors.bg, 0.12) : Qt.alpha(Colors.fg, 0.08)
+
+                            IconImage {
+                                id: appIcon
+                                anchors.centerIn: parent
+                                implicitSize: 22
+                                source: appRow.modelData.icon
+                                    ? Quickshell.iconPath(appRow.modelData.icon, true) : ""
+                                visible: source.toString().length > 0
+                            }
+
+                            Text {
+                                anchors.centerIn: parent
+                                visible: !appIcon.visible
+                                text: "\ue5c3"
+                                font.family: Colors.iconFontFamily
+                                font.pixelSize: 22
+                                color: appRow.selected ? Colors.bg : Colors.fg
+                            }
+                        }
+
+                        ColumnLayout {
+                            Layout.fillWidth: true
+                            spacing: 4
+
+                            Text {
+                                Layout.fillWidth: true
+                                text: appRow.modelData.name
+                                font.family: Colors.fontFamily
+                                font.pixelSize: 14
+                                font.bold: true
+                                textFormat: Text.PlainText
+                                elide: Text.ElideRight
+                                color: appRow.selected ? Colors.bg : Colors.fg
+                            }
+
+                            Text {
+                                Layout.fillWidth: true
+                                visible: text.length > 0
+                                text: appRow.modelData.comment || appRow.modelData.genericName || ""
+                                font.family: Colors.fontFamily
+                                font.pixelSize: 11
+                                textFormat: Text.PlainText
+                                elide: Text.ElideRight
+                                color: appRow.selected ? Qt.alpha(Colors.bg, 0.7) : Colors.fgAlt
+                            }
+                        }
+
+                        Text {
+                            visible: appRow.selected
+                            text: "Open  ↗"
+                            font.family: Colors.fontFamily
+                            font.pixelSize: 11
+                            color: Colors.bg
+                        }
+                    }
+
+                    MouseArea {
+                        id: rowArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onPositionChanged: root.selectedIndex = appRow.index
+                        onClicked: root.launch(appRow.modelData)
+                    }
                 }
             }
 
             Rectangle {
-                Layout.preferredWidth: 28
-                Layout.preferredHeight: 28
-                radius: Colors.radius
-                color: sortToggleArea.containsMouse ? Colors.border : "transparent"
-
-                Text {
-                    anchors.centerIn: parent
-                    text: root.sortMode === "recent" ? "\ue8b3" : "\ue053"
-                    font.family: Colors.iconFontFamily
-                    font.pixelSize: Colors.fontSize
-                    color: Colors.fgAlt
-                }
-
-                MouseArea {
-                    id: sortToggleArea
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    onClicked: root.toggleSortMode()
-                }
+                Layout.fillWidth: true
+                Layout.preferredHeight: 1
+                color: Colors.border
             }
-        }
 
-        Rectangle {
-            Layout.fillWidth: true
-            height: 1
-            color: Colors.border
-        }
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.leftMargin: 8
+                Layout.preferredHeight: 24
+                spacing: 20
 
-        ListView {
-            id: list
-            Layout.fillWidth: true
-            Layout.fillHeight: true
-            clip: true
-            model: root.sortedFiltered
-            currentIndex: root.selectedIndex
-            spacing: 2
+                Repeater {
+                    model: [
+                        { key: "↑↓", label: "Navigate" },
+                        { key: "↵", label: "Open" },
+                        { key: "Esc", label: "Close" }
+                    ]
 
-            delegate: Rectangle {
-                id: appRow
+                    delegate: RowLayout {
+                        required property var modelData
+                        spacing: 6
 
-                required property var modelData
-                required property int index
+                        Rectangle {
+                            Layout.preferredWidth: Math.max(26, keyLabel.implicitWidth + 12)
+                            Layout.preferredHeight: 21
+                            radius: 5
+                            color: Qt.alpha(Colors.fg, 0.08)
 
-                width: list.width
-                height: 44
-                radius: Colors.radius
-                color: index === root.selectedIndex ? Colors.secondary : (rowArea.containsMouse ? Colors.border : "transparent")
-
-                RowLayout {
-                    anchors.fill: parent
-                    anchors.leftMargin: 10
-                    anchors.rightMargin: 10
-                    spacing: 10
-
-                    IconImage {
-                        implicitSize: 24
-                        Layout.preferredWidth: 24
-                        Layout.preferredHeight: 24
-                        source: Quickshell.iconPath(appRow.modelData.icon, "application-x-executable")
-                    }
-
-                    ColumnLayout {
-                        Layout.fillWidth: true
-                        spacing: 0
-
-                        Text {
-                            Layout.fillWidth: true
-                            text: appRow.modelData.name
-                            font.family: Colors.fontFamily
-                            font.pixelSize: Colors.fontSize
-                            font.bold: true
-                            elide: Text.ElideRight
-                            color: index === root.selectedIndex ? Colors.accentText : Colors.fg
+                            Text {
+                                id: keyLabel
+                                anchors.centerIn: parent
+                                text: modelData.key
+                                font.family: Colors.fontFamily
+                                font.pixelSize: 10
+                                color: Colors.fg
+                            }
                         }
 
                         Text {
-                            Layout.fillWidth: true
-                            visible: text.length > 0
-                            text: appRow.modelData.comment || ""
+                            text: modelData.label
                             font.family: Colors.fontFamily
-                            font.pixelSize: 11
-                            elide: Text.ElideRight
-                            color: index === root.selectedIndex ? Colors.accentText : Colors.fgAlt
+                            font.pixelSize: 10
+                            color: Colors.fgAlt
                         }
                     }
                 }
 
-                MouseArea {
-                    id: rowArea
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    onEntered: root.selectedIndex = appRow.index
-                    onClicked: root.launch(appRow.modelData)
-                }
+                Item { Layout.fillWidth: true }
             }
         }
-    }
     }
 }

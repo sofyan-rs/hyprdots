@@ -6,12 +6,18 @@ import "notifications"
 import "launcher"
 import "wallpaper"
 import "dock"
+import "clock"
 
 ShellRoot {
     Variants {
         model: Quickshell.screens
 
         Bar {}
+    }
+
+    Variants {
+        model: Quickshell.screens
+        DesktopClock {}
     }
 
     NotificationToasts {

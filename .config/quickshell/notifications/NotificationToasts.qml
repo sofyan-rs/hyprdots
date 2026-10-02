@@ -1,5 +1,7 @@
 import Quickshell
+import Quickshell.Wayland
 import QtQuick
+import "../core"
 
 PanelWindow {
     id: root
@@ -9,13 +11,14 @@ PanelWindow {
         right: true
     }
     margins {
-        top: 46
-        right: 10
+        top: Colors.barHeight + 10
+        right: 14
     }
     exclusionMode: ExclusionMode.Ignore
     color: "transparent"
+    WlrLayershell.namespace: "quickshell-notifications"
 
-    implicitWidth: 320
+    implicitWidth: 410
     implicitHeight: Math.max(1, column.implicitHeight)
 
     readonly property bool hasShownToast: {

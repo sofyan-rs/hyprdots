@@ -8,13 +8,19 @@ Item {
 
     property bool open: false
     property var viewDate: new Date()
-    readonly property var dayCells: computeDayCells(viewDate)
+    readonly property string todayKey: liveClock.date.toDateString()
+    readonly property var dayCells: computeDayCells(viewDate, todayKey)
+    readonly property string utcOffset: {
+        const offset = -liveClock.date.getTimezoneOffset()
+        const hours = Math.floor(Math.abs(offset) / 60).toString().padStart(2, "0")
+        const minutes = Math.abs(offset) % 60
+        return "UTC" + (offset >= 0 ? "+" : "−") + hours
+            + (minutes ? ":" + minutes.toString().padStart(2, "0") : "")
+    }
 
-    implicitWidth: 260
-    implicitHeight: column.implicitHeight + 32
-
+    implicitWidth: 410
+    implicitHeight: column.implicitHeight + 40
     transformOrigin: Item.TopRight
-
     opacity: open ? 1 : 0
     scale: open ? 1 : 0.92
     y: open ? 0 : -14
@@ -29,34 +35,45 @@ Item {
         NumberAnimation { duration: 240; easing.type: Easing.OutCubic }
     }
 
-    function shiftMonth(delta) {
-        const d = new Date(viewDate)
-        d.setMonth(d.getMonth() + delta)
-        viewDate = d
+    onOpenChanged: {
+        if (open)
+            showToday()
     }
 
-    function computeDayCells(ref) {
+    function showToday() {
+        viewDate = new Date(liveClock.date.getFullYear(), liveClock.date.getMonth(), 1)
+    }
+
+    function shiftMonth(delta) {
+        viewDate = new Date(viewDate.getFullYear(), viewDate.getMonth() + delta, 1)
+    }
+
+    function computeDayCells(ref, today) {
         const year = ref.getFullYear()
         const month = ref.getMonth()
-        const firstOfMonth = new Date(year, month, 1)
-        const startOffset = firstOfMonth.getDay()
-        const today = new Date()
+        const startOffset = new Date(year, month, 1).getDay()
+        const daysInMonth = new Date(year, month + 1, 0).getDate()
+        const cellCount = Math.max(35, Math.ceil((startOffset + daysInMonth) / 7) * 7)
         const cells = []
-        for (let i = 0; i < 42; i++) {
-            const dayNum = i - startOffset + 1
-            const cellDate = new Date(year, month, dayNum)
+        for (let i = 0; i < cellCount; i++) {
+            const cellDate = new Date(year, month, i - startOffset + 1)
             cells.push({
                 day: cellDate.getDate(),
                 inMonth: cellDate.getMonth() === month,
-                isToday: cellDate.toDateString() === today.toDateString()
+                isToday: cellDate.toDateString() === today
             })
         }
         return cells
     }
 
+    SystemClock {
+        id: liveClock
+        precision: root.open ? SystemClock.Seconds : SystemClock.Minutes
+    }
+
     Rectangle {
         anchors.fill: parent
-        radius: Colors.radius
+        radius: 18
         color: Colors.bgAlt
         border.width: 1
         border.color: Colors.border
@@ -64,72 +81,122 @@ Item {
 
     ColumnLayout {
         id: column
-        anchors.fill: parent
-        anchors.margins: 16
-        spacing: 12
-
-        SystemClock {
-            id: liveClock
-            precision: SystemClock.Seconds
-        }
-
-        Text {
-            Layout.alignment: Qt.AlignHCenter
-            text: Qt.formatDateTime(liveClock.date, "hh:mm:ss")
-            font.family: Colors.fontFamily
-            font.pixelSize: 30
-            font.bold: true
-            color: Colors.fg
-        }
-
-        Text {
-            Layout.alignment: Qt.AlignHCenter
-            text: Qt.formatDateTime(liveClock.date, "dddd, dd MMMM yyyy")
-            font.family: Colors.fontFamily
-            font.pixelSize: Colors.fontSize
-            color: Colors.fgAlt
-        }
-
-        Rectangle {
-            Layout.fillWidth: true
-            height: 1
-            color: Colors.border
-        }
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.margins: 20
+        spacing: 14
 
         RowLayout {
             Layout.fillWidth: true
 
             Text {
-                text: "\ue5cb"
-                font.family: Colors.iconFontFamily
-                font.pixelSize: Colors.fontSize
-                color: Colors.fg
+                text: "DATE & TIME"
+                font.family: Colors.fontFamily
+                font.pixelSize: 10
+                color: Colors.accent
+            }
+
+            Item { Layout.fillWidth: true }
+
+            Text {
+                text: root.utcOffset
+                font.family: Colors.fontFamily
+                font.pixelSize: 10
+                color: Colors.fgAlt
+            }
+        }
+
+        DotMatrixClock {
+            Layout.preferredWidth: 248
+            Layout.preferredHeight: 48
+            timeText: Qt.formatDateTime(liveClock.date, "hh:mm:ss")
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: 8
+
+            Text {
+                Layout.maximumWidth: column.width - todayButton.width - 8
+                elide: Text.ElideRight
+                text: Qt.formatDateTime(liveClock.date, "dddd, d MMMM yyyy")
+                font.family: Colors.fontFamily
+                font.pixelSize: 13
+                color: Colors.fgAlt
+            }
+
+            Rectangle {
+                id: todayButton
+                Layout.preferredWidth: 44
+                Layout.preferredHeight: 20
+                radius: 5
+                color: Qt.alpha(Colors.accent, todayMouse.containsMouse ? 0.22 : 0.12)
+
+                Text {
+                    anchors.centerIn: parent
+                    text: "TODAY"
+                    font.family: Colors.fontFamily
+                    font.pixelSize: 9
+                    color: Colors.accent
+                }
 
                 MouseArea {
+                    id: todayMouse
                     anchors.fill: parent
-                    onClicked: root.shiftMonth(-1)
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: root.showToday()
                 }
             }
 
+            Item { Layout.fillWidth: true }
+        }
+
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 1
+            color: Colors.border
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+            spacing: 6
+
             Text {
                 Layout.fillWidth: true
-                horizontalAlignment: Text.AlignHCenter
                 text: Qt.formatDate(root.viewDate, "MMMM yyyy")
                 font.family: Colors.fontFamily
-                font.pixelSize: Colors.fontSize
+                font.pixelSize: 16
                 font.bold: true
                 color: Colors.fg
             }
 
-            Text {
-                text: "\ue5cc"
-                font.family: Colors.iconFontFamily
-                font.pixelSize: Colors.fontSize
-                color: Colors.fg
+            Repeater {
+                model: [-1, 1]
 
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: root.shiftMonth(1)
+                delegate: Rectangle {
+                    required property int modelData
+                    Layout.preferredWidth: 30
+                    Layout.preferredHeight: 30
+                    radius: 8
+                    color: monthMouse.containsMouse ? Colors.border : Colors.surface
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: modelData < 0 ? "\ue5cb" : "\ue5cc"
+                        font.family: Colors.iconFontFamily
+                        font.pixelSize: 20
+                        color: Colors.fg
+                    }
+
+                    MouseArea {
+                        id: monthMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: root.shiftMonth(parent.modelData)
+                    }
                 }
             }
         }
@@ -137,7 +204,7 @@ Item {
         GridLayout {
             Layout.fillWidth: true
             columns: 7
-            rowSpacing: 4
+            rowSpacing: 8
             columnSpacing: 4
 
             Repeater {
@@ -145,12 +212,14 @@ Item {
 
                 delegate: Text {
                     required property string modelData
-                    Layout.preferredWidth: 30
+                    Layout.fillWidth: true
+                    Layout.preferredWidth: 34
+                    Layout.preferredHeight: 24
                     horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
                     text: modelData
                     font.family: Colors.fontFamily
-                    font.pixelSize: 12
-                    font.bold: true
+                    font.pixelSize: 11
                     color: Colors.fgAlt
                 }
             }
@@ -158,15 +227,20 @@ Item {
             Repeater {
                 model: root.dayCells
 
-                delegate: Rectangle {
+                delegate: Item {
                     id: dayCell
-
                     required property var modelData
+                    Layout.fillWidth: true
+                    Layout.preferredWidth: 34
+                    Layout.preferredHeight: 34
 
-                    Layout.preferredWidth: 30
-                    Layout.preferredHeight: 30
-                    radius: width / 2
-                    color: modelData.isToday ? Colors.secondary : "transparent"
+                    Rectangle {
+                        anchors.centerIn: parent
+                        width: 34
+                        height: 34
+                        radius: 17
+                        color: dayCell.modelData.isToday ? Colors.accent : "transparent"
+                    }
 
                     Text {
                         anchors.centerIn: parent
@@ -175,6 +249,7 @@ Item {
                         font.pixelSize: 13
                         font.bold: dayCell.modelData.isToday
                         color: dayCell.modelData.isToday ? Colors.accentText : (dayCell.modelData.inMonth ? Colors.fg : Colors.fgAlt)
+                        opacity: dayCell.modelData.inMonth || dayCell.modelData.isToday ? 1 : 0.5
                     }
                 }
             }

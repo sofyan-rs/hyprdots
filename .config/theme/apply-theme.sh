@@ -15,7 +15,7 @@ THEME_DIR="$HOME/.config/theme"
 PALETTES_DIR="$THEME_DIR/palettes"
 MAP_FILE="$THEME_DIR/wallpapers.conf"
 STATE_FILE="$THEME_DIR/current-palette"
-DEFAULT_PALETTE="sakura-ember"
+DEFAULT_PALETTE="nothing"
 
 WAYPAPER_CONFIG="$HOME/.config/waypaper/config.ini"
 
@@ -81,10 +81,15 @@ EOF
 cat > "$THEME_DIR/quickshell-colors.css" <<EOF
 @define-color bg $BG;
 @define-color bg-alt $BG_ALT;
+@define-color surface $SURFACE;
+@define-color surface-alt $SURFACE_ALT;
+@define-color surface-hover $SURFACE_HOVER;
 @define-color fg $FG;
 @define-color fg-alt $FG_ALT;
+@define-color fg-muted $FG_MUTED;
 @define-color accent $ACCENT;
 @define-color secondary $SECONDARY;
+@define-color accent-light $ACCENT_LIGHT;
 @define-color border $BORDER;
 @define-color on-accent $ON_ACCENT;
 @define-color workspace-focused-bg $WORKSPACE_FOCUSED_BG;

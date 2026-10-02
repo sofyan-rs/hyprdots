@@ -16,6 +16,29 @@ local suppressMaximizeRule = hl.window_rule({
 })
 -- suppressMaximizeRule:set_enabled(false)
 
+-- Open GTK portal file pickers floating in the middle of their monitor.
+hl.window_rule({
+    name = "gtk-file-picker-center",
+    match = { class = "^[Xx]dg-desktop-portal-gtk$" },
+
+    float = true,
+    center = true,
+})
+
+-- XWayland GTK portal pickers (ChatGPT, Telegram, etc.) include transparent
+-- frame margins; compositor borders, shadows and blur outline those margins.
+hl.window_rule({
+    name = "xwayland-gtk-file-picker-no-frame",
+    match = {
+        class = "^Xdg-desktop-portal-gtk$",
+        xwayland = true,
+    },
+
+    border_size = 0,
+    no_shadow = true,
+    no_blur = true,
+})
+
 -- Keep Brave video and Google Meet picture-in-picture windows clear.
 hl.window_rule({
     name  = "brave-meet-pip-no-blur",
@@ -55,16 +78,29 @@ hl.window_rule({
 -- })
 -- overlayLayerRule:set_enabled(false)
 
+-- Show and resize the dock immediately, including its window picker.
+hl.layer_rule({
+    name = "quickshell-dock-no-animation",
+    match = { namespace = "^quickshell-dock$" },
+    no_anim = true,
+})
+
+-- Let the control center follow its content without compositor resize animation.
+hl.layer_rule({
+    name = "quickshell-controlcenter-no-animation",
+    match = { namespace = "^quickshell-controlcenter$" },
+    no_anim = true,
+})
+
 -- Blur quickshell (their backgrounds are semi-transparent, so blur is
 -- only visible here if layer blur is enabled)
 hl.layer_rule({ name = "blur-quickshell",    match = { namespace = "^quickshell$" },    blur = true })
 
 -- Hyprland-run windowrule
 hl.window_rule({
-    name  = "move-hyprland-run",
+    name  = "float-hyprland-run",
     match = { class = "hyprland-run" },
 
-    move  = "20 monitor_h-120",
     float = true,
 })
 
@@ -96,4 +132,13 @@ hl.window_rule({
 
     no_blur = true,
     opacity = "1.0 override",
+})
+
+-- Center newly opened floating windows, including dialogs and utility windows.
+-- Hyprland only applies center to floating windows; tiled windows keep their layout.
+hl.window_rule({
+    name = "center-floating-windows",
+    match = { class = ".*" },
+
+    center = true,
 })

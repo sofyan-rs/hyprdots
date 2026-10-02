@@ -8,6 +8,8 @@ import "../core"
 Pill {
     id: root
 
+    property bool compact: false
+    readonly property bool automatic: VolumeState.automatic
     readonly property var sink: Pipewire.defaultAudioSink
     readonly property real volume: sink && sink.audio ? sink.audio.volume : 0
     readonly property bool muted: sink && sink.audio ? sink.audio.muted : false
@@ -31,11 +33,12 @@ Pill {
         Text {
             text: root.muted ? "\ue04f" : (root.volume <= 0.5 ? "\ue04d" : "\ue050")
             font.family: Colors.iconFontFamily
-            font.pixelSize: Colors.fontSize + 2
-            color: root.muted ? Colors.accentText : Colors.accent
+            font.pixelSize: root.flat ? 18 : Colors.fontSize + 2
+            color: root.flat ? Colors.fg : (root.muted ? Colors.accentText : Colors.accent)
         }
 
         Text {
+            visible: !root.compact
             text: Math.round(root.volume * 100) + "%"
             font.family: Colors.fontFamily
             font.pixelSize: Colors.fontSize
@@ -47,12 +50,14 @@ Pill {
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.LeftButton | Qt.RightButton
+        hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
         onClicked: mouse => {
             if (mouse.button === Qt.RightButton) {
                 proc.running = true
                 return
             }
-            PopupManager.toggle("volume", root.barScreen)
+            VolumeState.toggle(root.barScreen)
         }
     }
 
@@ -83,12 +88,13 @@ Pill {
         exclusionMode: ExclusionMode.Ignore
         WlrLayershell.namespace: "quickshell-popup"
         WlrLayershell.layer: WlrLayer.Overlay
+        WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
 
         anchors {
             top: true
             right: true
         }
-        margins.top: Colors.barHeight + 2
+        margins.top: Colors.barHeight + Colors.popupTopGap
         margins.right: rightMargin
 
         implicitWidth: content.implicitWidth
@@ -97,6 +103,7 @@ Pill {
         VolumePopup {
             id: content
             open: root.open
+            onInteracted: VolumeState.pin()
         }
     }
 }

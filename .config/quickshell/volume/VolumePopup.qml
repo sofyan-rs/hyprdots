@@ -2,20 +2,23 @@ import Quickshell
 import Quickshell.Services.Pipewire
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls.Basic
 import "../core"
+import "../controlcenter"
 
 Item {
     id: root
 
     property bool open: false
+    signal interacted()
     readonly property var sink: Pipewire.defaultAudioSink
     readonly property real volume: sink && sink.audio ? sink.audio.volume : 0
     readonly property bool muted: sink && sink.audio ? sink.audio.muted : false
 
     transformOrigin: Item.TopRight
 
-    implicitWidth: 240
-    implicitHeight: column.implicitHeight + 32
+    implicitWidth: 360
+    implicitHeight: column.implicitHeight + 28
 
     opacity: open ? 1 : 0
     scale: open ? 1 : 0.92
@@ -32,13 +35,16 @@ Item {
     }
 
     function setVolume(v) {
-        if (root.sink && root.sink.audio)
+        root.interacted()
+        if (root.sink && root.sink.audio) {
             root.sink.audio.volume = Math.max(0, Math.min(1, v))
+            root.sink.audio.muted = false
+        }
     }
 
     Rectangle {
         anchors.fill: parent
-        radius: Colors.radius
+        radius: 16
         color: Colors.bgAlt
         border.width: 1
         border.color: Colors.border
@@ -46,98 +52,74 @@ Item {
 
     ColumnLayout {
         id: column
-        anchors.fill: parent
-        anchors.margins: 16
-        spacing: 12
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.margins: 14
+        spacing: 8
 
         RowLayout {
             Layout.fillWidth: true
             spacing: 8
-
             Text {
-                text: root.muted ? "\ue04f" : "\ue050"
+                text: "\ue050"
                 font.family: Colors.iconFontFamily
-                font.pixelSize: 20
-                color: root.muted ? Colors.fgAlt : Colors.accent
-
-                MouseArea {
-                    anchors.fill: parent
-                    onClicked: {
-                        if (root.sink && root.sink.audio)
-                            root.sink.audio.muted = !root.sink.audio.muted
-                    }
-                }
+                font.pixelSize: 21
+                color: Colors.accent
             }
-
-            Text {
-                Layout.fillWidth: true
-                text: "Volume"
-                font.family: Colors.fontFamily
-                font.pixelSize: Colors.fontSize
-                font.bold: true
-                color: Colors.fg
-            }
-
-            Text {
+            CcText { text: "Volume" }
+            Item { Layout.fillWidth: true }
+            CcText {
                 text: Math.round(root.volume * 100) + "%"
-                font.family: Colors.fontFamily
-                font.pixelSize: Colors.fontSize
-                font.bold: true
+                font.pixelSize: 12
                 color: Colors.fgAlt
+            }
+            CcButton {
+                text: root.muted ? "Unmute" : "Mute"
+                icon: "\ue04f"
+                implicitHeight: 28
+                enabled: root.sink !== null
+                onClicked: {
+                    root.interacted()
+                    if (root.sink && root.sink.audio)
+                        root.sink.audio.muted = !root.sink.audio.muted
+                }
             }
         }
 
-        Item {
-            id: sliderTrack
+        Slider {
+            id: volumeSlider
             Layout.fillWidth: true
-            implicitHeight: 18
-
-            Rectangle {
-                id: track
-                anchors.verticalCenter: parent.verticalCenter
-                width: parent.width
-                height: 6
-                radius: height / 2
-                color: Colors.bg
-                border.width: 1
-                border.color: Colors.border
-
+            Layout.preferredHeight: 22
+            padding: 0
+            from: 0
+            to: 1
+            enabled: root.sink !== null
+            value: root.volume
+            onMoved: root.setVolume(value)
+            background: Rectangle {
+                x: volumeSlider.leftPadding
+                y: volumeSlider.topPadding + (volumeSlider.availableHeight - height) / 2
+                width: volumeSlider.availableWidth
+                height: 7
+                radius: 3.5
+                color: Colors.border
                 Rectangle {
-                    width: track.width * Math.max(0, Math.min(1, root.volume))
+                    width: parent.width * volumeSlider.visualPosition
                     height: parent.height
-                    radius: parent.radius
-                    color: root.muted ? Colors.fgAlt : Colors.accent
-
-                    Behavior on width {
-                        enabled: !dragArea.pressed
-                        NumberAnimation { duration: 120; easing.type: Easing.OutCubic }
-                    }
+                    radius: 3.5
+                    color: Colors.accent
                 }
             }
-
-            Rectangle {
-                id: handle
-                width: 16
-                height: 16
-                radius: 8
+            handle: Rectangle {
+                x: volumeSlider.leftPadding + volumeSlider.visualPosition * (volumeSlider.availableWidth - width)
+                y: volumeSlider.topPadding + (volumeSlider.availableHeight - height) / 2
+                width: 18
+                height: 18
+                radius: 9
                 color: Colors.fg
                 border.width: 2
-                border.color: root.muted ? Colors.fgAlt : Colors.accent
-                anchors.verticalCenter: parent.verticalCenter
-                x: track.width * Math.max(0, Math.min(1, root.volume)) - width / 2
-            }
-
-            MouseArea {
-                id: dragArea
-                anchors.fill: parent
-
-                property bool dragging: false
-
-                onPressed: mouse => root.setVolume(mouse.x / width)
-                onPositionChanged: mouse => {
-                    if (pressed)
-                        root.setVolume(mouse.x / width)
-                }
+                border.color: Colors.accent
             }
         }
     }

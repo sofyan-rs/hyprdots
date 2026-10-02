@@ -6,6 +6,7 @@ import "../core"
 Pill {
     id: root
 
+    property string dateFormat: "hh:mm"
     required property var barScreen
 
     readonly property bool open: PopupManager.activeId === "clock" && PopupManager.activeScreen === barScreen
@@ -21,15 +22,17 @@ Pill {
     Text {
         id: label
         anchors.centerIn: parent
-        text: Qt.formatDateTime(clock.date, "hh:mm")
+        text: Qt.formatDateTime(clock.date, root.dateFormat)
         font.family: Colors.fontFamily
-        font.pixelSize: Colors.fontSize
-        font.bold: true
+        font.pixelSize: root.flat ? Colors.fontSize - 2 : Colors.fontSize
+        font.bold: !root.flat
         color: Colors.fg
     }
 
     MouseArea {
         anchors.fill: parent
+        hoverEnabled: true
+        cursorShape: Qt.PointingHandCursor
         onClicked: PopupManager.toggle("clock", root.barScreen)
     }
 
@@ -60,7 +63,7 @@ Pill {
             top: true
             right: true
         }
-        margins.top: Colors.barHeight + 2
+        margins.top: Colors.barHeight + Colors.popupTopGap
         margins.right: rightMargin
 
         implicitWidth: content.implicitWidth

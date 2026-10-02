@@ -18,12 +18,18 @@ Rectangle {
         dispatchProc.running = true
     }
 
-    implicitWidth: row.implicitWidth + 5
-    implicitHeight: 28
-    color: Colors.bgAlt
-    border.width: 1
+    readonly property var workspaceNames: {
+        const names = ["1", "2", "3", "4", "5", "6"]
+        const extras = Hyprland.workspaces.values.filter(ws => ws.monitor === root.monitor && !names.includes(ws.name))
+        return names.concat(extras.map(ws => ws.name))
+    }
+
+    implicitWidth: row.implicitWidth
+    implicitHeight: 30
+    color: "transparent"
+    border.width: 0
     border.color: Colors.border
-    radius: Colors.radius
+    radius: 7
 
     Process {
         id: dispatchProc
@@ -40,37 +46,40 @@ Rectangle {
     RowLayout {
         id: row
         anchors.centerIn: parent
-        spacing: 2
+        spacing: 3
 
         Repeater {
-            model: Hyprland.workspaces.values.filter(ws => ws.monitor === root.monitor)
+            model: root.workspaceNames
 
             delegate: Rectangle {
                 id: wsButton
 
                 required property var modelData
 
-                readonly property bool isFocused: modelData.focused
-                readonly property bool isVisible: modelData.active && !modelData.focused
+                readonly property var workspace: Hyprland.workspaces.values.find(ws => ws.name === modelData && ws.monitor === root.monitor)
+                readonly property bool isFocused: workspace ? workspace.focused : false
+                readonly property bool isVisible: workspace ? workspace.active && !workspace.focused : false
 
-                Layout.preferredWidth: label.implicitWidth + 12
-                Layout.preferredHeight: 22
-                radius: Colors.radius
-                color: isFocused ? Colors.secondary : (isVisible ? Colors.wsFocusedBg : "transparent")
+                Layout.preferredWidth: Math.max(30, label.implicitWidth + 12)
+                Layout.preferredHeight: 30
+                radius: 7
+                color: isFocused ? Colors.accent : (isVisible ? Colors.wsFocusedBg : "transparent")
 
                 Text {
                     id: label
                     anchors.centerIn: parent
-                    text: wsButton.modelData.name
+                    text: wsButton.modelData
                     font.family: Colors.fontFamily
                     font.pixelSize: Colors.fontSize
-                    font.bold: true
+                    font.bold: wsButton.isFocused
                     color: wsButton.isFocused ? Colors.accentText : Colors.fg
                 }
 
                 MouseArea {
                     anchors.fill: parent
-                    onClicked: root.goToWorkspace(wsButton.modelData.name)
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: root.goToWorkspace(wsButton.modelData)
                 }
             }
         }
