@@ -1,14 +1,17 @@
 import QtQuick
+import Quickshell
 import QtQuick.Layouts
 import "../core"
 
 Rectangle {
     id: root
     required property var controller
+    property bool lockedSession: false
     property var pendingAction: null
     readonly property bool confirming: pendingAction !== null
-    readonly property var actions: [
-        {title: "Lock", subtitle: "Keep everything running", icon: "\ue899", command: ["hyprlock"], confirm: false},
+    readonly property var actions: lockedSession ? allActions.filter(action => action.title !== "Lock" && action.title !== "Sign out") : allActions
+    readonly property var allActions: [
+        {title: "Lock", subtitle: "Keep everything running", icon: "\ue899", command: [Quickshell.env("HOME") + "/.config/quickshell/lockscreen/lock.sh"], confirm: false},
         {title: "Sleep", subtitle: "Pause and resume quickly", icon: "\ue51c", command: ["systemctl", "suspend"], confirm: false},
         {title: "Sign out", subtitle: "Close your session", icon: "\ue9ba", command: ["hyprctl", "dispatch", "hl.dsp.exit()"], confirm: true, question: "Sign out of your session?", hint: "You can sign back in anytime.", description: "Open apps will close and you'll return to the sign-in screen."},
         {title: "Restart", subtitle: "Close apps and reboot", icon: "\ue5d5", command: ["systemctl", "reboot"], confirm: true, question: "Restart this computer?", hint: "Your session will start again.", description: "All open apps will close. Save your work before restarting."},

@@ -8,9 +8,10 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 - 🌀 Switchable **dwindle** / **scrolling** layout (`SUPER + W`)
 - 📟 **Quickshell** bar with centered workspaces, system tray, calendar, volume popup, and app launcher
 - 🎛️ **Control Center** for Wi-Fi, saved networks, Bluetooth pairing, volume, media playback, and notifications
+- 🔐 **Quickshell lock screen** with PAM authentication on every monitor (`SUPER + L`)
 - 🔒 Power dialog with lock, sleep, sign out, restart, and shutdown; session-ending actions ask for confirmation
 - 🖼️ **Personalization** panel with searchable wallpaper previews, shuffle, and dock settings, backed by **awww** and **Waypaper**
-- 🎨 Shared **Nothing** palette for Kitty, Quickshell, and Hyprlock, with support for custom wallpaper-to-palette mappings
+- 🎨 Shared **Nothing** palette for Kitty and Quickshell, with support for custom wallpaper-to-palette mappings
 - 🚢 App **dock** with pinned apps, a running-window picker, left/bottom/right placement, and position locking
 - 📋 **Global menu** for compatible applications
 - 🕒 Dot-matrix desktop clock and date on each monitor
@@ -31,8 +32,8 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 
 - [**Fedora Workstation**](https://www.fedoraproject.org/) — the installation commands below use `dnf` and COPR
 - [**Hyprland**](https://github.com/hyprwm/Hyprland) with native Lua configuration and the scrolling layout supported by this config
-- `quickshell` with Hyprland, PipeWire, MPRIS, notification, and Bluetooth modules
-- `kitty`, `fastfetch`, `hyprlock`, and `hypridle`
+- `quickshell` with Hyprland, PipeWire, MPRIS, notification, Bluetooth, PAM, and Wayland session-lock modules
+- `kitty`, `fastfetch`, and `hypridle`
 - `awww` and `waypaper` for wallpaper rendering and selection
 - `NetworkManager` (`nmcli`) and `bluez` (`bluetoothctl`) for connection management
 - PipeWire and `wireplumber` (`wpctl`) for audio; `playerctl` for media keys
@@ -50,10 +51,10 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 - Install requirements
 
 ```bash
-# Hyprland + hyprlock (COPR)
+# Hyprland (COPR)
 sudo dnf install dnf-plugins-core
 sudo dnf copr enable lionheartp/Hyprland
-sudo dnf install hyprland hyprland-guiutils hyprlock hypridle
+sudo dnf install hyprland hyprland-guiutils hypridle
 
 # terminal, system information, screenshots, and hardware keys
 sudo dnf install kitty fastfetch grim slurp wl-clipboard brightnessctl playerctl
@@ -144,6 +145,7 @@ cp -r wallpapers/* ~/Pictures/Wallpapers/
 | `SUPER + J`                  | Toggle split (dwindle)                              |
 | `SUPER + W`                  | Toggle layout (dwindle ↔ scrolling)                 |
 | `SUPER + SHIFT + W`          | Open Personalization (wallpapers and dock settings) |
+| `SUPER + L`                  | Lock the session (Quickshell)                        |
 | `SUPER + R`                  | Restart Quickshell                                  |
 | `SUPER + M`                  | Exit Hyprland (uses `hyprshutdown` if available)    |
 | `ALT + Space`                | App launcher (Quickshell)                           |
@@ -177,9 +179,11 @@ Full list (and how to change binds) lives in `hl.bind(...)` calls inside `hypr/c
 
 **Desktop clock:** `clock/DesktopClock.qml` places a date and dot-matrix clock near the top left of each monitor. Adjust its margins there; typography and dot sizes live in `DesktopClockContent.qml` and `DotMatrixClock.qml`.
 
-**Idle sleep and caffeine:** `~/.config/hypr/hypridle.conf` suspends after 1,800 seconds of inactivity and respects idle inhibitors. The caffeine icon on the bar toggles a `systemd-inhibit` process to block idle sleep while enabled.
+**Lock screen:** `SUPER + L` and the control center Lock button launch a separate Quickshell process on every monitor. Authentication uses `/etc/pam.d/login`. Restarting the desktop shell leaves the locker running. See [the lock screen documentation](.config/quickshell/lockscreen/README.md) for preview commands and details.
 
-**Shared theme:** The only bundled palette is `.config/theme/palettes/nothing.sh`. All wallpapers currently use it; choosing another wallpaper keeps the same colors. `apply-theme.sh` regenerates `kitty/theme.conf`, `theme/quickshell-colors.css`, and `hypr/hyprlock-colors.conf`. It signals Kitty to reload, Quickshell watches its color file, and Hyprlock uses the generated colors and wallpaper when started.
+**Idle sleep and caffeine:** `~/.config/hypr/hypridle.conf` suspends after 1,800 seconds of inactivity and respects idle inhibitors. Hypridle launches the lock screen for session lock requests and before sleep. The caffeine icon on the bar toggles a `systemd-inhibit` process to block idle sleep while enabled.
+
+**Shared theme:** The only bundled palette is `.config/theme/palettes/nothing.sh`. All wallpapers currently use it; choosing another wallpaper keeps the same colors. `apply-theme.sh` regenerates `kitty/theme.conf` and `theme/quickshell-colors.css`. It signals Kitty to reload, and Quickshell watches its color file. The lock screen reads the selected wallpaper from Waypaper.
 
 - Add a palette by copying `nothing.sh` and adjusting its colors.
 - Map a wallpaper to it in `.config/theme/wallpapers.conf` using `<wallpaper filename>=<palette name>`. Unmapped wallpapers and missing palette files fall back to `nothing`.
@@ -198,7 +202,7 @@ qs ipc call globalmenu status
 
 ## 🛠️ Troubleshooting
 
-**Hyprlock always says "Wrong Password" :** Usually caused by `pam_fprintd` or `pam_faillock` interfering with the auth stack in `/etc/pam.d/hyprlock`, not `hyprlock.conf` itself. See [`docs/README-hyprlock-wrong-password.md`](docs/README-hyprlock-wrong-password.md) for the full diagnosis and fix.
+**Legacy Hyprlock setup says "Wrong Password" :** The current config uses Quickshell. For older Hyprlock setups, this is usually caused by `pam_fprintd` or `pam_faillock` interfering with the auth stack in `/etc/pam.d/hyprlock`, not `hyprlock.conf` itself. See [`docs/README-hyprlock-wrong-password.md`](docs/README-hyprlock-wrong-password.md) for the full diagnosis and fix.
 
 **Steam game won't launch on a dual-boot NTFS partition :** Caused by `ntfs-3g` mounting the partition without `uid=`/`gid=` options, so Proton refuses to run because its prefix isn't owned by you. See [`docs/FIX-STEAM-DUAL-PARTITION.md`](docs/FIX-STEAM-DUAL-PARTITION.md) for the fix.
 

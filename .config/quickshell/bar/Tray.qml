@@ -13,6 +13,11 @@ Row {
 
     spacing: root.flat ? 8 : 5
 
+    TrayMenu {
+        id: contextMenu
+        barWindow: root.barWindow
+    }
+
     Pill {
         id: togglePill
         flat: root.flat
@@ -31,7 +36,10 @@ Row {
             anchors.fill: parent
             hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
-            onClicked: root.expanded = !root.expanded
+            onClicked: {
+                contextMenu.close()
+                root.expanded = !root.expanded
+            }
         }
     }
 
@@ -71,10 +79,11 @@ Row {
                         cursorShape: Qt.PointingHandCursor
                         acceptedButtons: Qt.LeftButton | Qt.RightButton
                         onClicked: mouse => {
-                            if (mouse.button === Qt.RightButton) {
-                                const pos = trayIcon.mapToItem(root.barWindow.contentItem, mouse.x, mouse.y)
-                                trayIcon.modelData.display(root.barWindow, pos.x, pos.y)
+                            if (mouse.button === Qt.RightButton || trayIcon.modelData.onlyMenu) {
+                                const pos = trayIcon.mapToItem(root.barWindow.contentItem, 0, trayIcon.height)
+                                contextMenu.show(trayIcon.modelData, pos.x)
                             } else {
+                                contextMenu.close()
                                 trayIcon.modelData.activate()
                             }
                         }

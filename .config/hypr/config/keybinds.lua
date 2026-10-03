@@ -7,6 +7,9 @@ local programs = require("config.programs")
 local mainMod = "SUPER" -- Sets "Windows" key as main modifier
 local secondMod = "ALT"
 
+-- Session locker runs separately from the desktop shell.
+hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("~/.config/quickshell/lockscreen/lock.sh"))
+
 -- Example binds, see https://wiki.hypr.land/Configuring/Basics/Binds/ for more
 hl.bind(mainMod .. " + Return", hl.dsp.exec_cmd(programs.terminal))
 local closeWindowBind = hl.bind(mainMod .. " + Q", hl.dsp.window.close())
@@ -28,7 +31,7 @@ hl.bind(mainMod .. " + W", function ()
     hl.config({ general = { layout = layouts[layoutIndex] } })
 end)
 
-hl.bind(mainMod .. " + R", hl.dsp.exec_cmd("pkill -9 -x qs; env QT_QPA_PLATFORMTHEME=gtk3 qs &"))
+hl.bind(mainMod .. " + R", hl.dsp.exec_cmd("quickshell kill -p ~/.config/quickshell; env QT_QPA_PLATFORMTHEME=gtk3 qs &"))
 
 hl.bind(mainMod .. " + SHIFT + W", hl.dsp.exec_cmd("qs ipc call wallpaper toggle"))
 

@@ -4,6 +4,7 @@
 
 -- See https://wiki.hypr.land/Configuring/Advanced-and-Cool/Environment-variables/
 
+hl.env("XCURSOR_THEME", "macOS")
 hl.env("XCURSOR_SIZE", "28")
 hl.env("HYPRCURSOR_SIZE", "28")
 

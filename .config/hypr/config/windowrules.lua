@@ -7,6 +7,14 @@
 
 -- Example window rules that are useful
 
+-- Keep Gradia fully opaque when focused or unfocused.
+hl.window_rule({
+    name = "gradia-opaque",
+    match = { class = "^(be[.]alexandervanhee[.]gradia|[Gg]radia)$" },
+
+    opacity = "1.0 override 1.0 override",
+})
+
 local suppressMaximizeRule = hl.window_rule({
     -- Ignore maximize requests from all apps. You'll probably like this.
     name  = "suppress-maximize-events",
@@ -16,7 +24,7 @@ local suppressMaximizeRule = hl.window_rule({
 })
 -- suppressMaximizeRule:set_enabled(false)
 
--- Open GTK portal file pickers floating in the middle of their monitor.
+-- Center GTK portal file pickers on both Wayland and XWayland.
 hl.window_rule({
     name = "gtk-file-picker-center",
     match = { class = "^[Xx]dg-desktop-portal-gtk$" },
@@ -37,6 +45,18 @@ hl.window_rule({
     border_size = 0,
     no_shadow = true,
     no_blur = true,
+})
+
+-- Blip draws its own frame and popup shadows, including transparent margins.
+-- Match untitled menus too so Hyprland does not outline their outer surface.
+hl.window_rule({
+    name = "blip-no-frame",
+    match = {
+        class = "^MainKt$",
+        xwayland = true,
+    },
+
+    decorate = false,
 })
 
 -- Keep Brave video and Google Meet picture-in-picture windows clear.
@@ -132,13 +152,4 @@ hl.window_rule({
 
     no_blur = true,
     opacity = "1.0 override",
-})
-
--- Center newly opened floating windows, including dialogs and utility windows.
--- Hyprland only applies center to floating windows; tiled windows keep their layout.
-hl.window_rule({
-    name = "center-floating-windows",
-    match = { class = ".*" },
-
-    center = true,
 })
