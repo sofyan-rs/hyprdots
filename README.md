@@ -76,7 +76,7 @@ sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/too
 sudo dnf copr enable alebastr/sway-extras
 sudo dnf install awww
 
-# quickshell - bar, control center, launcher, personalization, and dock
+# quickshell - bar, control center, launcher, personalization, dock, and lock screen
 sudo dnf install quickshell
 
 # waypaper - wallpaper GUI
@@ -169,7 +169,7 @@ Full list (and how to change binds) lives in `hl.bind(...)` calls inside `hypr/c
 
 **Hyprland:** `.config/hypr/hyprland.lua` loads the topic files under `hypr/config/`. Adjust `monitors.lua` for display modes and scaling, `programs.lua` for application commands, `keybinds.lua` for shortcuts, and `appearance.lua` for borders, blur, curves, and animations. `env.lua` also sets Steam UI scaling to `1.33`; adjust that for your displays.
 
-**Quickshell:** `.config/quickshell/` is organized into `bar/`, `clock/`, `controlcenter/`, `globalmenu/`, `volume/`, `notifications/`, `launcher/`, `wallpaper/`, `dock/`, and shared state in `core/`. After copying changes into `~/.config/quickshell`, use `SUPER + R` to restart Quickshell if they have not reloaded. Editing this repository alone does not change the running desktop.
+**Quickshell:** `.config/quickshell/` is organized into `bar/`, `clock/`, `controlcenter/`, `globalmenu/`, `volume/`, `notifications/`, `launcher/`, `wallpaper/`, `dock/`, `lockscreen/`, and shared state in `core/`. The lock screen has its own entry point in `lock.qml`. After copying changes into `~/.config/quickshell`, use `SUPER + R` to restart Quickshell if they have not reloaded. Editing this repository alone does not change the running desktop.
 
 **Control Center:** Click the control center icon at the right of the bar. The home page contains connection tiles, volume, media controls, and notifications. The Wi-Fi and Bluetooth icons open their connection pages directly. Wi-Fi supports saved profiles and autojoin; Bluetooth supports pairing prompts. Use the power button inside the control center for lock, sleep, sign out, restart, or shutdown. Sign out, restart, and shutdown require confirmation.
 
@@ -202,7 +202,7 @@ qs ipc call globalmenu status
 
 ## 🛠️ Troubleshooting
 
-**Legacy Hyprlock setup says "Wrong Password" :** The current config uses Quickshell. For older Hyprlock setups, this is usually caused by `pam_fprintd` or `pam_faillock` interfering with the auth stack in `/etc/pam.d/hyprlock`, not `hyprlock.conf` itself. See [`docs/README-hyprlock-wrong-password.md`](docs/README-hyprlock-wrong-password.md) for the full diagnosis and fix.
+**Quickshell lock screen fails to start:** Run `~/.config/quickshell/lockscreen/lock.sh` from a terminal to see errors. The launcher reports a failure if the compositor does not confirm that the session is secured. Ensure your Quickshell build includes the PAM and Wayland session-lock modules. For a visual preview, run `quickshell -p ~/.config/quickshell/lock-preview.qml`; password and power actions are disabled in preview mode. See [the lock screen documentation](.config/quickshell/lockscreen/README.md) for details.
 
 **Steam game won't launch on a dual-boot NTFS partition :** Caused by `ntfs-3g` mounting the partition without `uid=`/`gid=` options, so Proton refuses to run because its prefix isn't owned by you. See [`docs/FIX-STEAM-DUAL-PARTITION.md`](docs/FIX-STEAM-DUAL-PARTITION.md) for the fix.
 
