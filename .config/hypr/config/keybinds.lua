@@ -7,6 +7,8 @@ local programs = require("config.programs")
 local mainMod = "SUPER" -- Sets "Windows" key as main modifier
 local secondMod = "ALT"
 
+hl.bind(mainMod .. " + K", hl.dsp.exec_cmd("qs ipc -p ~/.config/quickshell call keybinds toggle"))
+
 -- Session locker runs separately from the desktop shell.
 hl.bind(mainMod .. " + L", hl.dsp.exec_cmd("~/.config/quickshell/lockscreen/lock.sh"))
 
@@ -18,7 +20,19 @@ local closeWindowBind = hl.bind(mainMod .. " + Q", hl.dsp.window.close())
 hl.bind(mainMod .. " + M", hl.dsp.exec_cmd("command -v hyprshutdown >/dev/null 2>&1 && hyprshutdown || hyprctl dispatch 'hl.dsp.exit()'"))
 hl.bind(mainMod .. " + E", hl.dsp.exec_cmd(programs.fileManager))
 hl.bind(mainMod .. " + B", hl.dsp.exec_cmd(programs.browser))
-hl.bind(mainMod .. " + V", hl.dsp.window.float({ action = "toggle" }))
+-- Give windows a normal size when switching from tiling to floating.
+hl.bind(mainMod .. " + V", function()
+    local window = hl.get_active_window()
+    if window == nil then return end
+
+    if window.floating then
+        hl.dispatch(hl.dsp.window.float({ action = "unset", window = window }))
+    else
+        hl.dispatch(hl.dsp.window.float({ action = "set", window = window }))
+        hl.dispatch(hl.dsp.window.resize({ x = 1000, y = 700, relative = false, window = window }))
+        hl.dispatch(hl.dsp.window.center({ window = window }))
+    end
+end)
 hl.bind(mainMod .. " + P", hl.dsp.window.pseudo())
 hl.bind(mainMod .. " + J", hl.dsp.layout("togglesplit")) -- dwindle only
 
@@ -95,3 +109,6 @@ hl.bind("XF86AudioPrev",  hl.dsp.exec_cmd("playerctl previous"),   { locked = tr
 
 -- Screenshot (region select, copied to clipboard)
 hl.bind("Print", hl.dsp.exec_cmd('grim -g "$(slurp)" - | wl-copy'))
+
+-- Screenshot (focused monitor, saved to Pictures/Screenshots)
+hl.bind("End", hl.dsp.exec_cmd([[file="/home/sofyan/Pictures/Screenshots/Screenshot-$(date +%Y-%m-%d_%H-%M-%S-%N).png"; monitor=$(hyprctl monitors -j | jq -er '.[] | select(.focused) | .name') && mkdir -p /home/sofyan/Pictures/Screenshots && grim -o "$monitor" "$file" && notify-send -a Screenshot -i camera-photo "Screenshot saved" "$file"]]))

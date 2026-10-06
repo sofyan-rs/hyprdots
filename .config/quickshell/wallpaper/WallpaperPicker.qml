@@ -71,6 +71,11 @@ PanelWindow {
         const choices = filtered.filter(item => item.path !== currentPath)
         if (choices.length) setWallpaper(choices[Math.floor(Math.random() * choices.length)].path)
     }
+    function nextWallpaper() {
+        if (!library.length || busy) return
+        const index = library.findIndex(item => item.path === currentPath)
+        setWallpaper(library[(index + 1) % library.length].path)
+    }
     function done() { PopupManager.close() }
     function back() { PopupManager.toggle("controlcenter", root.screen) }
     Process {

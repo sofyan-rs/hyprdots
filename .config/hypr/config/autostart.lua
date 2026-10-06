@@ -5,6 +5,9 @@
 -- See https://wiki.hypr.land/Configuring/Basics/Autostart/
 
 hl.on("hyprland.start", function ()
+  -- Finish initializing the keyring unlocked by GDM's PAM login hook.
+  hl.exec_cmd("gnome-keyring-daemon --start --components=secrets")
+
   -- Automatic suspend after 30 minutes idle (configured in hypridle.conf).
   hl.exec_cmd("command -v hypridle >/dev/null 2>&1 && hypridle")
   -- xdg-desktop-portal doesn't start on its own unless the session was launched

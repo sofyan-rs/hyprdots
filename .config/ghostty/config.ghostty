@@ -1,0 +1,60 @@
+# Ghostty Configuration File
+
+# --- Fonts ---
+font-family = "Maple Mono NF"
+font-size = 10
+
+# Enable font ligatures (true/false)
+font-feature = calt
+font-feature = liga
+
+# --- Theme ---
+# Current palette, matching kitty/theme.conf and theme/quickshell-colors.css
+background = #0B0B0B
+foreground = #F3F3F3
+cursor-color = #F3F3F3
+selection-background = #F15A52
+selection-foreground = #0B0B0B
+
+palette = 0=#0B0B0B
+palette = 1=#EB514B
+palette = 2=#E6E6E6
+palette = 3=#FF7770
+palette = 4=#969696
+palette = 5=#F15A52
+palette = 6=#E6E6E6
+palette = 7=#F3F3F3
+palette = 8=#303030
+palette = 9=#F15A52
+palette = 10=#F3F3F3
+palette = 11=#FF7770
+palette = 12=#E6E6E6
+palette = 13=#FF7770
+palette = 14=#F3F3F3
+palette = 15=#F3F3F3
+
+background-opacity = 0.8
+background-blur-radius = 20
+
+# --- Window & Layout ---
+window-padding-x = 15
+window-padding-y = 15
+
+# Window title behavior
+window-title-font-family = "CaskaydiaCove Nerd Font Propo"
+window-save-state = always
+
+# macOS specific window settings
+macos-option-as-alt = true
+macos-window-shadow = true
+
+# --- Cursor ---
+cursor-style = block
+cursor-style-blink = true
+
+# --- Mouse ---
+# Hide mouse when typing
+mouse-hide-while-typing = true
+
+# --- Shell Integration ---
+shell-integration = detect

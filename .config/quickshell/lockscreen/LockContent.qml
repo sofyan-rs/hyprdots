@@ -36,7 +36,7 @@ Rectangle {
                 GradientStop { position: 1; color: "#70081019" }
             }
         }
-        Text { x: 40 * root.uiScale; y: 32 * root.uiScale; text: root.state.distro; color: "#f3f3f3"; font.family: "Sans Serif"; font.pixelSize: 17 * root.uiScale; font.bold: true }
+        Text { x: 40 * root.uiScale; y: 32 * root.uiScale; text: root.state.distro; color: "#f3f3f3"; font.family: Colors.fontFamily; font.pixelSize: 17 * root.uiScale; font.bold: true }
         Row {
             anchors.right: parent.right; anchors.top: parent.top; anchors.margins: 38 * root.uiScale
             spacing: 18 * root.uiScale
@@ -45,7 +45,7 @@ Rectangle {
                 visible: UPower.displayDevice.isLaptopBattery
                 spacing: 5
                 Text { text: UPower.onBattery ? "\ue1a4" : "\ue1a3"; color: "#eeeeee"; font.family: Colors.iconFontFamily; font.pixelSize: 20 * root.uiScale }
-                Text { text: Math.round(UPower.displayDevice.percentage * 100) + "%"; color: "#eeeeee"; font.pixelSize: 12 * root.uiScale; anchors.verticalCenter: parent.verticalCenter }
+                Text { text: Math.round(UPower.displayDevice.percentage * 100) + "%"; font.family: Colors.fontFamily; color: "#eeeeee"; font.pixelSize: 12 * root.uiScale; anchors.verticalCenter: parent.verticalCenter }
             }
         }
         Column {
@@ -75,8 +75,8 @@ Rectangle {
                 color: "#3346525e"; border.color: "#80909ba5"
                 Text { anchors.centerIn: parent; text: "\ue7fd"; font.family: Colors.iconFontFamily; font.pixelSize: 30 * root.uiScale; color: "#f3f3f3" }
             }
-            Text { anchors.horizontalCenter: parent.horizontalCenter; text: root.state.displayName; color: "#f3f3f3"; font.family: "Sans Serif"; font.pixelSize: 23 * root.uiScale; font.bold: true }
-            Text { anchors.horizontalCenter: parent.horizontalCenter; text: root.state.preview ? "Lock screen preview" : "Session locked"; color: "#c0c5ca"; font.family: "Sans Serif"; font.pixelSize: 12 * root.uiScale }
+            Text { anchors.horizontalCenter: parent.horizontalCenter; text: root.state.displayName; color: "#f3f3f3"; font.family: Colors.fontFamily; font.pixelSize: 23 * root.uiScale; font.bold: true }
+            Text { anchors.horizontalCenter: parent.horizontalCenter; text: root.state.preview ? "Lock screen preview" : "Session locked"; color: "#c0c5ca"; font.family: Colors.fontFamily; font.pixelSize: 12 * root.uiScale }
             RowLayout {
                 width: parent.width; spacing: 8 * root.uiScale
                 Rectangle {
@@ -102,7 +102,7 @@ Rectangle {
                             padding: 0; leftPadding: 0; rightPadding: 0; topPadding: 0; bottomPadding: 0
                             verticalAlignment: TextInput.AlignVCenter
                             placeholderText: "Enter password"; placeholderTextColor: "#aaadb0"
-                            color: "#f3f3f3"; font.family: "Sans Serif"; font.pixelSize: 13 * root.uiScale
+                            color: "#f3f3f3"; font.family: Colors.fontFamily; font.pixelSize: 13 * root.uiScale
                             echoMode: root.reveal ? TextInput.Normal : TextInput.Password
                             enabled: !root.state.busy && !root.powerOpen
                             background: Item {}
@@ -129,7 +129,7 @@ Rectangle {
             Text {
                 width: parent.width; horizontalAlignment: Text.AlignHCenter; wrapMode: Text.Wrap
                 text: root.state.busy ? "Checking…" : root.state.error || "Press Enter to unlock"
-                color: root.state.error ? "#ffaca5" : "#b8bec5"; font.family: "Sans Serif"; font.pixelSize: 11 * root.uiScale
+                color: root.state.error ? "#ffaca5" : "#b8bec5"; font.family: Colors.fontFamily; font.pixelSize: 11 * root.uiScale
             }
         }
         Connections {

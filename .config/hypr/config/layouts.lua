@@ -3,10 +3,14 @@
 ----------------------
 
 -- Ref https://wiki.hypr.land/Configuring/Basics/Workspace-Rules/
--- Keep workspaces 1-6 always present (needed for ext/workspaces in quickshell,
--- which has no client-side persistent-workspaces option of its own).
-for i = 1, 6 do
-    hl.workspace_rule({ workspace = tostring(i), persistent = true })
+-- Keep each monitor's assigned workspaces available in Quickshell.
+for i = 1, 10 do
+    hl.workspace_rule({
+        workspace = tostring(i),
+        monitor = i <= 6 and "DP-1" or "DP-2",
+        persistent = true,
+        default = i == 1 or i == 7,
+    })
 end
 
 -- "Smart gaps" / "No gaps when only"

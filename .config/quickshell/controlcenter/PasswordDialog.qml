@@ -47,7 +47,7 @@ PanelWindow {
                     CcText { Layout.fillWidth: true; text: "Connect to " + (root.controller.pendingNetwork ? root.controller.pendingNetwork.ssid : "Wi-Fi"); font.pixelSize: 16; font.bold: true }
                     CcText { text: "Secured network"; font.pixelSize: 11; color: Colors.fgAlt }
                 }
-                CcButton { icon: "\ue5cd"; implicitWidth: 28; implicitHeight: 28; color: "transparent"; enabled: !root.controller.network.busy; onClicked: root.cancelled() }
+                CcButton { icon: "\ue5cd"; implicitWidth: 36; enabled: !root.controller.network.busy; onClicked: root.cancelled() }
             }
             CcText { text: "Password"; font.pixelSize: 12 }
             Rectangle {

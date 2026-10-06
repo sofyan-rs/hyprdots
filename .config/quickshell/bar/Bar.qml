@@ -54,6 +54,28 @@ PanelWindow {
         }
 
         Pill {
+            id: colorPickerButton
+            flat: true
+            implicitWidth: 26
+
+            Text {
+                anchors.centerIn: parent
+                text: "\ue3b8"
+                font.family: Colors.iconFontFamily
+                font.pixelSize: 18
+                color: ColorPickerState.active ? Colors.accent : Colors.fg
+            }
+
+            MouseArea {
+                id: colorPickerMouse
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: ColorPickerState.pick()
+            }
+        }
+
+        Pill {
             id: caffeineButton
             property bool tooltipReady: false
             flat: true

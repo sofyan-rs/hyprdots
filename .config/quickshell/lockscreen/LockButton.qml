@@ -41,7 +41,7 @@ Button {
             Text {
                 visible: root.text !== ""
                 text: root.text
-                font.family: "Sans Serif"
+                font.family: Colors.fontFamily
                 font.pixelSize: 12 * root.uiScale
                 color: root.primary ? "#151515" : "#f3f3f3"
                 anchors.verticalCenter: parent.verticalCenter

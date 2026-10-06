@@ -7,6 +7,7 @@ import "launcher"
 import "wallpaper"
 import "dock"
 import "clock"
+import "keybinds"
 
 ShellRoot {
     Variants {
@@ -20,13 +21,20 @@ ShellRoot {
         DesktopClock {}
     }
 
+    Variants {
+        model: Quickshell.screens
+        DesktopMenu { wallpaperPicker: wallpaperController }
+    }
+
     NotificationToasts {
         screen: Quickshell.screens[0]
     }
 
     AppLauncher {}
 
-    WallpaperPicker {}
+    KeybindsPopup {}
+
+    WallpaperPicker { id: wallpaperController }
 
     Dock {}
 }

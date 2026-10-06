@@ -7,6 +7,16 @@
 
 -- Example window rules that are useful
 
+-- Open Calculator at its compact portrait size (logical pixels).
+hl.window_rule({
+    name = "calculator-floating",
+    match = { class = "^org[.]gnome[.]Calculator$" },
+
+    float = true,
+    size = { 360, 616 },
+    center = true,
+})
+
 -- Keep Gradia fully opaque when focused or unfocused.
 hl.window_rule({
     name = "gradia-opaque",

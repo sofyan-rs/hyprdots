@@ -4,7 +4,7 @@
 
 -- Set programs that you use, then require("programs") wherever you need them.
 return {
-    terminal    = "kitty",
+    terminal    = "ghostty",
     fileManager = "nautilus",
     menu        = "qs ipc call launcher toggle",
     browser     = "brave-origin",

@@ -62,7 +62,7 @@ Rectangle {
                 CcText { Layout.fillWidth: true; text: root.confirming ? root.pendingAction.question : "Power"; font.pixelSize: root.confirming ? 16 : 21; font.bold: true; wrapMode: Text.Wrap }
                 CcText { Layout.fillWidth: true; text: root.confirming ? root.pendingAction.hint : "Choose what happens next"; font.pixelSize: 11; color: Colors.fgAlt; wrapMode: Text.Wrap }
             }
-            CcButton { visible: !root.confirming; icon: "\ue5cd"; implicitWidth: 32; implicitHeight: 32; onClicked: root.cancel() }
+            CcButton { visible: !root.confirming; icon: "\ue5cd"; implicitWidth: 36; onClicked: root.cancel() }
         }
         ColumnLayout {
             visible: !root.confirming

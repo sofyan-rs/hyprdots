@@ -19,7 +19,11 @@ Rectangle {
     }
 
     readonly property var workspaceNames: {
-        const names = ["1", "2", "3", "4", "5", "6"]
+        const names = barScreen && barScreen.name === "DP-1"
+            ? ["1", "2", "3", "4", "5", "6"]
+            : barScreen && barScreen.name === "DP-2"
+                ? ["7", "8", "9", "10"]
+                : []
         const extras = Hyprland.workspaces.values.filter(ws => ws.monitor === root.monitor && !names.includes(ws.name))
         return names.concat(extras.map(ws => ws.name))
     }

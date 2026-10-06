@@ -16,7 +16,7 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 - 📋 **Global menu** for compatible applications
 - 🕒 Dot-matrix desktop clock and date on each monitor
 - ☕ **Caffeine** toggle to inhibit idle sleep; **Hypridle** otherwise suspends after 30 minutes of inactivity
-- 💻 **Kitty** terminal with Maple Mono NF and a cursor trail; **Fastfetch** for system information
+- 💻 **Ghostty** terminal with Maple Mono NF; optional **Kitty** config with a cursor trail; **Fastfetch** for system information
 - 💨 Desktop animations and touchpad workspace gestures
 
 ## 📸 Screenshots
@@ -33,16 +33,17 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 - [**Fedora Workstation**](https://www.fedoraproject.org/) — the installation commands below use `dnf` and COPR
 - [**Hyprland**](https://github.com/hyprwm/Hyprland) with native Lua configuration and the scrolling layout supported by this config
 - `quickshell` with Hyprland, PipeWire, MPRIS, notification, Bluetooth, PAM, and Wayland session-lock modules
-- `kitty`, `fastfetch`, and `hypridle`
+- `ghostty` (default terminal), optional `kitty`, `fastfetch`, and `hypridle`
 - `awww` and `waypaper` for wallpaper rendering and selection
 - `NetworkManager` (`nmcli`) and `bluez` (`bluetoothctl`) for connection management
 - PipeWire and `wireplumber` (`wpctl`) for audio; `playerctl` for media keys
 - `python3`, `python3-dbus`, and `python3-gobject` for the network and global-menu helpers
 - `ImageMagick` (`magick`) for WebP wallpaper previews; `binutils` (`objcopy`) for the Nautilus menu integration
-- `grim`, `slurp`, `wl-clipboard`, and `brightnessctl` for screenshot and hardware keybindings
+- `grim`, `slurp`, `wl-clipboard`, `jq`, and `brightnessctl` for screenshot and hardware keybindings
 - `xdg-desktop-portal`, `xdg-desktop-portal-hyprland`, and `xdg-desktop-portal-gtk` for desktop integration
 - `qt6-qtbase-gui` for the GTK platform theme used when launching Quickshell
-- Default applications: Nautilus and Brave Origin (`brave-origin`); change them in `.config/hypr/config/programs.lua`
+- `gnome-keyring` for the secrets service started with the session
+- Default applications: Ghostty, Nautilus and Brave Origin (`brave-origin`); change them in `.config/hypr/config/programs.lua`
 - Optional quick-settings tools: `pavucontrol`, `nm-connection-editor`, `hyprpicker`, and `libnotify` (`notify-send`)
 - [**Hatter**](https://github.com/Mibea/Hatter) icon theme
 
@@ -57,7 +58,7 @@ sudo dnf copr enable lionheartp/Hyprland
 sudo dnf install hyprland hyprland-guiutils hypridle
 
 # terminal, system information, screenshots, and hardware keys
-sudo dnf install kitty fastfetch grim slurp wl-clipboard brightnessctl playerctl
+sudo dnf install ghostty kitty fastfetch grim slurp wl-clipboard jq brightnessctl playerctl gnome-keyring
 
 # Python helpers, wallpaper previews, and global-menu integration
 sudo dnf install python3 python3-dbus python3-gobject ImageMagick binutils
@@ -136,7 +137,7 @@ cp -r wallpapers/* ~/Pictures/Wallpapers/
 
 | Keybind                      | Action                                              |
 | ---------------------------- | --------------------------------------------------- |
-| `SUPER + Return`             | Open terminal (Kitty)                               |
+| `SUPER + Return`             | Open terminal (Ghostty)                               |
 | `SUPER + Q`                  | Close active window                                 |
 | `SUPER + E`                  | Open file manager (Nautilus)                        |
 | `SUPER + B`                  | Open browser (Brave Origin)                         |
@@ -145,6 +146,7 @@ cp -r wallpapers/* ~/Pictures/Wallpapers/
 | `SUPER + J`                  | Toggle split (dwindle)                              |
 | `SUPER + W`                  | Toggle layout (dwindle ↔ scrolling)                 |
 | `SUPER + SHIFT + W`          | Open Personalization (wallpapers and dock settings) |
+| `SUPER + K`                  | Toggle keybind reference                            |
 | `SUPER + L`                  | Lock the session (Quickshell)                        |
 | `SUPER + R`                  | Restart Quickshell                                  |
 | `SUPER + M`                  | Exit Hyprland (uses `hyprshutdown` if available)    |
@@ -161,6 +163,7 @@ cp -r wallpapers/* ~/Pictures/Wallpapers/
 | `SUPER + LMB drag`           | Move window                                         |
 | `SUPER + RMB drag`           | Resize window                                       |
 | `Print`                      | Screenshot region to clipboard                      |
+| `End`                        | Save focused monitor screenshot to `~/Pictures/Screenshots` |
 | Volume/brightness/media keys | Handled via `wpctl`, `brightnessctl`, `playerctl`   |
 
 Full list (and how to change binds) lives in `hl.bind(...)` calls inside `hypr/config/keybinds.lua`.
@@ -169,7 +172,11 @@ Full list (and how to change binds) lives in `hl.bind(...)` calls inside `hypr/c
 
 **Hyprland:** `.config/hypr/hyprland.lua` loads the topic files under `hypr/config/`. Adjust `monitors.lua` for display modes and scaling, `programs.lua` for application commands, `keybinds.lua` for shortcuts, and `appearance.lua` for borders, blur, curves, and animations. `env.lua` also sets Steam UI scaling to `1.33`; adjust that for your displays.
 
-**Quickshell:** `.config/quickshell/` is organized into `bar/`, `clock/`, `controlcenter/`, `globalmenu/`, `volume/`, `notifications/`, `launcher/`, `wallpaper/`, `dock/`, `lockscreen/`, and shared state in `core/`. The lock screen has its own entry point in `lock.qml`. After copying changes into `~/.config/quickshell`, use `SUPER + R` to restart Quickshell if they have not reloaded. Editing this repository alone does not change the running desktop.
+**Ghostty:** `.config/ghostty/config.ghostty` sets the font, Nothing palette, transparency, and window padding. Ghostty is the default terminal in `hypr/config/programs.lua`; Kitty remains available as an alternative.
+
+**Quickshell:** `.config/quickshell/` is organized into `bar/`, `clock/`, `controlcenter/`, `globalmenu/`, `volume/`, `notifications/`, `launcher/`, `wallpaper/`, `dock/`, `lockscreen/`, `keybinds/`, and shared state in `core/`. The lock screen has its own entry point in `lock.qml`. After copying changes into `~/.config/quickshell`, use `SUPER + R` to restart Quickshell if they have not reloaded. Editing this repository alone does not change the running desktop.
+
+**Desktop tools:** `SUPER + K` opens a searchable keybind reference. The bar's color picker uses `hyprpicker` to copy a selected color. Right-click desktop space to change the wallpaper or select the next one. Workspaces 1–6 are assigned to `DP-1`, and 7–10 to `DP-2`; adjust `hypr/config/layouts.lua` and `quickshell/bar/Workspaces.qml` for your monitors. The `End` screenshot binding currently uses `/home/sofyan/Pictures/Screenshots`; adjust it in `hypr/config/keybinds.lua` for your account.
 
 **Control Center:** Click the control center icon at the right of the bar. The home page contains connection tiles, volume, media controls, and notifications. The Wi-Fi and Bluetooth icons open their connection pages directly. Wi-Fi supports saved profiles and autojoin; Bluetooth supports pairing prompts. Use the power button inside the control center for lock, sleep, sign out, restart, or shutdown. Sign out, restart, and shutdown require confirmation.
 

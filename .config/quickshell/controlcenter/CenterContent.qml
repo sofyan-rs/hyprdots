@@ -55,6 +55,7 @@ Item {
                 RowLayout {
                     visible: root.displayedPage === "hub"
                     spacing: 8
+                    CcButton { icon: "\ue312"; implicitWidth: 36; onClicked: PopupManager.toggle("keybinds", root.controller.barScreen) }
                     CcButton { icon: "\ue429"; implicitWidth: 36; onClicked: PopupManager.toggle("wallpaper", root.controller.barScreen) }
                     CcButton { icon: "\ue8ac"; implicitWidth: 36; danger: true; color: Qt.alpha(Colors.accent, 0.12); onClicked: root.controller.powerOpen = true }
                 }
