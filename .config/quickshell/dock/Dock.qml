@@ -308,7 +308,7 @@ PanelWindow {
         width: Math.min(360, root.width - 16)
         height: pickerHeader.height + windowList.height + 24
         radius: Colors.radius + 6
-        color: Qt.alpha(Colors.bgAlt, 0.98)
+        color: Colors.glass
         border.width: 1
         border.color: Colors.border
 
@@ -430,7 +430,7 @@ PanelWindow {
         x: DockState.position === "left" ? 0 : DockState.position === "right" ? root.width - width : (root.width - width) / 2
         y: root.vertical ? (root.height - height) / 2 : root.height - height
         radius: 14
-        color: Colors.bgAlt
+        color: Colors.glass
         border.width: 1
         border.color: Colors.border
 
@@ -480,7 +480,7 @@ PanelWindow {
 
                         IconImage {
                             anchors.fill: parent
-                            anchors.margins: 5
+                            anchors.margins: 1
                             source: Quickshell.iconPath(iconSlot.modelData.icon, "application-x-executable")
                         }
 

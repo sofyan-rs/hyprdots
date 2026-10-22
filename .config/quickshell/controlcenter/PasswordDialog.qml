@@ -31,7 +31,7 @@ PanelWindow {
         anchors.centerIn: parent
         width: Math.min(440, parent.width - 40)
         height: form.implicitHeight + 44
-        radius: 18; color: Colors.bgAlt; border.width: 1; border.color: Colors.border
+        radius: 18; color: Colors.glass; border.width: 1; border.color: Colors.border
         MouseArea { anchors.fill: parent; onClicked: password.forceActiveFocus() }
         ColumnLayout {
             id: form

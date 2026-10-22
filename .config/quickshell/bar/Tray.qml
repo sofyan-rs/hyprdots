@@ -10,6 +10,7 @@ Row {
     required property var barWindow
     property bool expanded: false
     property bool flat: false
+    property alias additionalItems: extraControls.data
 
     spacing: root.flat ? 8 : 5
 
@@ -71,6 +72,7 @@ Row {
 
                     implicitWidth: 18
                     implicitHeight: 18
+                    anchors.verticalCenter: parent.verticalCenter
                     source: modelData.icon
 
                     MouseArea {
@@ -89,6 +91,12 @@ Row {
                         }
                     }
                 }
+            }
+
+            Row {
+                id: extraControls
+                spacing: 8
+                visible: children.length > 0
             }
         }
     }

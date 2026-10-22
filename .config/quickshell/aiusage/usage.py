@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read Codex account quotas over the local app-server's JSON-RPC transport."""
+"""Read AI agent quotas: Codex via its local app-server, Claude via the OAuth usage API."""
 import datetime as dt
 import json
 import math
@@ -8,9 +8,29 @@ from pathlib import Path
 import queue
 import shutil
 import subprocess
+import sys
 import threading
 import time
+import urllib.error
+import urllib.request
 from zoneinfo import ZoneInfo
+
+
+TZ = ZoneInfo("Asia/Jakarta")
+CACHE_DIR = Path(os.environ.get("XDG_CACHE_HOME", Path.home() / ".cache")) / "quickshell"
+MIN_AGE = 120  # seconds a cached result is reused without asking the server again
+
+
+class RateLimited(Exception):
+    def __init__(self, retry_after):
+        self.retry_after = retry_after
+
+
+def window_data(used, reset):
+    label = None
+    if isinstance(reset, (int, float)) and not isinstance(reset, bool) and reset > 0:
+        label = dt.datetime.fromtimestamp(reset, TZ).strftime("%d %b %Y · %H:%M")
+    return {"usedPercent": max(0, min(100, used)), "resetsAt": reset, "resetLabel": label}
 
 
 def normalize(result):
@@ -34,12 +54,7 @@ def normalize(result):
         if not isinstance(used, (int, float)) or isinstance(used, bool) or not math.isfinite(used):
             data[key] = None
             continue
-        reset = window.get("resetsAt")
-        label = None
-        if isinstance(reset, (int, float)) and not isinstance(reset, bool) and reset > 0:
-            label = dt.datetime.fromtimestamp(reset, ZoneInfo("Asia/Jakarta")).strftime("%d %b %Y · %H:%M")
-        data[key] = {"usedPercent": max(0, min(100, used)),
-                     "resetsAt": reset, "resetLabel": label}
+        data[key] = window_data(used, window.get("resetsAt"))
     if all(value is None for value in data.values()):
         raise ValueError("Session 5-hour and Weekly quotas are unavailable.")
     return {"ok": True, **data, "updatedAt": int(time.time())}
@@ -108,13 +123,113 @@ def fetch():
         proc.stdout.close()
 
 
-if __name__ == "__main__":
+def parse_time(value):
+    if not isinstance(value, str):
+        return None
     try:
-        output = fetch()
-    except (TimeoutError, queue.Empty):
-        output = {"ok": False, "error": "Codex connection timed out. Try refreshing."}
-    except ValueError as error:
-        output = {"ok": False, "error": str(error)}
-    except Exception:
-        output = {"ok": False, "error": "Could not read Codex usage. Check your login and connection."}
+        return int(dt.datetime.fromisoformat(value.replace("Z", "+00:00")).timestamp())
+    except ValueError:
+        return None
+
+
+def fetch_claude():
+    path = Path(os.environ.get("CLAUDE_CONFIG_DIR", Path.home() / ".claude")) / ".credentials.json"
+    try:
+        oauth = json.loads(path.read_text()).get("claudeAiOauth") or {}
+    except (OSError, json.JSONDecodeError):
+        oauth = {}
+    token = oauth.get("accessToken")
+    if not token:
+        raise ValueError("Claude login not found. Run `claude` and sign in.")
+    expires = oauth.get("expiresAt")
+    if isinstance(expires, (int, float)) and expires / 1000 < time.time():
+        raise ValueError("Claude login expired. Open `claude` to refresh it.")
+    request = urllib.request.Request("https://api.anthropic.com/api/oauth/usage", headers={
+        "Authorization": "Bearer " + token,
+        "anthropic-beta": "oauth-2025-04-20",
+        "User-Agent": "quickshell-usage/1.0"})
+    try:
+        with urllib.request.urlopen(request, timeout=20) as reply:
+            result = json.load(reply)
+    except urllib.error.HTTPError as error:
+        if error.code == 429:
+            try:
+                retry = int(error.headers.get("Retry-After", ""))
+            except ValueError:
+                retry = 300
+            raise RateLimited(max(60, retry))
+        if error.code in (401, 403):
+            raise ValueError("Claude login rejected. Open `claude` to refresh it.")
+        raise ValueError("Could not fetch Claude quota (" + str(error.code) + ").")
+    except (urllib.error.URLError, OSError):
+        raise TimeoutError
+    limits = result.get("limits") if isinstance(result.get("limits"), list) else []
+    data = {}
+    for key, field in (("session", "five_hour"), ("weekly", "seven_day")):
+        window = result.get(field)
+        used = window.get("utilization") if isinstance(window, dict) else None
+        reset = window.get("resets_at") if isinstance(window, dict) else None
+        if used is None:
+            limit = next((l for l in limits if isinstance(l, dict) and l.get("group") == key), None)
+            if limit:
+                used, reset = limit.get("percent"), limit.get("resets_at")
+        if not isinstance(used, (int, float)) or isinstance(used, bool) or not math.isfinite(used):
+            data[key] = None
+            continue
+        data[key] = window_data(used, parse_time(reset))
+    if all(value is None for value in data.values()):
+        raise ValueError("Session 5-hour and Weekly quotas are unavailable.")
+    return {"ok": True, **data, "updatedAt": int(time.time())}
+
+
+def load_cache(path):
+    try:
+        data = json.loads(path.read_text())
+        return data if isinstance(data, dict) else {}
+    except (OSError, json.JSONDecodeError):
+        return {}
+
+
+def save_cache(path, data):
+    try:
+        CACHE_DIR.mkdir(parents=True, exist_ok=True)
+        path.write_text(json.dumps(data))
+    except OSError:
+        pass
+
+
+def wait_label(seconds):
+    minutes = max(1, math.ceil(seconds / 60))
+    return str(minutes) + " min"
+
+
+if __name__ == "__main__":
+    provider = sys.argv[1] if len(sys.argv) > 1 else "codex"
+    force = "--force" in sys.argv
+    name = "Claude" if provider == "claude" else "Codex"
+    cache_path = CACHE_DIR / ("aiusage-" + provider + ".json")
+    cache = load_cache(cache_path)
+    last = cache.get("last") if isinstance(cache.get("last"), dict) else None
+    now = time.time()
+    output = None
+    if last and not force and now - last.get("updatedAt", 0) < MIN_AGE:
+        output = last
+    elif cache.get("retryAt", 0) > now:
+        output = {"ok": False, "error": name + " rate limited. Retrying in " + wait_label(cache["retryAt"] - now) + "."}
+    else:
+        try:
+            output = fetch_claude() if provider == "claude" else fetch()
+            cache = {"last": output}
+        except RateLimited as limited:
+            cache["retryAt"] = now + limited.retry_after
+            output = {"ok": False, "error": name + " rate limited. Retrying in " + wait_label(limited.retry_after) + "."}
+        except (TimeoutError, queue.Empty):
+            output = {"ok": False, "error": name + " connection timed out. Try refreshing."}
+        except ValueError as error:
+            output = {"ok": False, "error": str(error)}
+        except Exception:
+            output = {"ok": False, "error": "Could not read " + name + " usage. Check your login and connection."}
+        save_cache(cache_path, cache)
+    if not output.get("ok") and last:
+        output = {**output, "session": last.get("session"), "weekly": last.get("weekly"), "updatedAt": last.get("updatedAt")}
     print(json.dumps(output))

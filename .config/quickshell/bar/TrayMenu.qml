@@ -149,7 +149,7 @@ Item {
         Rectangle {
             anchors.fill: parent
             radius: 14
-            color: Colors.bgAlt
+            color: Colors.glass
             border.width: 1
             border.color: Colors.border
         }

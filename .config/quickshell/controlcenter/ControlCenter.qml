@@ -33,8 +33,8 @@ PanelWindow {
     readonly property real volume: sink && sink.audio ? sink.audio.volume : 0
     readonly property bool muted: sink && sink.audio ? sink.audio.muted : false
     readonly property var players: Mpris.players.values.filter(p => p.trackTitle !== "" || p.playbackState !== MprisPlaybackState.Stopped)
-    property int playerIndex: 0
-    readonly property var player: players.length ? players[Math.min(playerIndex, players.length - 1)] : null
+    property var selectedPlayer: null
+    readonly property var player: players.includes(selectedPlayer) ? selectedPlayer : (players.find(p => p.isPlaying) || players[0] || null)
     readonly property var wifi: net.state.current
 
     screen: barScreen
@@ -109,8 +109,10 @@ PanelWindow {
         return Math.floor(seconds / 60) + ":" + (seconds % 60).toString().padStart(2, "0")
     }
     function pickPlayer() {
-        const playing = players.findIndex(p => p.isPlaying)
-        playerIndex = playing >= 0 ? playing : 0
+        if (!players.includes(selectedPlayer)) selectedPlayer = null
+    }
+    function selectPlayer(source) {
+        if (players.includes(source)) selectedPlayer = source
     }
     onPlayersChanged: pickPlayer()
 

@@ -128,7 +128,7 @@ PanelWindow {
         Behavior on opacity { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
         Behavior on scale { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
         radius: 20
-        color: Colors.bgAlt
+        color: Colors.glass
         border.color: Colors.border
 
         ColumnLayout {

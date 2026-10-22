@@ -3,13 +3,14 @@ import QtQuick.Layouts
 import Quickshell.Widgets
 import "../core"
 import "../controlcenter"
+import "../aiusage"
 
 Rectangle {
     id: root
     required property var controller
     implicitWidth: 690
     implicitHeight: form.implicitHeight + 40
-    radius: 20; color: Colors.bgAlt; border.width: 1; border.color: Colors.border
+    radius: 20; color: Colors.glass; border.width: 1; border.color: Colors.border
     Keys.onEscapePressed: controller.done()
     Flickable {
         anchors.fill: parent; anchors.margins: 20
@@ -24,7 +25,7 @@ Rectangle {
                 ColumnLayout {
                     Layout.fillWidth: true; spacing: 5
                     CcText { text: "Personalization"; font.pixelSize: 21; font.bold: true }
-                    CcText { text: "Wallpaper and dock, your way"; font.pixelSize: 11; color: Colors.fgAlt }
+                    CcText { text: "Wallpaper, dock and bar, your way"; font.pixelSize: 11; color: Colors.fgAlt }
                 }
             }
             ClippingRectangle {
@@ -138,6 +139,26 @@ Rectangle {
                     Layout.fillWidth: true; Layout.preferredWidth: 0; spacing: 14
                     RowLayout { Layout.fillWidth: true; CcText { text: "Show dock"; font.pixelSize: 12 } Item { Layout.fillWidth: true } CcSwitch { checked: DockState.open; onClicked: DockState.toggle(root.controller.screen) } }
                     RowLayout { Layout.fillWidth: true; CcText { text: "Lock dock"; font.pixelSize: 12 } Item { Layout.fillWidth: true } CcSwitch { checked: DockState.positionsLocked; onClicked: DockState.toggleLock() } }
+                }
+            }
+            Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: Colors.border }
+            RowLayout {
+                Layout.fillWidth: true
+                CcText { text: "AI USAGE"; font.pixelSize: 10; color: Colors.accent }
+                Item { Layout.fillWidth: true }
+                CcText { text: "Tabs shown in the bar popup"; font.pixelSize: 10; color: Colors.fgAlt }
+            }
+            RowLayout {
+                Layout.fillWidth: true; spacing: 12
+                Repeater {
+                    model: UsageState.providers
+                    RowLayout {
+                        required property var modelData
+                        Layout.fillWidth: true; Layout.preferredWidth: 0
+                        CcText { text: "Show " + modelData.name; font.pixelSize: 12 }
+                        Item { Layout.fillWidth: true }
+                        CcSwitch { checked: modelData.enabled; onClicked: modelData.enabled = !modelData.enabled }
+                    }
                 }
             }
             RowLayout {

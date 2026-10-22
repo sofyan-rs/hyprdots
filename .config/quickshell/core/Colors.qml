@@ -34,9 +34,9 @@ Singleton {
         "wallpaperIcon": "#FF7770"
     })
 
-    readonly property color surface: palette.surface
-    readonly property color surfaceAlt: palette.surfaceAlt
-    readonly property color surfaceHover: palette.surfaceHover
+    readonly property color surface: Qt.alpha(palette.surface, surfaceOpacity)
+    readonly property color surfaceAlt: Qt.alpha(palette.surfaceAlt, surfaceOpacity)
+    readonly property color surfaceHover: Qt.alpha(palette.surfaceHover, surfaceOpacity)
     readonly property color fgMuted: palette.fgMuted
     readonly property color accentLight: palette.accentLight
     readonly property color bg: palette.bg
@@ -47,10 +47,19 @@ Singleton {
     readonly property color secondary: palette.secondary
     readonly property color border: palette.border
     readonly property color accentText: palette.accentText
-    readonly property color wsFocusedBg: palette.wsFocusedBg
-    readonly property color clockBg: palette.clockBg
+    readonly property color wsFocusedBg: Qt.alpha(palette.wsFocusedBg, surfaceOpacity)
+    readonly property color clockBg: Qt.alpha(palette.clockBg, surfaceOpacity)
     readonly property color wallpaperIcon: palette.wallpaperIcon
     readonly property color shadow: Qt.rgba(0, 0, 0, 0.35)
+
+    // Frosted glass: panel backgrounds are translucent and Hyprland blurs
+    // what is behind them (layer rule "blur-quickshell" in hypr/config/windowrules.lua).
+    readonly property real barOpacity: 0.45
+    readonly property real glassOpacity: 0.72
+    // Cards, buttons and fields inside panels, so the glass shows through them too.
+    readonly property real surfaceOpacity: 0.8
+    readonly property color glass: Qt.alpha(bgAlt, glassOpacity)
+    readonly property color glassBar: Qt.alpha(bg, barOpacity)
 
     function parseColors(content) {
         const keyMap = {

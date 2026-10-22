@@ -34,7 +34,7 @@ Item {
     }
     implicitWidth: 470
     implicitHeight: column.implicitHeight + 40
-    Rectangle { anchors.fill: parent; radius: 20; color: Colors.bgAlt; border.width: 1; border.color: Colors.border }
+    Rectangle { anchors.fill: parent; radius: 20; color: Colors.glass; border.width: 1; border.color: Colors.border }
     Flickable {
         id: flick
         anchors.fill: parent; anchors.margins: 20

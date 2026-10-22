@@ -21,7 +21,7 @@ Rectangle {
     implicitHeight: form.implicitHeight + 40
     height: implicitHeight
     radius: 18
-    color: Colors.bgAlt
+    color: Colors.glass
     border.width: 1
     border.color: Colors.border
     MouseArea { anchors.fill: parent; onClicked: root.forceActiveFocus() }

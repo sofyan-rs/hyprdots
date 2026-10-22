@@ -5,6 +5,8 @@ Item {
     required property var controller
     property bool opened: false
     property bool lockedSession: false
+    property real uiScale: 1
+    readonly property real cardScale: Math.max(0.1, Math.min(uiScale, (height - 40 * uiScale) / card.implicitHeight))
     opacity: opened ? 1 : 0
     visible: opacity > 0
     enabled: opened
@@ -21,10 +23,10 @@ Item {
     PowerCard {
         id: card
         anchors.centerIn: parent
-        width: Math.min(implicitWidth, parent.width - 40)
+        width: Math.min(implicitWidth, (parent.width - 40 * root.cardScale) / root.cardScale)
         controller: root.controller
         lockedSession: root.lockedSession
-        scale: root.opened ? 1 : 0.96
+        scale: root.cardScale * (root.opened ? 1 : 0.96)
         Behavior on scale { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
         Behavior on implicitHeight { NumberAnimation { duration: 180; easing.type: Easing.OutCubic } }
     }

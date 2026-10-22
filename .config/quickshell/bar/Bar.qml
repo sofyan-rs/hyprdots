@@ -1,11 +1,11 @@
 import Quickshell
+import Quickshell.Io
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Wayland
 import "../core"
 import "../clock"
 import "../controlcenter"
-import "../globalmenu"
 import "../volume"
 import "../aiusage"
 
@@ -22,7 +22,7 @@ PanelWindow {
         right: true
     }
     implicitHeight: Colors.barHeight
-    color: Colors.bg
+    color: Colors.glassBar
 
     MouseArea {
         anchors.fill: parent
@@ -35,6 +35,11 @@ PanelWindow {
         barScreen: bar.barScreen
     }
 
+    Process {
+        id: overviewProc
+        command: ["hyprctl", "dispatch", 'hl.plugin.scrolloverview.overview("toggle all")']
+    }
+
     RowLayout {
         id: statusRow
         anchors.right: parent.right
@@ -43,8 +48,107 @@ PanelWindow {
         spacing: 8
 
         Tray {
+            id: statusTray
             barWindow: bar
             flat: true
+            onExpandedChanged: {
+                if (!expanded && PopupManager.activeId === "aiusage" && PopupManager.activeScreen === bar.barScreen)
+                    PopupManager.close()
+            }
+            additionalItems: [
+                Pill {
+                    id: colorPickerButton
+                    flat: true
+                    implicitWidth: 26
+
+                    Text {
+                        anchors.centerIn: parent
+                        text: "\ue3b8"
+                        font.family: Colors.iconFontFamily
+                        font.pixelSize: 18
+                        color: ColorPickerState.active ? Colors.accent : Colors.fg
+                    }
+
+                    MouseArea {
+                        id: colorPickerMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: ColorPickerState.pick()
+                    }
+                },
+
+                Pill {
+                    id: caffeineButton
+                    property bool tooltipReady: false
+                    flat: true
+                    implicitWidth: 26
+                    Text {
+                        anchors.centerIn: parent
+                        text: "\uefef"
+                        font.family: Colors.iconFontFamily
+                        font.pixelSize: 18
+                        color: CaffeineState.active ? Colors.accent : Colors.fg
+                    }
+                    MouseArea {
+                        id: caffeineMouse
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: CaffeineState.toggle()
+                        onEntered: tooltipDelay.restart()
+                        onExited: {
+                            tooltipDelay.stop()
+                            caffeineButton.tooltipReady = false
+                        }
+                    }
+                    Timer {
+                        id: tooltipDelay
+                        interval: 600
+                        onTriggered: caffeineButton.tooltipReady = true
+                    }
+                    PanelWindow {
+                        id: caffeineTooltip
+                        property real rightMargin: 6
+                        screen: bar.barScreen
+                        visible: statusTray.expanded && caffeineMouse.containsMouse && caffeineButton.tooltipReady
+                        anchors { top: true; right: true }
+                        margins.top: Colors.barHeight + Colors.popupTopGap
+                        margins.right: rightMargin
+                        onVisibleChanged: if (visible) {
+                            const p = caffeineButton.mapToItem(null, caffeineButton.width, 0)
+                            rightMargin = Math.max(6, bar.barScreen.width - p.x)
+                        }
+                        implicitWidth: tooltipLabel.implicitWidth + 24
+                        implicitHeight: 34
+                        color: "transparent"
+                        exclusionMode: ExclusionMode.Ignore
+                        mask: Region {}
+                        WlrLayershell.layer: WlrLayer.Overlay
+                        WlrLayershell.namespace: "quickshell-caffeine-tooltip"
+                        WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
+                        Rectangle {
+                            anchors.fill: parent
+                            radius: 8
+                            color: Colors.glass
+                            border.width: 1
+                            border.color: Colors.border
+                        }
+                        Text {
+                            id: tooltipLabel
+                            anchors.centerIn: parent
+                            text: CaffeineState.active ? "Caffeine on · Auto sleep off" : "Caffeine off · Auto sleep after 30 min"
+                            font.family: Colors.fontFamily
+                            font.pixelSize: 11
+                            color: Colors.fg
+                        }
+                    }
+                },
+
+                Usage {
+                    barScreen: bar.barScreen
+                }
+            ]
         }
 
         Rectangle {
@@ -53,98 +157,11 @@ PanelWindow {
             color: Colors.border
         }
 
-        Pill {
-            id: colorPickerButton
-            flat: true
-            implicitWidth: 26
-
-            Text {
-                anchors.centerIn: parent
-                text: "\ue3b8"
-                font.family: Colors.iconFontFamily
-                font.pixelSize: 18
-                color: ColorPickerState.active ? Colors.accent : Colors.fg
-            }
-
-            MouseArea {
-                id: colorPickerMouse
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: ColorPickerState.pick()
-            }
-        }
-
-        Pill {
-            id: caffeineButton
-            property bool tooltipReady: false
-            flat: true
-            implicitWidth: 26
-            Text {
-                anchors.centerIn: parent
-                text: "\uefef"
-                font.family: Colors.iconFontFamily
-                font.pixelSize: 18
-                color: CaffeineState.active ? Colors.accent : Colors.fgAlt
-            }
-            MouseArea {
-                id: caffeineMouse
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: CaffeineState.toggle()
-                onEntered: tooltipDelay.restart()
-                onExited: {
-                    tooltipDelay.stop()
-                    caffeineButton.tooltipReady = false
-                }
-            }
-            Timer {
-                id: tooltipDelay
-                interval: 600
-                onTriggered: caffeineButton.tooltipReady = true
-            }
-            PanelWindow {
-                id: caffeineTooltip
-                property real rightMargin: 6
-                screen: bar.barScreen
-                visible: caffeineMouse.containsMouse && caffeineButton.tooltipReady
-                anchors { top: true; right: true }
-                margins.top: Colors.barHeight + Colors.popupTopGap
-                margins.right: rightMargin
-                onVisibleChanged: if (visible) {
-                    const p = caffeineButton.mapToItem(null, caffeineButton.width, 0)
-                    rightMargin = Math.max(6, bar.barScreen.width - p.x)
-                }
-                implicitWidth: tooltipLabel.implicitWidth + 24
-                implicitHeight: 34
-                color: "transparent"
-                exclusionMode: ExclusionMode.Ignore
-                mask: Region {}
-                WlrLayershell.layer: WlrLayer.Overlay
-                WlrLayershell.namespace: "quickshell-caffeine-tooltip"
-                WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
-                Rectangle {
-                    anchors.fill: parent
-                    radius: 8
-                    color: Colors.bgAlt
-                    border.width: 1
-                    border.color: Colors.border
-                }
-                Text {
-                    id: tooltipLabel
-                    anchors.centerIn: parent
-                    text: CaffeineState.active ? "Caffeine on · Auto sleep off" : "Caffeine off · Auto sleep after 30 min"
-                    font.family: Colors.fontFamily
-                    font.pixelSize: 11
-                    color: Colors.fg
-                }
-            }
-        }
-
-
-        Usage {
+        Volume {
             barScreen: bar.barScreen
+            flat: true
+            compact: true
+            implicitWidth: 26
         }
 
         Repeater {
@@ -172,13 +189,83 @@ PanelWindow {
                 }
             }
         }
-
-
-        Volume {
-            barScreen: bar.barScreen
+        Pill {
+            id: overviewButton
+            property bool tooltipReady: false
             flat: true
-            compact: true
             implicitWidth: 26
+            Accessible.role: Accessible.Button
+            Accessible.name: "Open ScrollOverview"
+
+            Text {
+                anchors.centerIn: parent
+                text: "\ue9b0"
+                font.family: Colors.iconFontFamily
+                font.pixelSize: 18
+                color: Colors.fg
+            }
+
+            MouseArea {
+                id: overviewMouse
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onEntered: overviewTooltipDelay.restart()
+                onExited: {
+                    overviewTooltipDelay.stop()
+                    overviewButton.tooltipReady = false
+                }
+                onClicked: {
+                    overviewTooltipDelay.stop()
+                    overviewButton.tooltipReady = false
+                    if (!overviewProc.running)
+                        overviewProc.running = true
+                }
+            }
+
+            Timer {
+                id: overviewTooltipDelay
+                interval: 600
+                onTriggered: overviewButton.tooltipReady = true
+            }
+
+            PanelWindow {
+                property real rightMargin: 6
+                screen: bar.barScreen
+                visible: overviewMouse.containsMouse && overviewButton.tooltipReady
+                anchors { top: true; right: true }
+                margins.top: Colors.barHeight + Colors.popupTopGap
+                margins.right: rightMargin
+                onVisibleChanged: if (visible) {
+                    const p = overviewButton.mapToItem(null, overviewButton.width, 0)
+                    rightMargin = Math.max(6, bar.barScreen.width - p.x)
+                }
+                implicitWidth: overviewTooltipLabel.implicitWidth + 24
+                implicitHeight: 34
+                color: "transparent"
+                exclusionMode: ExclusionMode.Ignore
+                mask: Region {}
+                WlrLayershell.layer: WlrLayer.Overlay
+                WlrLayershell.namespace: "quickshell-scrolloverview-tooltip"
+                WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
+
+                Rectangle {
+                    anchors.fill: parent
+                    radius: 8
+                    color: Colors.glass
+                    border.width: 1
+                    border.color: Colors.border
+                }
+
+                Text {
+                    id: overviewTooltipLabel
+                    anchors.centerIn: parent
+                    text: "ScrollOverview · Super+Tab"
+                    font.family: Colors.fontFamily
+                    font.pixelSize: 11
+                    color: Colors.fg
+                }
+            }
         }
 
         Clock {
@@ -239,16 +326,22 @@ PanelWindow {
             }
         }
 
-        GlobalMenu {
+        Workspaces {
+            id: workspaces
             barScreen: bar.barScreen
-            maximumWidth: Math.max(0, workspaces.x - 60)
         }
-    }
-    Workspaces {
-        id: workspaces
-        barScreen: bar.barScreen
-        anchors.horizontalCenter: parent.horizontalCenter
-        anchors.verticalCenter: parent.verticalCenter
+
+        Text {
+            readonly property var toplevel: ToplevelManager.activeToplevel
+            visible: text !== ""
+            text: toplevel ? (toplevel.title || toplevel.appId || "") : ""
+            Layout.maximumWidth: Math.max(0, bar.width * 0.4)
+            elide: Text.ElideRight
+            font.family: Colors.fontFamily
+            font.pixelSize: Colors.fontSize
+            font.bold: true
+            color: Colors.fg
+        }
     }
 
     ControlCenter {

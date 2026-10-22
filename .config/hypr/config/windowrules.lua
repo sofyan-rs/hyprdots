@@ -122,9 +122,15 @@ hl.layer_rule({
     no_anim = true,
 })
 
--- Blur quickshell (their backgrounds are semi-transparent, so blur is
--- only visible here if layer blur is enabled)
-hl.layer_rule({ name = "blur-quickshell",    match = { namespace = "^quickshell$" },    blur = true })
+-- Frosted glass for quickshell: panel backgrounds are semi-transparent
+-- (Colors.glass), blur what is behind them. ignore_alpha keeps the blur
+-- off transparent corners, margins and soft shadows.
+hl.layer_rule({
+    name         = "blur-quickshell",
+    match        = { namespace = "^quickshell(-(popup|controlcenter|controlcenter-modal|launcher|keybinds|notifications|dock|tray-menu|wallpaper|desktop-menu|desktop-menu-popup|caffeine-tooltip|scrolloverview-tooltip))?$" },
+    blur         = true,
+    ignore_alpha = 0.3,
+})
 
 -- Hyprland-run windowrule
 hl.window_rule({

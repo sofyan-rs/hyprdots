@@ -29,6 +29,12 @@ PowerModal/PowerCard provides the power popup, including open/close animations.
 Restart and shutdown ask for confirmation. Unlock requires a
 successful PAM result; there is no IPC unlock command.
 
+Content uses the lock surface's logical size, which already accounts for monitor
+scaling. The compact scale is `min(width / 1800, height / 1125)`, limited to
+0.5–1.0, and updates when the surface resizes. The Power popup follows this scale.
+For size checks, set `QS_LOCK_PREVIEW_WIDTH` and `QS_LOCK_PREVIEW_HEIGHT` when
+launching the preview (defaults: 1152 × 720).
+
 Verification: rendered in offscreen and live Wayland previews, loaded the
 locker with locking disabled, tested PAM success/failure with temporary policies,
 and tested launcher success and failure handling using mocked commands. Real account

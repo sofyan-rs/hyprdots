@@ -150,7 +150,7 @@ PanelWindow {
         Rectangle {
             anchors.fill: parent
             radius: 20
-            color: Colors.bgAlt
+            color: Colors.glass
             border.width: 1
             border.color: Colors.border
         }
@@ -308,7 +308,7 @@ PanelWindow {
                             IconImage {
                                 id: appIcon
                                 anchors.centerIn: parent
-                                implicitSize: 22
+                                implicitSize: 32
                                 source: appRow.modelData.icon
                                     ? Quickshell.iconPath(appRow.modelData.icon, true) : ""
                                 visible: source.toString().length > 0

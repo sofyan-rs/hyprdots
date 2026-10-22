@@ -19,7 +19,9 @@ Rectangle {
     Behavior on entranceProgress { NumberAnimation { duration: root.state.closing ? 220 : 360; easing.type: Easing.OutCubic } }
     Component.onCompleted: Qt.callLater(() => { appeared = true })
     onPowerOpenChanged: { if (!powerOpen) Qt.callLater(() => password.forceActiveFocus()) }
-    readonly property real uiScale: Math.min(1.4, Math.max(0.6, Math.min(width / 1440, height / 900)))
+    // Surface dimensions are logical pixels: Qt already applies monitor scaling.
+    // Keep the UI compact, fit smaller outputs, and cap growth on large displays.
+    readonly property real uiScale: Math.min(1, Math.max(0.5, Math.min(width / 1800, height / 1125)))
     SystemClock { id: clock; precision: SystemClock.Minutes }
     NetworkState { id: network; active: true }
     Item {
@@ -43,7 +45,7 @@ Rectangle {
             Text { text: network.state.wired ? "\ueb2f" : network.state.current ? "\ue63e" : "\ue648"; color: "#eeeeee"; font.family: Colors.iconFontFamily; font.pixelSize: 20 * root.uiScale }
             Row {
                 visible: UPower.displayDevice.isLaptopBattery
-                spacing: 5
+                spacing: 5 * root.uiScale
                 Text { text: UPower.onBattery ? "\ue1a4" : "\ue1a3"; color: "#eeeeee"; font.family: Colors.iconFontFamily; font.pixelSize: 20 * root.uiScale }
                 Text { text: Math.round(UPower.displayDevice.percentage * 100) + "%"; font.family: Colors.fontFamily; color: "#eeeeee"; font.pixelSize: 12 * root.uiScale; anchors.verticalCenter: parent.verticalCenter }
             }
@@ -67,7 +69,7 @@ Rectangle {
             id: form
             anchors.horizontalCenter: parent.horizontalCenter
             y: parent.height * 0.53 + (1 - root.entranceProgress) * 20 * root.uiScale
-            width: Math.min(420 * root.uiScale, parent.width - 40)
+            width: Math.min(420 * root.uiScale, parent.width - 40 * root.uiScale)
             spacing: 14 * root.uiScale
             Rectangle {
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -147,6 +149,7 @@ Rectangle {
             controller: root
             opened: root.powerOpen && !root.state.closing
             lockedSession: true
+            uiScale: root.uiScale
         }
     } // scene
     function submit() { root.reveal = false; root.state.submit(password.text) }

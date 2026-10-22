@@ -63,7 +63,7 @@ Item {
         width: parent.width
         implicitHeight: Math.max(82, content.implicitHeight + 28)
         radius: 8
-        color: Colors.bgAlt
+        color: Colors.glass
         border.width: 1
         border.color: Colors.border
 

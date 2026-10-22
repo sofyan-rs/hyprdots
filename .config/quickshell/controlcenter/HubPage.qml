@@ -78,6 +78,63 @@ ColumnLayout {
                 Layout.fillWidth: true
                 CcText { text: "NOW PLAYING"; font.pixelSize: 10; font.bold: true; font.letterSpacing: 1; color: Colors.accent }
                 Item { Layout.fillWidth: true }
+                RowLayout {
+                    visible: root.controller.players.length > 1
+                    Layout.alignment: Qt.AlignVCenter
+                    spacing: 0
+                    Repeater {
+                        model: root.controller.players
+                        delegate: Button {
+                            id: playerDot
+                            required property var modelData
+                            readonly property bool selected: root.controller.player === modelData
+                            readonly property string sourceName: modelData.identity || "Media player"
+                            implicitWidth: selected ? 22 : 11
+                            implicitHeight: 14
+                            padding: 0
+                            hoverEnabled: true
+                            Accessible.name: "Switch to " + sourceName
+                            ToolTip {
+                                visible: playerDot.hovered
+                                delay: 600
+                                x: playerDot.width - width
+                                y: playerDot.height + Colors.popupTopGap
+                                width: Math.min(root.width - 28, tooltipLabel.implicitWidth + 24)
+                                height: 34
+                                leftPadding: 12
+                                rightPadding: 12
+                                topPadding: 0
+                                bottomPadding: 0
+                                background: Rectangle {
+                                    color: Colors.bgAlt
+                                    radius: 8
+                                    border.width: 1
+                                    border.color: Colors.border
+                                }
+                                contentItem: CcText {
+                                    id: tooltipLabel
+                                    text: playerDot.sourceName + (playerDot.modelData.trackTitle ? " · " + playerDot.modelData.trackTitle : "")
+                                    font.pixelSize: 11
+                                    color: Colors.fg
+                                    verticalAlignment: Text.AlignVCenter
+                                }
+                                enter: Transition {}
+                                exit: Transition {}
+                            }
+                            contentItem: Item {}
+                            background: Item {
+                                Rectangle {
+                                    anchors.centerIn: parent
+                                    width: playerDot.selected ? 18 : 7
+                                    height: 7; radius: 3.5
+                                    color: playerDot.selected ? Colors.accent : (playerDot.hovered ? Colors.fg : Colors.fgAlt)
+                                    opacity: playerDot.selected || playerDot.hovered ? 1 : 0.5
+                                }
+                            }
+                            onClicked: root.controller.selectPlayer(modelData)
+                        }
+                    }
+                }
             }
             RowLayout {
                 Layout.fillWidth: true; spacing: 10

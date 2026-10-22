@@ -8,6 +8,7 @@ Pill {
     required property var barScreen
     readonly property bool open: PopupManager.activeId === "aiusage" && PopupManager.activeScreen === barScreen
     flat: true
+    visible: UsageState.anyEnabled
     implicitWidth: 26
 
     Text {
@@ -27,14 +28,14 @@ Pill {
         const position = root.mapToItem(null, root.width, 0)
         popup.rightMargin = Math.max(4, Math.min(root.barScreen.width - popup.width - 4,
                                               root.barScreen.width - position.x))
-        if (UsageState.now - UsageState.updatedAt > 60) UsageState.refresh()
+        UsageState.refreshStale()
     }
 
     PanelWindow {
         id: popup
         property real rightMargin: 20
         screen: root.barScreen
-        visible: root.open
+        visible: root.open && UsageState.anyEnabled
         color: "transparent"
         exclusionMode: ExclusionMode.Ignore
         anchors { top: true; right: true }

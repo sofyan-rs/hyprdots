@@ -59,7 +59,7 @@ Scope {
             width: 232
             height: actions.implicitHeight + 12
             radius: 12
-            color: Colors.bgAlt
+            color: Colors.glass
             border.width: 1
             border.color: Colors.border
 

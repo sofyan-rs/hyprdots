@@ -19,7 +19,7 @@ PanelWindow {
     Rectangle { anchors.fill: parent; color: "#99000000" }
     Rectangle {
         anchors.centerIn: parent; width: Math.min(420, parent.width - 40); height: form.implicitHeight + 40
-        radius: 18; color: Colors.bgAlt; border.width: 1; border.color: Colors.border
+        radius: 18; color: Colors.glass; border.width: 1; border.color: Colors.border
         ColumnLayout {
             id: form
             anchors.left: parent.left; anchors.right: parent.right; anchors.top: parent.top; anchors.margins: 20; spacing: 14

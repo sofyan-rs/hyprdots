@@ -7,9 +7,9 @@
 for i = 1, 10 do
     hl.workspace_rule({
         workspace = tostring(i),
-        monitor = i <= 6 and "DP-1" or "DP-2",
+        monitor = i <= 5 and "DP-1" or "DP-2",
         persistent = true,
-        default = i == 1 or i == 7,
+        default = i == 1 or i == 6,
     })
 end
 

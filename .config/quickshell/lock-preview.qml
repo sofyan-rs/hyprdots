@@ -9,7 +9,8 @@ ShellRoot {
     Window {
         id: window
         visible: true
-        width: 1152; height: 720
+        width: Number(Quickshell.env("QS_LOCK_PREVIEW_WIDTH")) || 1152
+        height: Number(Quickshell.env("QS_LOCK_PREVIEW_HEIGHT")) || 720
         title: "Quickshell lock screen preview"
         LockContent { id: content; anchors.fill: parent; state: lockState }
         Timer {

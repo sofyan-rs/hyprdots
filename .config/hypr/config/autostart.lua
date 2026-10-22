@@ -17,6 +17,15 @@ hl.on("hyprland.start", function ()
   hl.exec_cmd("/usr/libexec/xdg-desktop-portal-gtk")
   hl.exec_cmd("/usr/libexec/xdg-desktop-portal")
 
+  -- Polkit authentication agent: without it, privileged actions from GUI apps
+  -- (GNOME Software installs, etc.) fail with "Not authorized" instead of
+  -- prompting for a password.
+  hl.exec_cmd("/usr/libexec/hyprpolkitagent")
+
+  -- button-layout lives in shared dconf, so GNOME sets its own layout on login
+  -- (~/.config/autostart/gnome-button-layout.desktop) and we reset it here.
+  hl.exec_cmd("gsettings set org.gnome.desktop.wm.preferences button-layout ':close'")
+
   -- QT_QPA_PLATFORMTHEME=gtk3 makes Qt's native platform popups (e.g. the
   -- right-click tray menu) pick up the GTK dark palette instead of default
   -- white Fusion styling.
