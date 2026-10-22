@@ -36,8 +36,8 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 - `awww` and `waypaper` for wallpaper rendering and selection
 - `NetworkManager` (`nmcli`) and `bluez` (`bluetoothctl`) for connection management
 - PipeWire and `wireplumber` (`wpctl`) for audio; `playerctl` for media keys
-- `python3`, `python3-dbus`, and `python3-gobject` for the network and global-menu helpers
-- `ImageMagick` (`magick`) for WebP wallpaper previews; `binutils` (`objcopy`) for the Nautilus menu integration
+- `python3` for the network, wallpaper picker, and AI usage helpers
+- `ImageMagick` (`magick`) for WebP wallpaper previews
 - `grim`, `slurp`, `wl-clipboard`, `jq`, and `brightnessctl` for screenshot and hardware keybindings
 - `xdg-desktop-portal`, `xdg-desktop-portal-hyprland`, and `xdg-desktop-portal-gtk` for desktop integration
 - `qt6-qtbase-gui` for the GTK platform theme used when launching Quickshell
@@ -60,8 +60,8 @@ sudo dnf install hyprland hyprland-guiutils hypridle hyprpolkitagent
 # terminal, system information, screenshots, and hardware keys
 sudo dnf install ghostty kitty fastfetch grim slurp wl-clipboard jq brightnessctl playerctl gnome-keyring
 
-# Python helpers, wallpaper previews, and global-menu integration
-sudo dnf install python3 python3-dbus python3-gobject ImageMagick binutils
+# Python helpers and wallpaper previews
+sudo dnf install python3 ImageMagick
 
 # audio and optional settings tools
 sudo dnf install pipewire wireplumber pavucontrol nm-connection-editor hyprpicker libnotify
