@@ -6,6 +6,7 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 
 - 🪞 Dynamic tiling with **Hyprland**, using native **Lua** config (`hyprland.lua`)
 - 🌀 Switchable **dwindle** / **scrolling** layout (`SUPER + W`)
+- 🔭 Optional **ScrollOverview** plugin for a workspace overview (`SUPER + Tab`)
 - 📟 **Quickshell** bar with centered workspaces, system tray, calendar, volume popup, and app launcher
 - 🎛️ **Control Center** for Wi-Fi, saved networks, Bluetooth pairing, volume, media playback, and notifications
 - 🔐 **Quickshell lock screen** with PAM authentication on every monitor (`SUPER + L`)
@@ -47,6 +48,7 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 - `hyprpolkitagent` for password prompts when GUI apps request privileged actions
 - Default applications: Ghostty, Nautilus and Brave Origin (`brave-origin`); change them in `.config/hypr/config/programs.lua`
 - Optional quick-settings tools: `pavucontrol`, `nm-connection-editor`, `hyprpicker`, and `libnotify` (`notify-send`)
+- Optional extras: the `codex` and `claude` CLIs (signed in) for the AI usage widget, `nvidia-smi` for GPU stats in the notch, and VS Code (`code`) for the keybind reference's edit button
 - [**Hatter**](https://github.com/Mibea/Hatter) icon theme
 
 ## 💻 Installation
@@ -133,10 +135,11 @@ cp -r wallpapers/* ~/Pictures/Wallpapers/
 ```
 
 - Set your GTK theme and Hatter icon theme using **nwg-look**.
-- Adjust `~/.config/hypr/config/monitors.lua` for your displays. The copied config targets `DP-1` and `DP-2` with fractional scaling.
+- Adjust `~/.config/hypr/config/monitors.lua` for your displays. The copied config enables `DP-1` at 2560x1600@144 with fractional scaling.
 - Review `~/.config/hypr/config/programs.lua` for your terminal, file manager, and browser commands.
 - Open **Waypaper**, select **awww**, and choose a wallpaper from `~/Pictures/Wallpapers`.
 - Keep `post_command = ~/.config/theme/apply-theme.sh "$wallpaper"` in `~/.config/waypaper/config.ini` so wallpaper changes regenerate the shared theme files. Remove or replace the copied `stylesheet = /home/kuro/.config/waypaper/style.css` path if it does not exist on your machine.
+- Optional: from a terminal inside the Hyprland session, run `~/.config/hypr/install-scrolloverview.sh` to build and load the ScrollOverview plugin (`SUPER + Tab`). It installs the build dependencies with `dnf`; run it again after each Hyprland upgrade. Without the plugin, the config skips it.
 - Log out and start Hyprland, or reboot. The session starts Quickshell, Hypridle, the desktop portals, `awww-daemon`, and `waypaper --restore`.
 
 ## ⌨️ Keybindings
@@ -151,6 +154,7 @@ cp -r wallpapers/* ~/Pictures/Wallpapers/
 | `SUPER + P`                  | Toggle pseudotile                                   |
 | `SUPER + J`                  | Toggle split (dwindle)                              |
 | `SUPER + W`                  | Toggle layout (dwindle ↔ scrolling)                 |
+| `SUPER + Tab`                | Toggle workspace overview (ScrollOverview plugin)   |
 | `SUPER + SHIFT + W`          | Open Personalization (wallpapers and dock settings) |
 | `SUPER + K`                  | Toggle keybind reference                            |
 | `SUPER + L`                  | Lock the session (Quickshell)                        |
@@ -169,7 +173,7 @@ cp -r wallpapers/* ~/Pictures/Wallpapers/
 | `SUPER + LMB drag`           | Move window                                         |
 | `SUPER + RMB drag`           | Resize window                                       |
 | `Print`                      | Screenshot region to clipboard                      |
-| `End`                        | Save focused monitor screenshot to `~/Pictures/Screenshots` |
+| `End`                        | Save focused monitor screenshot to `~/Pictures/Screenshots` and copy it |
 | Volume/brightness/media keys | Handled via `wpctl`, `brightnessctl`, `playerctl`   |
 
 Full list (and how to change binds) lives in `hl.bind(...)` calls inside `hypr/config/keybinds.lua`.
@@ -180,9 +184,9 @@ Full list (and how to change binds) lives in `hl.bind(...)` calls inside `hypr/c
 
 **Ghostty:** `.config/ghostty/config.ghostty` sets the font, Nothing palette, transparency, and window padding. Ghostty is the default terminal in `hypr/config/programs.lua`; Kitty remains available as an alternative.
 
-**Quickshell:** `.config/quickshell/` is organized into `bar/`, `clock/`, `controlcenter/`, `aiusage/`, `volume/`, `notifications/`, `launcher/`, `wallpaper/`, `dock/`, `lockscreen/`, `keybinds/`, and shared state in `core/`. The lock screen has its own entry point in `lock.qml`. After copying changes into `~/.config/quickshell`, use `SUPER + R` to restart Quickshell if they have not reloaded. Editing this repository alone does not change the running desktop.
+**Quickshell:** `.config/quickshell/` is organized into `bar/`, `clock/`, `controlcenter/`, `aiusage/`, `notch/`, `volume/`, `notifications/`, `launcher/`, `wallpaper/`, `dock/`, `lockscreen/`, `keybinds/`, and shared state in `core/`. The lock screen has its own entry point in `lock.qml`. After copying changes into `~/.config/quickshell`, use `SUPER + R` to restart Quickshell if they have not reloaded. Editing this repository alone does not change the running desktop.
 
-**Desktop tools:** `SUPER + K` opens a searchable keybind reference. The bar's color picker uses `hyprpicker` to copy a selected color. Right-click desktop space to change the wallpaper or select the next one. Workspaces 1–5 are assigned to `DP-1`, and 6–10 to `DP-2`; adjust `hypr/config/layouts.lua` and `quickshell/bar/Workspaces.qml` for your monitors. The `End` screenshot binding currently uses `/home/sofyan/Pictures/Screenshots`; adjust it in `hypr/config/keybinds.lua` for your account.
+**Desktop tools:** `SUPER + K` opens a searchable keybind reference. The bar's color picker uses `hyprpicker` to copy a selected color. Right-click desktop space to change the wallpaper or select the next one. Workspaces 1–5 are assigned to `DP-1`, and 6–10 to `DP-2` (they fall back to `DP-1` when only one monitor is connected); adjust `hypr/config/layouts.lua` and `quickshell/bar/Workspaces.qml` for your monitors.
 
 **Control Center:** Click the control center icon at the right of the bar. The home page contains connection tiles, volume, media controls, and notifications. The Wi-Fi and Bluetooth icons open their connection pages directly. Wi-Fi supports saved profiles and autojoin; Bluetooth supports pairing prompts. Use the power button inside the control center for lock, sleep, sign out, restart, or shutdown. Sign out, restart, and shutdown require confirmation.
 

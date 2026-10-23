@@ -1,6 +1,12 @@
 -- ScrollOverview: https://github.com/yayuuu/hyprland-scroll-overview
 -- Built against the installed Fedora Hyprland headers; rebuild after updates.
-hl.plugin.load("/home/sofyan/.config/hypr/plugins/scrolloverview.so")
+-- Skipped until install-scrolloverview.sh has built the plugin.
+local plugin = os.getenv("HOME") .. "/.config/hypr/plugins/scrolloverview.so"
+local file = io.open(plugin, "r")
+if not file then return end
+file:close()
+
+hl.plugin.load(plugin)
 
 hl.config({
     plugin = {
