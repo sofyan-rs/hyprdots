@@ -12,6 +12,7 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 - 🔒 Power dialog with lock, sleep, sign out, restart, and shutdown; session-ending actions ask for confirmation
 - 🖼️ **Personalization** panel with searchable wallpaper previews, shuffle, and dock settings, backed by **awww** and **Waypaper**
 - 🎨 Shared **Nothing** palette for Kitty and Quickshell, with support for custom wallpaper-to-palette mappings
+- 🏝️ **Notch** with media peek, synced lyrics (optional romaji), volume OSD, system monitor, and a file shelf
 - 🚢 App **dock** with pinned apps, a running-window picker, left/bottom/right placement, and position locking
 - 🕒 Dot-matrix desktop clock and date on each monitor
 - ☕ **Caffeine** toggle to inhibit idle sleep; **Hypridle** otherwise suspends after 30 minutes of inactivity
@@ -36,7 +37,8 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 - `awww` and `waypaper` for wallpaper rendering and selection
 - `NetworkManager` (`nmcli`) and `bluez` (`bluetoothctl`) for connection management
 - PipeWire and `wireplumber` (`wpctl`) for audio; `playerctl` for media keys
-- `python3` for the network, wallpaper picker, and AI usage helpers
+- `python3` for the network, wallpaper picker, AI usage, and notch helpers; `python3-gobject` for the notch file shelf
+- Optional `pykakasi` (in `~/.local/share/quickshell/venv`) for romaji lyrics in the notch
 - `ImageMagick` (`magick`) for WebP wallpaper previews
 - `grim`, `slurp`, `wl-clipboard`, `jq`, and `brightnessctl` for screenshot and hardware keybindings
 - `xdg-desktop-portal`, `xdg-desktop-portal-hyprland`, and `xdg-desktop-portal-gtk` for desktop integration
@@ -61,7 +63,11 @@ sudo dnf install hyprland hyprland-guiutils hypridle hyprpolkitagent
 sudo dnf install ghostty kitty fastfetch grim slurp wl-clipboard jq brightnessctl playerctl gnome-keyring
 
 # Python helpers and wallpaper previews
-sudo dnf install python3 ImageMagick
+sudo dnf install python3 python3-gobject ImageMagick
+
+# optional: romaji lyrics in the notch (pykakasi is not packaged for Fedora)
+python3 -m venv ~/.local/share/quickshell/venv
+~/.local/share/quickshell/venv/bin/pip install pykakasi
 
 # audio and optional settings tools
 sudo dnf install pipewire wireplumber pavucontrol nm-connection-editor hyprpicker libnotify

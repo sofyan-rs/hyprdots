@@ -13,6 +13,7 @@ Rectangle {
     property bool highlighted: false
     property bool flat: false
     property real verticalPadding: 0
+    readonly property bool hovered: mouse.containsMouse
     signal clicked()
     implicitHeight: Math.max(56, row.implicitHeight + verticalPadding * 2)
     radius: 12

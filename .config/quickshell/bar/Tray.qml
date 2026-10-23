@@ -2,6 +2,7 @@ import Quickshell
 import Quickshell.Services.SystemTray
 import Quickshell.Widgets
 import QtQuick
+import QtQuick.Effects
 import "../core"
 
 Row {
@@ -74,6 +75,14 @@ Row {
                     implicitHeight: 18
                     anchors.verticalCenter: parent.verticalCenter
                     source: modelData.icon
+
+                    // Symbolic icons ship with a hardcoded dark fill; tint them to match the bar
+                    layer.enabled: String(modelData.icon).indexOf("-symbolic") !== -1
+                    layer.effect: MultiEffect {
+                        brightness: 1.0
+                        colorization: 1.0
+                        colorizationColor: Colors.fg
+                    }
 
                     MouseArea {
                         anchors.fill: parent

@@ -21,6 +21,10 @@ Singleton {
     function show() {
         // A manually opened volume panel stays open while using media keys.
         if (PopupManager.activeId === "volume" && !automatic) return
+        if (NotchState.enabled && NotchState.volumeOsd) {
+            NotchState.peek("volume")
+            return
+        }
         const monitor = Hyprland.focusedMonitor
         const screen = Quickshell.screens.find(s => monitor && s.name === monitor.name) || Quickshell.screens[0]
         if (!screen) return

@@ -13,3 +13,8 @@ hl.env("HYPRCURSOR_SIZE", "28")
 -- Force it to render its UI at the monitor's scale directly instead of being
 -- upscaled after the fact.
 hl.env("STEAM_FORCE_DESKTOPUI_SCALING", "1.33")
+
+-- On NVIDIA, GStreamer's GL defaults to GLES and fails to share a context with
+-- GTK, so video previews in Sushi (Space in Nautilus) show "Failed to
+-- initialize OpenGL with Gtk". Forcing desktop GL fixes it.
+hl.env("GST_GL_API", "opengl3")

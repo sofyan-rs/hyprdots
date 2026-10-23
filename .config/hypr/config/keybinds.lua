@@ -110,5 +110,5 @@ hl.bind("XF86AudioPrev",  hl.dsp.exec_cmd("playerctl previous"),   { locked = tr
 -- Screenshot (region select, copied to clipboard)
 hl.bind("Print", hl.dsp.exec_cmd('grim -g "$(slurp)" - | wl-copy'))
 
--- Screenshot (focused monitor, saved to Pictures/Screenshots)
-hl.bind("End", hl.dsp.exec_cmd([[file="/home/sofyan/Pictures/Screenshots/Screenshot-$(date +%Y-%m-%d_%H-%M-%S-%N).png"; monitor=$(hyprctl monitors -j | jq -er '.[] | select(.focused) | .name') && mkdir -p /home/sofyan/Pictures/Screenshots && grim -o "$monitor" "$file" && notify-send -a Screenshot -i camera-photo "Screenshot saved" "$file"]]))
+-- Screenshot (focused monitor, saved to Pictures/Screenshots and copied to clipboard)
+hl.bind("End", hl.dsp.exec_cmd([[file="/home/sofyan/Pictures/Screenshots/Screenshot-$(date +%Y-%m-%d_%H-%M-%S-%N).png"; monitor=$(hyprctl monitors -j | jq -er '.[] | select(.focused) | .name') && mkdir -p /home/sofyan/Pictures/Screenshots && grim -o "$monitor" "$file" && wl-copy --type image/png < "$file" && notify-send -a Screenshot -i camera-photo "Screenshot saved & copied" "$file"]]))

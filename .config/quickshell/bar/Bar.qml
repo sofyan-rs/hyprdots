@@ -7,7 +7,6 @@ import "../core"
 import "../clock"
 import "../controlcenter"
 import "../volume"
-import "../aiusage"
 
 PanelWindow {
     id: bar
@@ -51,104 +50,6 @@ PanelWindow {
             id: statusTray
             barWindow: bar
             flat: true
-            onExpandedChanged: {
-                if (!expanded && PopupManager.activeId === "aiusage" && PopupManager.activeScreen === bar.barScreen)
-                    PopupManager.close()
-            }
-            additionalItems: [
-                Pill {
-                    id: colorPickerButton
-                    flat: true
-                    implicitWidth: 26
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: "\ue3b8"
-                        font.family: Colors.iconFontFamily
-                        font.pixelSize: 18
-                        color: ColorPickerState.active ? Colors.accent : Colors.fg
-                    }
-
-                    MouseArea {
-                        id: colorPickerMouse
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: ColorPickerState.pick()
-                    }
-                },
-
-                Pill {
-                    id: caffeineButton
-                    property bool tooltipReady: false
-                    flat: true
-                    implicitWidth: 26
-                    Text {
-                        anchors.centerIn: parent
-                        text: "\uefef"
-                        font.family: Colors.iconFontFamily
-                        font.pixelSize: 18
-                        color: CaffeineState.active ? Colors.accent : Colors.fg
-                    }
-                    MouseArea {
-                        id: caffeineMouse
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: CaffeineState.toggle()
-                        onEntered: tooltipDelay.restart()
-                        onExited: {
-                            tooltipDelay.stop()
-                            caffeineButton.tooltipReady = false
-                        }
-                    }
-                    Timer {
-                        id: tooltipDelay
-                        interval: 600
-                        onTriggered: caffeineButton.tooltipReady = true
-                    }
-                    PanelWindow {
-                        id: caffeineTooltip
-                        property real rightMargin: 6
-                        screen: bar.barScreen
-                        visible: statusTray.expanded && caffeineMouse.containsMouse && caffeineButton.tooltipReady
-                        anchors { top: true; right: true }
-                        margins.top: Colors.barHeight + Colors.popupTopGap
-                        margins.right: rightMargin
-                        onVisibleChanged: if (visible) {
-                            const p = caffeineButton.mapToItem(null, caffeineButton.width, 0)
-                            rightMargin = Math.max(6, bar.barScreen.width - p.x)
-                        }
-                        implicitWidth: tooltipLabel.implicitWidth + 24
-                        implicitHeight: 34
-                        color: "transparent"
-                        exclusionMode: ExclusionMode.Ignore
-                        mask: Region {}
-                        WlrLayershell.layer: WlrLayer.Overlay
-                        WlrLayershell.namespace: "quickshell-caffeine-tooltip"
-                        WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
-                        Rectangle {
-                            anchors.fill: parent
-                            radius: 8
-                            color: Colors.glass
-                            border.width: 1
-                            border.color: Colors.border
-                        }
-                        Text {
-                            id: tooltipLabel
-                            anchors.centerIn: parent
-                            text: CaffeineState.active ? "Caffeine on · Auto sleep off" : "Caffeine off · Auto sleep after 30 min"
-                            font.family: Colors.fontFamily
-                            font.pixelSize: 11
-                            color: Colors.fg
-                        }
-                    }
-                },
-
-                Usage {
-                    barScreen: bar.barScreen
-                }
-            ]
         }
 
         Rectangle {
@@ -157,7 +58,98 @@ PanelWindow {
             color: Colors.border
         }
 
+        Pill {
+            id: colorPickerButton
+            flat: true
+            implicitWidth: 26
+
+            Text {
+                anchors.centerIn: parent
+                text: "\ue3b8"
+                font.family: Colors.iconFontFamily
+                font.pixelSize: 18
+                color: ColorPickerState.active ? Colors.accent : Colors.fg
+            }
+
+            MouseArea {
+                id: colorPickerMouse
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: ColorPickerState.pick()
+            }
+        }
+
+        Pill {
+            id: caffeineButton
+            property bool tooltipReady: false
+            flat: true
+            implicitWidth: 26
+            Text {
+                anchors.centerIn: parent
+                text: "\uefef"
+                font.family: Colors.iconFontFamily
+                font.pixelSize: 18
+                color: CaffeineState.active ? Colors.accent : Colors.fg
+            }
+            MouseArea {
+                id: caffeineMouse
+                anchors.fill: parent
+                hoverEnabled: true
+                cursorShape: Qt.PointingHandCursor
+                onClicked: CaffeineState.toggle()
+                onEntered: tooltipDelay.restart()
+                onExited: {
+                    tooltipDelay.stop()
+                    caffeineButton.tooltipReady = false
+                }
+            }
+            Timer {
+                id: tooltipDelay
+                interval: 600
+                onTriggered: caffeineButton.tooltipReady = true
+            }
+            PanelWindow {
+                id: caffeineTooltip
+                property real rightMargin: 6
+                screen: bar.barScreen
+                visible: caffeineMouse.containsMouse && caffeineButton.tooltipReady
+                anchors { top: true; right: true }
+                margins.top: Colors.barHeight + Colors.popupTopGap
+                margins.right: rightMargin
+                onVisibleChanged: if (visible) {
+                    const p = caffeineButton.mapToItem(null, caffeineButton.width, 0)
+                    rightMargin = Math.max(6, bar.barScreen.width - p.x)
+                }
+                implicitWidth: tooltipLabel.implicitWidth + 24
+                implicitHeight: 34
+                color: "transparent"
+                exclusionMode: ExclusionMode.Ignore
+                mask: Region {}
+                WlrLayershell.layer: WlrLayer.Overlay
+                WlrLayershell.namespace: "quickshell-caffeine-tooltip"
+                WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
+                Rectangle {
+                    anchors.fill: parent
+                    radius: 8
+                    color: Colors.glass
+                    border.width: 1
+                    border.color: Colors.border
+                }
+                Text {
+                    id: tooltipLabel
+                    anchors.centerIn: parent
+                    text: CaffeineState.active ? "Caffeine on · Auto sleep off" : "Caffeine off · Auto sleep after 30 min"
+                    font.family: Colors.fontFamily
+                    font.pixelSize: 11
+                    color: Colors.fg
+                }
+            }
+        }
+
         Volume {
+            // The notch shows volume changes, so the bar does not need its own.
+            visible: !NotchState.enabled
             barScreen: bar.barScreen
             flat: true
             compact: true
@@ -269,6 +261,8 @@ PanelWindow {
         }
 
         Clock {
+            // The notch has its own clock and calendar.
+            visible: !NotchState.enabled
             barScreen: bar.barScreen
             flat: true
             dateFormat: "ddd dd MMM  hh:mm"
@@ -333,9 +327,11 @@ PanelWindow {
 
         Text {
             readonly property var toplevel: ToplevelManager.activeToplevel
-            visible: text !== ""
+            // Hidden with the notch, which sits where a long title would run.
+            visible: text !== "" && !NotchState.enabled
             text: toplevel ? (toplevel.title || toplevel.appId || "") : ""
-            Layout.maximumWidth: Math.max(0, bar.width * 0.4)
+            // Stay clear of the notch in the middle of the bar.
+            Layout.maximumWidth: Math.max(0, NotchState.enabled ? bar.width / 2 - 140 - x - 14 : bar.width * 0.4)
             elide: Text.ElideRight
             font.family: Colors.fontFamily
             font.pixelSize: Colors.fontSize

@@ -25,7 +25,7 @@ Rectangle {
                 ColumnLayout {
                     Layout.fillWidth: true; spacing: 5
                     CcText { text: "Personalization"; font.pixelSize: 21; font.bold: true }
-                    CcText { text: "Wallpaper, dock and bar, your way"; font.pixelSize: 11; color: Colors.fgAlt }
+                    CcText { text: "Wallpaper, dock, notch and bar, your way"; font.pixelSize: 11; color: Colors.fgAlt }
                 }
             }
             ClippingRectangle {
@@ -117,22 +117,11 @@ Rectangle {
                 ColumnLayout {
                     Layout.fillWidth: true; Layout.preferredWidth: 0; spacing: 8
                     CcText { text: "Position"; font.pixelSize: 12 }
-                    Rectangle {
-                        Layout.fillWidth: true; implicitHeight: 36; radius: 10; color: Colors.surface
-                        RowLayout {
-                            anchors.fill: parent; anchors.margins: 3; spacing: 3
-                            Repeater {
-                                model: ["left", "bottom", "right"]
-                                CcButton {
-                                    required property string modelData
-                                    Layout.fillWidth: true; Layout.preferredWidth: 0; Layout.minimumWidth: 0; Layout.fillHeight: true
-                                    text: modelData[0].toUpperCase() + modelData.slice(1)
-                                    primary: DockState.position === modelData
-                                    color: primary ? Colors.fg : "transparent"
-                                    onClicked: DockState.position = modelData
-                                }
-                            }
-                        }
+                    CcSegmented {
+                        Layout.fillWidth: true
+                        options: [{ value: "left", label: "Left" }, { value: "bottom", label: "Bottom" }, { value: "right", label: "Right" }]
+                        current: DockState.position
+                        onActivated: value => DockState.position = value
                     }
                 }
                 ColumnLayout {
@@ -144,9 +133,37 @@ Rectangle {
             Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: Colors.border }
             RowLayout {
                 Layout.fillWidth: true
+                CcText { text: "NOTCH"; font.pixelSize: 10; color: Colors.accent }
+                Item { Layout.fillWidth: true }
+                CcText { text: "Dynamic island at the top"; font.pixelSize: 10; color: Colors.fgAlt }
+            }
+            RowLayout {
+                Layout.fillWidth: true; spacing: 12
+                ColumnLayout {
+                    Layout.fillWidth: true; Layout.preferredWidth: 0; spacing: 8
+                    CcText { text: "Style"; font.pixelSize: 12 }
+                    CcSegmented {
+                        Layout.fillWidth: true
+                        opacity: NotchState.enabled ? 1 : 0.45
+                        options: [{ value: "notch", label: "Notch" }, { value: "island", label: "Island" }]
+                        current: NotchState.style
+                        onActivated: value => NotchState.style = value
+                    }
+                    RowLayout { Layout.fillWidth: true; Layout.topMargin: 6; CcText { text: "Expand on hover"; font.pixelSize: 12 } Item { Layout.fillWidth: true } CcSwitch { enabled: NotchState.enabled; checked: NotchState.expandOnHover; onClicked: NotchState.expandOnHover = !NotchState.expandOnHover } }
+                }
+                ColumnLayout {
+                    Layout.fillWidth: true; Layout.preferredWidth: 0; spacing: 14
+                    RowLayout { Layout.fillWidth: true; CcText { text: "Show notch"; font.pixelSize: 12 } Item { Layout.fillWidth: true } CcSwitch { checked: NotchState.enabled; onClicked: NotchState.enabled = !NotchState.enabled } }
+                    RowLayout { Layout.fillWidth: true; CcText { text: "Track change peek"; font.pixelSize: 12 } Item { Layout.fillWidth: true } CcSwitch { enabled: NotchState.enabled; checked: NotchState.mediaPeek; onClicked: NotchState.mediaPeek = !NotchState.mediaPeek } }
+                    RowLayout { Layout.fillWidth: true; CcText { text: "Volume in notch"; font.pixelSize: 12 } Item { Layout.fillWidth: true } CcSwitch { enabled: NotchState.enabled; checked: NotchState.volumeOsd; onClicked: NotchState.volumeOsd = !NotchState.volumeOsd } }
+                }
+            }
+            Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: Colors.border }
+            RowLayout {
+                Layout.fillWidth: true
                 CcText { text: "AI USAGE"; font.pixelSize: 10; color: Colors.accent }
                 Item { Layout.fillWidth: true }
-                CcText { text: "Tabs shown in the bar popup"; font.pixelSize: 10; color: Colors.fgAlt }
+                CcText { text: "Tabs shown in the notch"; font.pixelSize: 10; color: Colors.fgAlt }
             }
             RowLayout {
                 Layout.fillWidth: true; spacing: 12
@@ -164,7 +181,7 @@ Rectangle {
             RowLayout {
                 Layout.fillWidth: true
                 Item { Layout.fillWidth: true }
-                CcButton { text: "Reset defaults"; onClicked: DockState.resetDefaults() }
+                CcButton { text: "Reset defaults"; onClicked: { DockState.resetDefaults(); NotchState.resetDefaults() } }
                 CcButton { text: "Done"; primary: true; implicitWidth: 66; onClicked: root.controller.done() }
             }
         }

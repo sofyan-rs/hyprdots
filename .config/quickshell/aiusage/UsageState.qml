@@ -76,6 +76,6 @@ Singleton {
         function enable(provider: string, on: bool): void {
             if (provider === "codex" || provider === "claude") root[provider].enabled = on
         }
-        function toggle(): void { PopupManager.toggle("aiusage", Quickshell.screens[0]) }
+        function toggle(): void { NotchState.tabRequested("ai") }
     }
 }

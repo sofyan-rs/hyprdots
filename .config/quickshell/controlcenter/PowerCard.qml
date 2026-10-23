@@ -8,6 +8,8 @@ Rectangle {
     required property var controller
     property bool lockedSession: false
     property var pendingAction: null
+    property int currentIndex: 0
+    property bool confirmFocused: false
     readonly property bool confirming: pendingAction !== null
     readonly property var actions: lockedSession ? allActions.filter(action => action.title !== "Lock" && action.title !== "Sign out") : allActions
     readonly property var allActions: [
@@ -26,6 +28,25 @@ Rectangle {
     border.color: Colors.border
     MouseArea { anchors.fill: parent; onClicked: root.forceActiveFocus() }
     Keys.onEscapePressed: cancel()
+    Keys.onPressed: event => {
+        const k = event.key
+        if (confirming) {
+            if (k === Qt.Key_Left || k === Qt.Key_Right || k === Qt.Key_Tab || k === Qt.Key_Backtab) confirmFocused = !confirmFocused
+            else if (k === Qt.Key_Return || k === Qt.Key_Enter || k === Qt.Key_Space) confirmFocused ? confirm() : cancel()
+            else return
+        } else {
+            const n = actions.length
+            if (k === Qt.Key_Down || k === Qt.Key_J || k === Qt.Key_Tab) currentIndex = (currentIndex + 1) % n
+            else if (k === Qt.Key_Up || k === Qt.Key_K || k === Qt.Key_Backtab) currentIndex = (currentIndex - 1 + n) % n
+            else if (k === Qt.Key_Home) currentIndex = 0
+            else if (k === Qt.Key_End) currentIndex = n - 1
+            else if (k >= Qt.Key_1 && k < Qt.Key_1 + n) selectAction(actions[k - Qt.Key_1])
+            else if (k === Qt.Key_Return || k === Qt.Key_Enter || k === Qt.Key_Space) selectAction(actions[currentIndex])
+            else return
+        }
+        event.accepted = true
+    }
+    onPendingActionChanged: confirmFocused = false
 
     function selectAction(action) {
         if (action.confirm) pendingAction = action
@@ -71,6 +92,11 @@ Rectangle {
                 model: root.actions
                 delegate: CcRow {
                     required property var modelData
+                    required property int index
+                    readonly property bool current: root.currentIndex === index
+                    border.width: current ? 1 : 0
+                    border.color: modelData.title === "Shut down" ? Colors.accent : Colors.fgAlt
+                    onHoveredChanged: if (hovered) root.currentIndex = index
                     Layout.fillWidth: true
                     verticalPadding: 12
                     title: modelData.title
@@ -99,8 +125,8 @@ Rectangle {
         RowLayout {
             visible: root.confirming
             Layout.fillWidth: true; spacing: 10
-            CcButton { Layout.fillWidth: true; Layout.preferredWidth: 0; Layout.minimumWidth: 0; implicitHeight: 40; text: "Cancel"; onClicked: root.cancel() }
-            CcButton { Layout.fillWidth: true; Layout.preferredWidth: 0; Layout.minimumWidth: 0; implicitHeight: 40; text: root.pendingAction ? root.pendingAction.title : ""; color: Colors.accent; primary: true; onClicked: root.confirm() }
+            CcButton { Layout.fillWidth: true; Layout.preferredWidth: 0; Layout.minimumWidth: 0; implicitHeight: 40; text: "Cancel"; border.width: root.confirmFocused ? 0 : 1; border.color: Colors.fgAlt; onClicked: root.cancel() }
+            CcButton { Layout.fillWidth: true; Layout.preferredWidth: 0; Layout.minimumWidth: 0; implicitHeight: 40; text: root.pendingAction ? root.pendingAction.title : ""; color: Colors.accent; primary: true; border.width: root.confirmFocused ? 2 : 0; border.color: Colors.fgAlt; onClicked: root.confirm() }
         }
     }
 }

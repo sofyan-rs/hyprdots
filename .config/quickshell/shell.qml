@@ -8,6 +8,7 @@ import "wallpaper"
 import "dock"
 import "clock"
 import "keybinds"
+import "notch"
 
 ShellRoot {
     Variants {
@@ -37,4 +38,9 @@ ShellRoot {
     WallpaperPicker { id: wallpaperController }
 
     Dock {}
+
+    Variants {
+        model: Quickshell.screens
+        Notch {}
+    }
 }

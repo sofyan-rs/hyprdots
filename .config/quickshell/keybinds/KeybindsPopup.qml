@@ -94,7 +94,6 @@ PanelWindow {
     onSelectedCategoryChanged: list.contentY = 0
 
     Shortcut { sequence: "Escape"; enabled: root.open; onActivated: PopupManager.close() }
-    Shortcut { sequence: "Ctrl+F"; enabled: root.open; onActivated: { search.forceActiveFocus(); search.selectAll() } }
 
     Process {
         id: customizeProcess
@@ -212,12 +211,6 @@ PanelWindow {
                             color: Colors.fgAlt
                             font: search.font
                         }
-                    }
-                    Text {
-                        text: "Ctrl + F"
-                        color: Colors.fgAlt
-                        font.family: Colors.fontFamily
-                        font.pixelSize: 10
                     }
                 }
             }

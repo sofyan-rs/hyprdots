@@ -15,6 +15,7 @@ Item {
     onOpenedChanged: {
         if (opened) {
             card.pendingAction = null
+            card.currentIndex = 0
             Qt.callLater(root.focusCard)
         }
     }

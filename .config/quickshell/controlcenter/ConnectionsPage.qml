@@ -9,27 +9,12 @@ ColumnLayout {
     property string expandedDevice: ""
     spacing: 14
 
-    Rectangle {
+    CcSegmented {
         Layout.fillWidth: true; Layout.preferredHeight: 42
-        radius: 12; color: Colors.surfaceAlt
-        RowLayout {
-            anchors.fill: parent; anchors.margins: 3; spacing: 3
-            Repeater {
-                model: ["wifi", "bluetooth"]
-                delegate: CcButton {
-                    required property string modelData
-                    Layout.fillWidth: true
-                    Layout.fillHeight: true
-                    Layout.preferredWidth: 0
-                    Layout.minimumWidth: 0
-                    text: modelData === "wifi" ? "Wi-Fi" : "Bluetooth"
-                    icon: modelData === "wifi" ? "\ue63e" : "\ue1a7"
-                    primary: root.controller.tab === modelData
-                    color: primary ? Colors.fg : "transparent"
-                    onClicked: root.controller.tab = modelData
-                }
-            }
-        }
+        radius: 12; trackColor: Colors.surfaceAlt
+        options: [{ value: "wifi", label: "Wi-Fi", icon: "\ue63e" }, { value: "bluetooth", label: "Bluetooth", icon: "\ue1a7" }]
+        current: root.controller.tab
+        onActivated: value => root.controller.tab = value
     }
 
     Rectangle {
