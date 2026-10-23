@@ -49,7 +49,7 @@ A minimal yet powerful Hyprland setup crafted for elegance, performance, and cus
 - Default applications: Ghostty, Nautilus and Brave Origin (`brave-origin`); change them in `.config/hypr/config/programs.lua`
 - Optional quick-settings tools: `pavucontrol`, `nm-connection-editor`, `hyprpicker`, and `libnotify` (`notify-send`)
 - Optional extras: the `codex` and `claude` CLIs (signed in) for the AI usage widget, `nvidia-smi` for GPU stats in the notch, and VS Code (`code`) for the keybind reference's edit button
-- [**Hatter**](https://github.com/Mibea/Hatter) icon theme
+- [**Adwair**](https://github.com/kusaida/Adwair) icon theme (`Adwair-dark`); [**Hatter**](https://github.com/Mibea/Hatter) works as an alternative
 
 ## 💻 Installation
 
@@ -127,6 +127,14 @@ cp -r .local/share/icons/* ~/.local/share/icons/
 fc-cache -fv
 ```
 
+- Install the **Adwair** icon theme (installs `Adwair` and `Adwair-dark` to `~/.local/share/icons`)
+
+```bash
+git clone --depth 1 https://github.com/kusaida/Adwair.git /tmp/Adwair
+/tmp/Adwair/install.sh
+rm -rf /tmp/Adwair
+```
+
 - Copy wallpapers to **~/Pictures/Wallpapers**
 
 ```bash
@@ -134,7 +142,7 @@ mkdir -p ~/Pictures/Wallpapers
 cp -r wallpapers/* ~/Pictures/Wallpapers/
 ```
 
-- Set your GTK theme and Hatter icon theme using **nwg-look**.
+- Set your GTK theme and the `Adwair-dark` icon theme using **nwg-look**, or from the terminal: `gsettings set org.gnome.desktop.interface icon-theme 'Adwair-dark'`. Keep `macOS` as the cursor theme.
 - Adjust `~/.config/hypr/config/monitors.lua` for your displays. The copied config enables `DP-1` at 2560x1600@144 with fractional scaling.
 - Review `~/.config/hypr/config/programs.lua` for your terminal, file manager, and browser commands.
 - Open **Waypaper**, select **awww**, and choose a wallpaper from `~/Pictures/Wallpapers`.
