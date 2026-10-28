@@ -169,3 +169,17 @@ hl.window_rule({
     no_blur = true,
     opacity = "1.0 override",
 })
+
+-- Polkit dialog: thin neutral frame like quickshell's dialogs
+-- (controlcenter/PasswordDialog.qml) instead of the red active border.
+hl.window_rule({
+    name  = "hyprpolkitagent-frame",
+    match = { class = "^hyprpolkitagent$" },
+
+    float        = true,
+    size         = { 520, 448 },
+    center       = true,
+    border_size  = 1,
+    border_color = "rgba(303030ff)",
+    rounding     = 18,
+})

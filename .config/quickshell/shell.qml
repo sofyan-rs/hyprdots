@@ -9,6 +9,7 @@ import "dock"
 import "clock"
 import "keybinds"
 import "notch"
+import "core"
 
 ShellRoot {
     Variants {
@@ -38,6 +39,8 @@ ShellRoot {
     WallpaperPicker { id: wallpaperController }
 
     Dock {}
+
+    IconThemeWatcher {}
 
     Variants {
         model: Quickshell.screens

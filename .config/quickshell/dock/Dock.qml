@@ -12,6 +12,10 @@ PanelWindow {
 
     readonly property bool open: DockState.open
     readonly property bool vertical: DockState.position !== "bottom"
+    // macOS-style sizing: equal padding on every side, with the running dot
+    // sitting inside the padding on the screen-edge side.
+    readonly property int iconSize: DockState.iconSize
+    readonly property int dockPadding: Math.max(6, Math.round(root.iconSize * 0.18))
 
     screen: DockState.screen
     visible: open
@@ -47,6 +51,11 @@ PanelWindow {
             width: windowPicker.visible ? windowPicker.width * windowPicker.scale : 0
             height: windowPicker.visible ? windowPicker.height * windowPicker.scale : 0
         }
+        Region {
+            x: contextMenu.x; y: contextMenu.y
+            width: contextMenu.visible ? contextMenu.width : 0
+            height: contextMenu.visible ? contextMenu.height : 0
+        }
     }
 
     IpcHandler {
@@ -55,32 +64,38 @@ PanelWindow {
         function hide(): void { DockState.close() }
     }
     property string selectedKey: ""
+    // Right-click context menu target; mutually exclusive with the window picker.
+    property string menuKey: ""
+    readonly property var menuItem: root.dockItems.find(item => item.key === root.menuKey) || null
+    readonly property string anchorKey: root.menuKey || root.selectedKey
     readonly property var selectedItem: root.dockItems.find(item => item.key === root.selectedKey) || null
     readonly property var selectedWindows: root.selectedItem ? root.selectedItem.windows : []
-    readonly property var selectedSlot: dockRepeater.itemAt(root.dockItems.findIndex(item => item.key === root.selectedKey))
+    readonly property var selectedSlot: dockRepeater.itemAt(root.dockItems.findIndex(item => item.key === root.anchorKey))
     readonly property real selectedIconX: content.x + dockRow.x + (selectedSlot ? selectedSlot.x + selectedSlot.width / 2 : dockRow.width / 2)
-    readonly property real selectedIconY: content.y + dockRow.y + (selectedSlot ? selectedSlot.y + 17 : dockRow.height / 2)
+    readonly property real selectedIconY: content.y + dockRow.y + (selectedSlot ? selectedSlot.y + root.iconSize / 2 : dockRow.height / 2)
     readonly property real surfaceX: DockState.position === "right" ? (screen ? screen.width : width) - width - 5 : DockState.position === "left" ? 5 : 0
     readonly property real surfaceY: root.vertical ? Colors.barHeight : (screen ? screen.height : height) - height - 5
 
     Connections {
         target: DockState
-        function onPositionChanged() { root.selectedKey = "" }
+        function onPositionChanged() { root.closePopups() }
     }
     Connections {
         target: PopupManager
-        function onActiveIdChanged() { if (PopupManager.activeId !== "") root.selectedKey = "" }
+        function onActiveIdChanged() { if (PopupManager.activeId !== "") root.closePopups() }
     }
 
     PanelWindow {
         id: pickerCatcher
         screen: root.screen
-        visible: root.open && root.selectedWindows.length > 0
+        visible: root.open && (root.selectedWindows.length > 0 || root.menuItem !== null)
         anchors { top: true; bottom: true; left: true; right: true }
         color: "transparent"
         exclusionMode: ExclusionMode.Ignore
         WlrLayershell.namespace: "quickshell-dock-catcher"
-        WlrLayershell.layer: WlrLayer.Overlay
+        // One layer below the dock so the dock, picker and menu always stay on
+        // top and keep hover, even if the subtracted regions below lag behind.
+        WlrLayershell.layer: WlrLayer.Top
         WlrLayershell.keyboardFocus: WlrKeyboardFocus.OnDemand
         mask: Region {
             width: pickerCatcher.width; height: pickerCatcher.height
@@ -95,25 +110,57 @@ PanelWindow {
                 y: root.surfaceY + windowPicker.y + windowPicker.height * (1 - windowPicker.scale) + pickerSlide.y
                 width: windowPicker.width * windowPicker.scale; height: windowPicker.height * windowPicker.scale
             }
+            Region {
+                intersection: Intersection.Subtract
+                x: root.surfaceX + contextMenu.x; y: root.surfaceY + contextMenu.y
+                width: contextMenu.visible ? contextMenu.width : 0; height: contextMenu.visible ? contextMenu.height : 0
+            }
         }
-        MouseArea { anchors.fill: parent; acceptedButtons: Qt.AllButtons; onPressed: root.selectedKey = "" }
-        Item { focus: true; Keys.onEscapePressed: root.selectedKey = "" }
+        MouseArea { anchors.fill: parent; acceptedButtons: Qt.AllButtons; onPressed: root.closePopups() }
+        Item { focus: true; Keys.onEscapePressed: root.closePopups() }
     }
 
     onOpenChanged: {
-        root.selectedKey = ""
+        root.closePopups()
         root.cancelDrag()
     }
     onDockItemsChanged: {
         root.cancelDrag()
         if (root.selectedKey && !root.dockItems.some(item => item.key === root.selectedKey && item.windows.length > 0))
             root.selectedKey = ""
+        if (root.menuKey && !root.menuItem)
+            root.menuKey = ""
     }
 
-    property var pinnedIds: []
-    property var orderKeys: []
+    function closePopups() {
+        root.selectedKey = ""
+        root.menuKey = ""
+    }
+
+    function openMenu(item) {
+        root.selectedKey = ""
+        root.menuKey = root.menuKey === item.key ? "" : item.key
+    }
+
+    // Hyprland keeps the last window "activated" after switching to an empty
+    // workspace, so it only counts when it sits on the focused workspace.
+    function isWindowActive(window) {
+        const focused = Hyprland.focusedWorkspace
+        return !!window && window.activated && !!window.workspace && !!focused && window.workspace.id === focused.id
+    }
+
+    function newWindowAction(item) {
+        const actions = item && item.entry ? item.entry.actions : []
+        return actions.find(action => /new.*window/i.test(action.id) || /new.*window/i.test(action.name)) || null
+    }
+
+    function closeApp(item) {
+        for (const window of item.windows)
+            if (window && window.wayland)
+                window.wayland.close()
+    }
+
     readonly property bool positionsLocked: DockState.positionsLocked
-    property bool settingsLoaded: false
     property string dragKey: ""
     property int dragFromIndex: -1
     property int dragTargetIndex: -1
@@ -121,39 +168,10 @@ PanelWindow {
 
     onPositionsLockedChanged: {
         root.cancelDrag()
-        if (root.settingsLoaded) {
-            root.orderKeys = root.rememberOrder()
-            root.savePinned()
+        if (DockState.pinsLoaded) {
+            DockState.orderKeys = root.rememberOrder()
+            DockState.savePinned()
         }
-    }
-
-    FileView {
-        id: pinnedFile
-        path: Quickshell.env("HOME") + "/.cache/quickshell/dock-pinned.json"
-        onLoaded: {
-            root.settingsLoaded = false
-            try {
-                const parsed = JSON.parse(text())
-                // Older versions stored just the list of pinned app IDs.
-                if (Array.isArray(parsed)) {
-                    root.pinnedIds = parsed
-                } else if (parsed && typeof parsed === "object") {
-                    root.pinnedIds = Array.isArray(parsed.pinnedIds) ? parsed.pinnedIds.filter(id => typeof id === "string") : []
-                    root.orderKeys = Array.isArray(parsed.orderKeys) ? [...new Set(parsed.orderKeys.filter(key => typeof key === "string"))] : []
-                }
-            } catch (e) {
-                root.pinnedIds = []
-            }
-            root.settingsLoaded = true
-        }
-        onLoadFailed: {
-            root.pinnedIds = []
-            root.settingsLoaded = true
-        }
-    }
-
-    function savePinned() {
-        pinnedFile.setText(JSON.stringify({ pinnedIds: root.pinnedIds, orderKeys: root.orderKeys, locked: root.positionsLocked }))
     }
 
     function cancelDrag() {
@@ -164,7 +182,7 @@ PanelWindow {
     }
 
     function rememberOrder() {
-        return root.orderKeys.concat(root.dockItems.map(item => item.key).filter(key => root.orderKeys.indexOf(key) < 0))
+        return DockState.orderKeys.concat(root.dockItems.map(item => item.key).filter(key => DockState.orderKeys.indexOf(key) < 0))
     }
 
     function moveItem(key, targetIndex) {
@@ -177,27 +195,22 @@ PanelWindow {
         const order = root.rememberOrder()
         order.splice(order.indexOf(key), 1)
         order.splice(order.indexOf(targetKey) + (fromIndex < targetIndex ? 1 : 0), 0, key)
-        root.orderKeys = order
-        root.savePinned()
+        DockState.orderKeys = order
+        DockState.savePinned()
     }
 
     function togglePin(item) {
-        if (root.positionsLocked || !item.id)
+        if (!item.id)
             return
-        root.orderKeys = root.rememberOrder()
-        const idx = root.pinnedIds.indexOf(item.id)
-        if (idx >= 0)
-            root.pinnedIds = root.pinnedIds.filter(id => id !== item.id)
-        else
-            root.pinnedIds = root.pinnedIds.concat([item.id])
-        root.savePinned()
+        DockState.orderKeys = root.rememberOrder()
+        DockState.togglePinned(item.id)
     }
 
     readonly property var dockItems: {
         const items = []
         const byId = {}
 
-        for (const pid of root.pinnedIds) {
+        for (const pid of DockState.pinnedIds) {
             const entry = DesktopEntries.byId(pid)
             if (!entry)
                 continue
@@ -245,12 +258,13 @@ PanelWindow {
         }
 
         // Retain the saved positions for apps that are temporarily closed, too.
-        const ranks = new Map(root.orderKeys.map((key, index) => [key, index]))
-        return items.sort((a, b) => (ranks.has(a.key) ? ranks.get(a.key) : root.orderKeys.length)
-            - (ranks.has(b.key) ? ranks.get(b.key) : root.orderKeys.length))
+        const ranks = new Map(DockState.orderKeys.map((key, index) => [key, index]))
+        return items.sort((a, b) => (ranks.has(a.key) ? ranks.get(a.key) : DockState.orderKeys.length)
+            - (ranks.has(b.key) ? ranks.get(b.key) : DockState.orderKeys.length))
     }
 
     function launch(item) {
+        root.menuKey = ""
         if (item.windows.length > 1) {
             root.selectedKey = root.selectedKey === item.key ? "" : item.key
         } else if (item.windows.length === 1) {
@@ -378,7 +392,7 @@ PanelWindow {
                 width: ListView.view.width
                 height: 56
                 radius: Colors.radius + 2
-                readonly property bool active: !!modelData && modelData.activated
+                readonly property bool active: root.isWindowActive(modelData)
                 color: windowArea.containsMouse ? Colors.bg : (active ? Qt.alpha(Colors.accent, 0.12) : "transparent")
                 border.width: active ? 1 : 0
                 border.color: Qt.alpha(Colors.accent, 0.45)
@@ -422,14 +436,139 @@ PanelWindow {
     }
 
     Rectangle {
+        id: contextMenu
+        visible: root.menuItem !== null
+        readonly property var actions: {
+            const item = root.menuItem
+            if (!item)
+                return []
+            const list = []
+            // Single-instance apps just refocus on execute(), so only offer
+            // "New window" when the desktop entry declares a matching action.
+            if (item.entry && !item.running)
+                list.push({ key: "open", label: "Open", icon: "\ue89e" })
+            else if (root.newWindowAction(item))
+                list.push({ key: "new", label: "New window", icon: "\ue89e" })
+            if (item.id)
+                list.push({ key: "pin", label: item.pinned ? "Unpin from dock" : "Pin to dock", icon: item.pinned ? "\ue6f9" : "\uf10d" })
+            if (item.running)
+                list.push({ key: "close", label: item.windowCount > 1 ? "Close " + item.windowCount + " windows" : "Close", icon: "\ue5cd", danger: true })
+            return list
+        }
+        onVisibleChanged: if (visible) menuAppear.restart()
+
+        NumberAnimation {
+            id: menuAppear
+            target: contextMenu
+            property: "opacity"
+            from: 0
+            to: 1
+            duration: 140
+            easing.type: Easing.OutCubic
+        }
+
+        x: DockState.position === "left" ? content.x + content.width + 8
+            : DockState.position === "right" ? content.x - width - 8
+            : Math.max(0, Math.min(root.width - width, root.selectedIconX - width / 2))
+        y: root.vertical ? Math.max(0, Math.min(root.height - height, root.selectedIconY - height / 2))
+            : content.y - height - 8
+        width: 210
+        height: menuColumn.implicitHeight + 12
+        radius: Colors.radius + 6
+        color: Colors.glass
+        border.width: 1
+        border.color: Colors.border
+
+        Column {
+            id: menuColumn
+            anchors.fill: parent
+            anchors.margins: 6
+            spacing: 2
+
+            Text {
+                width: parent.width
+                leftPadding: 8
+                topPadding: 4
+                bottomPadding: 6
+                text: root.menuItem ? root.menuItem.name : ""
+                elide: Text.ElideRight
+                font.family: Colors.fontFamily
+                font.pixelSize: Colors.fontSize - 4
+                font.bold: true
+                color: Colors.fgAlt
+            }
+
+            Repeater {
+                model: contextMenu.actions
+
+                delegate: Rectangle {
+                    id: actionRow
+                    required property var modelData
+                    width: menuColumn.width
+                    height: 32
+                    radius: Colors.radius + 2
+                    color: actionArea.containsMouse ? (modelData.danger ? Qt.alpha(Colors.accent, 0.18) : Colors.bg) : "transparent"
+
+                    Row {
+                        anchors.left: parent.left
+                        anchors.leftMargin: 8
+                        anchors.verticalCenter: parent.verticalCenter
+                        spacing: 10
+
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: actionRow.modelData.icon
+                            font.family: Colors.iconFontFamily
+                            font.pixelSize: 15
+                            color: actionRow.modelData.danger ? Colors.accent : Colors.fgAlt
+                        }
+                        Text {
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: actionRow.modelData.label
+                            font.family: Colors.fontFamily
+                            font.pixelSize: Colors.fontSize - 3
+                            color: actionRow.modelData.danger ? Colors.accent : Colors.fg
+                        }
+                    }
+
+                    MouseArea {
+                        id: actionArea
+                        anchors.fill: parent
+                        hoverEnabled: true
+                        cursorShape: Qt.PointingHandCursor
+                        onClicked: {
+                            // Clearing menuKey destroys this delegate, so grab
+                            // everything we need before touching it.
+                            const dock = root
+                            const item = dock.menuItem
+                            const key = actionRow.modelData.key
+                            dock.menuKey = ""
+                            if (!item)
+                                return
+                            if (key === "open")
+                                item.entry.execute()
+                            else if (key === "new")
+                                dock.newWindowAction(item).execute()
+                            else if (key === "pin")
+                                dock.togglePin(item)
+                            else if (key === "close")
+                                dock.closeApp(item)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    Rectangle {
         id: content
-        implicitWidth: dockRow.implicitWidth + 20
-        implicitHeight: dockRow.implicitHeight + 12
+        implicitWidth: dockRow.implicitWidth + root.dockPadding * 2
+        implicitHeight: dockRow.implicitHeight + root.dockPadding * 2
         width: implicitWidth
         height: implicitHeight
         x: DockState.position === "left" ? 0 : DockState.position === "right" ? root.width - width : (root.width - width) / 2
         y: root.vertical ? (root.height - height) / 2 : root.height - height
-        radius: 14
+        radius: Math.round(root.iconSize * 0.4)
         color: Colors.glass
         border.width: 1
         border.color: Colors.border
@@ -438,7 +577,7 @@ PanelWindow {
             id: dockRow
             anchors.centerIn: parent
             columns: root.vertical ? 1 : Math.max(1, root.dockItems.length)
-            spacing: 6
+            spacing: 4
 
             Repeater {
                 id: dockRepeater
@@ -450,8 +589,8 @@ PanelWindow {
                     required property var modelData
                     required property int index
 
-                    width: 34
-                    height: 42
+                    width: root.iconSize
+                    height: root.iconSize
                     z: root.dragKey === modelData.key ? 1 : 0
                     readonly property real displacement: {
                             if (!root.dragKey) return 0
@@ -468,19 +607,22 @@ PanelWindow {
 
                     ClippingRectangle {
                         id: iconVisual
-                        width: 34
-                        height: 34
-                        radius: 8
-                        readonly property bool active: iconSlot.modelData.windows.some(window => window.activated)
+                        width: root.iconSize
+                        height: root.iconSize
+                        radius: Math.round(root.iconSize * 0.22)
+                        readonly property bool active: iconSlot.modelData.windows.some(window => root.isWindowActive(window))
                         color: active ? Colors.fg : Colors.surface
-                        border.width: root.selectedKey === iconSlot.modelData.key ? 1 : 0
-                        border.color: root.selectedKey === iconSlot.modelData.key ? Colors.accent : Colors.border
-                        anchors.top: parent.top
-                        anchors.horizontalCenter: parent.horizontalCenter
+                        border.width: root.anchorKey === iconSlot.modelData.key ? 1 : 0
+                        border.color: Colors.accent
+                        scale: clickArea.pressed && root.positionsLocked ? 0.92 : 1
+
+                        Behavior on scale {
+                            NumberAnimation { duration: 120; easing.type: Easing.OutCubic }
+                        }
 
                         IconImage {
                             anchors.fill: parent
-                            anchors.margins: 1
+                            anchors.margins: Math.max(1, Math.round(root.iconSize * 0.04))
                             source: Quickshell.iconPath(iconSlot.modelData.icon, "application-x-executable")
                         }
 
@@ -532,7 +674,7 @@ PanelWindow {
                                     return
                                 if (!dragged) {
                                     dragged = true
-                                    root.selectedKey = ""
+                                    root.closePopups()
                                     root.dragKey = iconSlot.modelData.key
                                     root.dragFromIndex = iconSlot.index
                                 }
@@ -553,7 +695,7 @@ PanelWindow {
                                 if (dragged)
                                     return
                                 if (mouse.button === Qt.RightButton) {
-                                    root.togglePin(iconSlot.modelData)
+                                    root.openMenu(iconSlot.modelData)
                                     return
                                 }
                                 root.launch(iconSlot.modelData)
@@ -561,22 +703,22 @@ PanelWindow {
                         }
                     }
 
-                    Row {
+                    // One dot per running app, brighter when it owns the focused window.
+                    Rectangle {
+                        readonly property bool active: iconSlot.modelData.windows.some(window => root.isWindowActive(window))
                         visible: iconSlot.modelData.running
-                        anchors.bottom: parent.bottom
-                        anchors.bottomMargin: 0
-                        anchors.horizontalCenter: parent.horizontalCenter
-                        spacing: 3
+                        width: 4
+                        height: 4
+                        radius: 2
+                        color: Colors.fg
+                        opacity: active ? 0.95 : 0.5
+                        x: DockState.position === "left" ? -(root.dockPadding + width) / 2
+                            : DockState.position === "right" ? parent.width + (root.dockPadding - width) / 2
+                            : (parent.width - width) / 2
+                        y: root.vertical ? (parent.height - height) / 2 : parent.height + (root.dockPadding - height) / 2
 
-                        Repeater {
-                            model: Math.min(iconSlot.modelData.windowCount, 4)
-
-                            delegate: Rectangle {
-                                width: 3
-                                height: 3
-                                radius: 1.5
-                                color: Colors.accent
-                            }
+                        Behavior on opacity {
+                            NumberAnimation { duration: 150 }
                         }
                     }
                 }

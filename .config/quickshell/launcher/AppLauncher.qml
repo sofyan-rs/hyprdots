@@ -42,6 +42,11 @@ PanelWindow {
     property int selectedIndex: 0
     property string sortMode: "recent"
     property var recentIds: []
+    // Right-click context menu for a launcher row.
+    property var menuEntry: null
+    property point menuPos: Qt.point(0, 0)
+
+    onQueryChanged: root.menuEntry = null
 
     readonly property var filtered: {
         const q = query.toLowerCase().trim()
@@ -82,6 +87,7 @@ PanelWindow {
     }
 
     onOpenChanged: {
+        root.menuEntry = null
         if (open) {
             query = ""
             selectedIndex = 0
@@ -104,6 +110,11 @@ PanelWindow {
         recentFile.setText(JSON.stringify(recentIds))
         entry.execute()
         PopupManager.close()
+    }
+
+    function openMenu(entry, pos) {
+        root.menuEntry = entry
+        root.menuPos = pos
     }
 
     function moveSelection(delta) {
@@ -201,7 +212,10 @@ PanelWindow {
                                 root.launch(root.sortedFiltered[root.selectedIndex])
                                 event.accepted = true
                             } else if (event.key === Qt.Key_Escape) {
-                                PopupManager.close()
+                                if (root.menuEntry)
+                                    root.menuEntry = null
+                                else
+                                    PopupManager.close()
                                 event.accepted = true
                             }
                         }
@@ -328,15 +342,31 @@ PanelWindow {
                             Layout.fillWidth: true
                             spacing: 4
 
-                            Text {
+                            RowLayout {
                                 Layout.fillWidth: true
-                                text: appRow.modelData.name
-                                font.family: Colors.fontFamily
-                                font.pixelSize: 14
-                                font.bold: true
-                                textFormat: Text.PlainText
-                                elide: Text.ElideRight
-                                color: appRow.selected ? Colors.bg : Colors.fg
+                                spacing: 6
+
+                                Text {
+                                    Layout.fillWidth: true
+                                    Layout.maximumWidth: Math.ceil(implicitWidth) + 1
+                                    text: appRow.modelData.name
+                                    font.family: Colors.fontFamily
+                                    font.pixelSize: 14
+                                    font.bold: true
+                                    textFormat: Text.PlainText
+                                    elide: Text.ElideRight
+                                    color: appRow.selected ? Colors.bg : Colors.fg
+                                }
+
+                                Text {
+                                    visible: DockState.isPinned(appRow.modelData.id)
+                                    text: "\uf10d"
+                                    font.family: Colors.iconFontFamily
+                                    font.pixelSize: 13
+                                    color: appRow.selected ? Qt.alpha(Colors.bg, 0.6) : Colors.fgAlt
+                                }
+
+                                Item { Layout.fillWidth: true }
                             }
 
                             Text {
@@ -365,8 +395,16 @@ PanelWindow {
                         anchors.fill: parent
                         hoverEnabled: true
                         cursorShape: Qt.PointingHandCursor
-                        onPositionChanged: root.selectedIndex = appRow.index
-                        onClicked: root.launch(appRow.modelData)
+                        acceptedButtons: Qt.LeftButton | Qt.RightButton
+                        onPositionChanged: if (!root.menuEntry) root.selectedIndex = appRow.index
+                        onClicked: mouse => {
+                            if (mouse.button === Qt.RightButton) {
+                                root.selectedIndex = appRow.index
+                                root.openMenu(appRow.modelData, mapToItem(content, mouse.x, mouse.y))
+                                return
+                            }
+                            root.launch(appRow.modelData)
+                        }
                     }
                 }
             }
@@ -387,7 +425,8 @@ PanelWindow {
                     model: [
                         { key: "↑↓", label: "Navigate" },
                         { key: "↵", label: "Open" },
-                        { key: "Esc", label: "Close" }
+                        { key: "Esc", label: "Close" },
+                        { key: "RMB", label: "Pin to dock" }
                     ]
 
                     delegate: RowLayout {
@@ -420,6 +459,112 @@ PanelWindow {
                 }
 
                 Item { Layout.fillWidth: true }
+            }
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            visible: root.menuEntry !== null
+            acceptedButtons: Qt.AllButtons
+            onPressed: root.menuEntry = null
+        }
+
+        Rectangle {
+            id: entryMenu
+            visible: root.menuEntry !== null
+            readonly property bool pinned: root.menuEntry ? DockState.isPinned(root.menuEntry.id) : false
+            readonly property var actions: [
+                { key: "open", label: "Open", icon: "\ue89e" },
+                { key: "pin", label: entryMenu.pinned ? "Unpin from dock" : "Pin to dock", icon: entryMenu.pinned ? "\ue6f9" : "\uf10d" }
+            ]
+            x: Math.min(root.menuPos.x, content.width - width - 8)
+            y: Math.min(root.menuPos.y, content.height - height - 8)
+            width: 200
+            height: entryMenuColumn.implicitHeight + 12
+            radius: 12
+            // Opaque: the menu sits inside the launcher surface, so nothing blurs behind it.
+            color: Qt.alpha(Colors.surfaceAlt, 1)
+            border.width: 1
+            border.color: Colors.border
+
+            onVisibleChanged: if (visible) entryMenuAppear.restart()
+            NumberAnimation { id: entryMenuAppear; target: entryMenu; property: "opacity"; from: 0; to: 1; duration: 120 }
+
+            Column {
+                id: entryMenuColumn
+                anchors.fill: parent
+                anchors.margins: 6
+                spacing: 2
+
+                Text {
+                    width: parent.width
+                    leftPadding: 8
+                    topPadding: 4
+                    bottomPadding: 6
+                    text: root.menuEntry ? root.menuEntry.name : ""
+                    elide: Text.ElideRight
+                    textFormat: Text.PlainText
+                    font.family: Colors.fontFamily
+                    font.pixelSize: 11
+                    font.bold: true
+                    color: Colors.fgAlt
+                }
+
+                Repeater {
+                    model: entryMenu.actions
+
+                    delegate: Rectangle {
+                        id: entryAction
+                        required property var modelData
+                        width: entryMenuColumn.width
+                        height: 32
+                        radius: 8
+                        color: entryActionArea.containsMouse ? Colors.border : "transparent"
+
+                        Row {
+                            anchors.left: parent.left
+                            anchors.leftMargin: 8
+                            anchors.verticalCenter: parent.verticalCenter
+                            spacing: 10
+
+                            Text {
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: entryAction.modelData.icon
+                                font.family: Colors.iconFontFamily
+                                font.pixelSize: 15
+                                color: Colors.fgAlt
+                            }
+                            Text {
+                                anchors.verticalCenter: parent.verticalCenter
+                                text: entryAction.modelData.label
+                                font.family: Colors.fontFamily
+                                font.pixelSize: 12
+                                color: Colors.fg
+                            }
+                        }
+
+                        MouseArea {
+                            id: entryActionArea
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: {
+                                // Clearing menuEntry destroys this delegate, so grab
+                                // everything we need before touching it.
+                                const launcher = root
+                                const entry = launcher.menuEntry
+                                const key = entryAction.modelData.key
+                                launcher.menuEntry = null
+                                if (!entry)
+                                    return
+                                if (key === "open")
+                                    launcher.launch(entry)
+                                else
+                                    DockState.togglePinned(entry.id)
+                            }
+                        }
+                    }
+                }
             }
         }
     }

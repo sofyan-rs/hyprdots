@@ -14,6 +14,9 @@ Row {
     property alias additionalItems: extraControls.data
 
     spacing: root.flat ? 8 : 5
+    // Hide the whole tray (chevron included) when there is nothing to show.
+    readonly property bool hasItems: SystemTray.items.values.length > 0 || extraControls.children.length > 0
+    visible: hasItems
 
     TrayMenu {
         id: contextMenu
@@ -23,7 +26,7 @@ Row {
     Pill {
         id: togglePill
         flat: root.flat
-        implicitWidth: toggleIcon.implicitWidth + (root.flat ? 8 : 20)
+        implicitWidth: root.flat ? 26 : toggleIcon.implicitWidth + 20
 
         Text {
             id: toggleIcon
@@ -50,7 +53,7 @@ Row {
         flat: root.flat
         clip: true
         visible: width > 0
-        implicitWidth: root.expanded ? (trayRow.implicitWidth + (root.flat ? 4 : 20)) : 0
+        implicitWidth: root.expanded ? (trayRow.implicitWidth + (root.flat ? 0 : 20)) : 0
 
         Behavior on implicitWidth {
             NumberAnimation { duration: 220; easing.type: Easing.InOutQuad }
@@ -66,22 +69,28 @@ Row {
             Repeater {
                 model: SystemTray.items
 
-                delegate: IconImage {
+                // Same 26px slot as the bar's icon pills so the spacing matches.
+                delegate: Item {
                     id: trayIcon
 
                     required property var modelData
 
-                    implicitWidth: 18
-                    implicitHeight: 18
+                    implicitWidth: root.flat ? 26 : 18
+                    implicitHeight: 26
                     anchors.verticalCenter: parent.verticalCenter
-                    source: modelData.icon
 
-                    // Symbolic icons ship with a hardcoded dark fill; tint them to match the bar
-                    layer.enabled: String(modelData.icon).indexOf("-symbolic") !== -1
-                    layer.effect: MultiEffect {
-                        brightness: 1.0
-                        colorization: 1.0
-                        colorizationColor: Colors.fg
+                    IconImage {
+                        anchors.centerIn: parent
+                        implicitSize: 18
+                        source: trayIcon.modelData.icon
+
+                        // Symbolic icons ship with a hardcoded dark fill; tint them to match the bar
+                        layer.enabled: String(trayIcon.modelData.icon).indexOf("-symbolic") !== -1
+                        layer.effect: MultiEffect {
+                            brightness: 1.0
+                            colorization: 1.0
+                            colorizationColor: Colors.fg
+                        }
                     }
 
                     MouseArea {

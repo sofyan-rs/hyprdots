@@ -20,3 +20,4 @@ require("config.keybinds")
 require("config.windowrules")
 require("config.emulator")
 require("config.scrolloverview")
+pcall(require, "dotlink") -- Dotlink: start at login

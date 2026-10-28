@@ -53,6 +53,7 @@ PanelWindow {
         }
 
         Rectangle {
+            visible: statusTray.hasItems
             Layout.preferredWidth: 1
             Layout.preferredHeight: 18
             color: Colors.border

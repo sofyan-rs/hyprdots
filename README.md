@@ -200,7 +200,7 @@ Full list (and how to change binds) lives in `hl.bind(...)` calls inside `hypr/c
 
 **Launcher:** Click the `⌘` icon or press `ALT + Space` to search apps. The launcher supports recent-use and alphabetical sorting.
 
-**Wallpapers and dock:** Open Personalization with `SUPER + SHIFT + W` or the personalization button in the control center. Browse or search wallpapers, shuffle the selection, and show/hide the dock, choose its left/bottom/right position, or lock app positions. Dock appearance settings persist in `~/.config/quickshell/dock/settings.json`; the copied settings initially hide the dock and lock its positions. Pinned apps and ordering persist in `~/.cache/quickshell/dock-pinned.json`. Unlock the dock to change app ordering or pinning.
+**Wallpapers and dock:** Open Personalization with `SUPER + SHIFT + W` or the personalization button in the control center. Browse or search wallpapers, shuffle the selection, and show/hide the dock, choose its left/bottom/right position, resize its icons (32–64 px), or lock app positions. Dock appearance settings persist in `~/.config/quickshell/dock/settings.json`; the copied settings show the dock at the bottom with 50 px icons and lock its positions. Pinned apps and ordering persist in `~/.cache/quickshell/dock-pinned.json`. Unlock the dock to change app ordering or pinning.
 
 **Desktop clock:** `clock/DesktopClock.qml` places a date and dot-matrix clock near the top left of each monitor. Adjust its margins there; typography and dot sizes live in `DesktopClockContent.qml` and `DotMatrixClock.qml`.
 

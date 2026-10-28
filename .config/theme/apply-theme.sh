@@ -98,6 +98,30 @@ cat > "$THEME_DIR/quickshell-colors.css" <<EOF
 @define-color shadow $SHADOW;
 EOF
 
+# ---- Hyprtoolkit (hyprpolkitagent, etc.) ----
+# Mirrors quickshell's glass dialogs (controlcenter/PasswordDialog.qml).
+hex() { echo "${1#\#}"; }
+cat > "$HOME/.config/hypr/hyprtoolkit.conf" <<EOF
+background = rgb($(hex "$BG_ALT"))
+base = rgb($(hex "$SURFACE_ALT"))
+alternate_base = rgb($(hex "$SURFACE"))
+text = rgb($(hex "$FG"))
+bright_text = rgb($(hex "$FG_MUTED"))
+accent = rgb($(hex "$ACCENT"))
+accent_secondary = rgb($(hex "$SECONDARY"))
+
+rounding_large = 18
+rounding_small = 5
+
+font_family = Maple Mono NF
+font_family_monospace = Maple Mono NF
+font_size = 13
+small_font_size = 11
+h1_size = 18
+h2_size = 16
+h3_size = 15
+EOF
+
 # ---- Reload running apps ----
 pkill -SIGUSR1 kitty 2>/dev/null
 

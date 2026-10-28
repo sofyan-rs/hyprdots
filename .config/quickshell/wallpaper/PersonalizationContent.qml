@@ -1,5 +1,6 @@
 import QtQuick
 import QtQuick.Layouts
+import QtQuick.Controls.Basic
 import Quickshell.Widgets
 import "../core"
 import "../controlcenter"
@@ -128,6 +129,33 @@ Rectangle {
                     Layout.fillWidth: true; Layout.preferredWidth: 0; spacing: 14
                     RowLayout { Layout.fillWidth: true; CcText { text: "Show dock"; font.pixelSize: 12 } Item { Layout.fillWidth: true } CcSwitch { checked: DockState.open; onClicked: DockState.toggle(root.controller.screen) } }
                     RowLayout { Layout.fillWidth: true; CcText { text: "Lock dock"; font.pixelSize: 12 } Item { Layout.fillWidth: true } CcSwitch { checked: DockState.positionsLocked; onClicked: DockState.toggleLock() } }
+                }
+            }
+            ColumnLayout {
+                Layout.fillWidth: true; spacing: 8
+                RowLayout {
+                    Layout.fillWidth: true
+                    CcText { text: "Size"; font.pixelSize: 12 }
+                    Item { Layout.fillWidth: true }
+                    CcText { text: DockState.iconSize + " px"; font.pixelSize: 11; color: Colors.fgAlt }
+                }
+                Slider {
+                    id: dockSizeSlider
+                    Layout.fillWidth: true; Layout.preferredHeight: 22
+                    padding: 0
+                    from: DockState.minIconSize; to: DockState.maxIconSize; stepSize: 2; snapMode: Slider.SnapAlways
+                    value: DockState.iconSize
+                    onMoved: DockState.iconSize = Math.round(value)
+                    background: Rectangle {
+                        x: dockSizeSlider.leftPadding; y: dockSizeSlider.topPadding + (dockSizeSlider.availableHeight - height) / 2
+                        width: dockSizeSlider.availableWidth; height: 7; radius: 3.5; color: Colors.border
+                        Rectangle { width: parent.width * dockSizeSlider.visualPosition; height: parent.height; radius: 3.5; color: Colors.accent }
+                    }
+                    handle: Rectangle {
+                        x: dockSizeSlider.leftPadding + dockSizeSlider.visualPosition * (dockSizeSlider.availableWidth - width)
+                        y: dockSizeSlider.topPadding + (dockSizeSlider.availableHeight - height) / 2
+                        width: 18; height: 18; radius: 9; color: Colors.fg; border.width: 2; border.color: Colors.accent
+                    }
                 }
             }
             Rectangle { Layout.fillWidth: true; implicitHeight: 1; color: Colors.border }
