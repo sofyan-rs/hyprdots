@@ -12,6 +12,8 @@ Singleton {
     readonly property int minIconSize: 32
     readonly property int maxIconSize: 64
     property int iconSize: 44
+    // macOS-style magnification of the icons under the cursor.
+    property bool magnify: true
     property bool settingsLoaded: false
 
     FileView {
@@ -26,6 +28,7 @@ Singleton {
                 root.position = ["left", "bottom", "right"].includes(data.position) ? data.position : "bottom"
                 root.open = data.visible !== false
                 root.positionsLocked = data.locked !== false
+                root.magnify = data.magnify !== false
                 root.iconSize = typeof data.iconSize === "number" ? Math.max(root.minIconSize, Math.min(root.maxIconSize, Math.round(data.iconSize))) : 44
             } catch (e) { }
             root.settingsLoaded = true
@@ -78,17 +81,19 @@ Singleton {
     }
 
     function save() {
-        if (settingsLoaded) settings.setText(JSON.stringify({ position: position, visible: open, locked: positionsLocked, iconSize: iconSize }))
+        if (settingsLoaded) settings.setText(JSON.stringify({ position: position, visible: open, locked: positionsLocked, iconSize: iconSize, magnify: magnify }))
     }
     onPositionChanged: save()
     onOpenChanged: save()
     onPositionsLockedChanged: save()
     onIconSizeChanged: save()
+    onMagnifyChanged: save()
     function resetDefaults() {
         position = "bottom"
         open = true
         positionsLocked = true
         iconSize = 44
+        magnify = true
     }
 
     function toggleLock() {

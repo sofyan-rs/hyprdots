@@ -129,6 +129,7 @@ Rectangle {
                     Layout.fillWidth: true; Layout.preferredWidth: 0; spacing: 14
                     RowLayout { Layout.fillWidth: true; CcText { text: "Show dock"; font.pixelSize: 12 } Item { Layout.fillWidth: true } CcSwitch { checked: DockState.open; onClicked: DockState.toggle(root.controller.screen) } }
                     RowLayout { Layout.fillWidth: true; CcText { text: "Lock dock"; font.pixelSize: 12 } Item { Layout.fillWidth: true } CcSwitch { checked: DockState.positionsLocked; onClicked: DockState.toggleLock() } }
+                    RowLayout { Layout.fillWidth: true; CcText { text: "Magnification"; font.pixelSize: 12 } Item { Layout.fillWidth: true } CcSwitch { checked: DockState.magnify; onClicked: DockState.magnify = !DockState.magnify } }
                 }
             }
             ColumnLayout {

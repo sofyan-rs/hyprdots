@@ -16,6 +16,31 @@ PanelWindow {
     // sitting inside the padding on the screen-edge side.
     readonly property int iconSize: DockState.iconSize
     readonly property int dockPadding: Math.max(6, Math.round(root.iconSize * 0.18))
+    // Dock length with no icon magnified; the surface is sized from this so it
+    // doesn't resize while the cursor moves along the dock.
+    readonly property real baseLength: Math.max(0, root.dockItems.length * (root.iconSize + dockRow.spacing) - dockRow.spacing) + root.dockPadding * 2
+
+    // macOS-style magnification: icons near the cursor grow up to magnifyMax,
+    // falling off over magnifyRange px. Distances are measured against the
+    // unmagnified layout, so growing icons don't feed back into the hover point.
+    readonly property real magnifyMax: 1.6
+    readonly property real magnifyRange: root.iconSize * 2.5
+    property real hoverPos: 0
+    property real hoverAmount: dockHover.hovered && DockState.magnify && !root.dragKey ? 1 : 0
+    Behavior on hoverAmount {
+        NumberAnimation { duration: 160; easing.type: Easing.OutCubic }
+    }
+
+    function magnification(index) {
+        if (root.hoverAmount <= 0)
+            return 1
+        const axis = root.vertical ? root.height : root.width
+        const center = (axis - root.baseLength) / 2 + root.dockPadding + index * (root.iconSize + dockRow.spacing) + root.iconSize / 2
+        const distance = Math.abs(root.hoverPos - center)
+        if (distance >= root.magnifyRange)
+            return 1
+        return 1 + (root.magnifyMax - 1) * root.hoverAmount * 0.5 * (1 + Math.cos(Math.PI * distance / root.magnifyRange))
+    }
 
     screen: DockState.screen
     visible: open
@@ -34,13 +59,13 @@ PanelWindow {
     margins.top: root.vertical ? Colors.barHeight : 0
     margins.left: DockState.position === "left" ? 5 : 0
     margins.right: DockState.position === "right" ? 5 : 0
-    implicitWidth: content.implicitWidth + 8 + 360
+    implicitWidth: (root.vertical ? content.implicitWidth : root.baseLength) + 8 + 360
 
-    readonly property int pickerListMaxHeight: Math.min(280, Math.max(56, (root.screen ? root.screen.height : 800) - content.height - pickerHeader.height - 64))
+    readonly property int pickerListMaxHeight: Math.min(280, Math.max(56, (root.screen ? root.screen.height : 800) - (root.vertical ? root.baseLength : content.height) - pickerHeader.height - 64))
 
     // Keep the surface geometry stable when opening or closing the picker.
     // The input mask below limits clicks to the visible dock and picker.
-    implicitHeight: content.implicitHeight + 8 + pickerHeader.height + 24 + root.pickerListMaxHeight
+    implicitHeight: (root.vertical ? root.baseLength : content.implicitHeight) + 8 + pickerHeader.height + 24 + root.pickerListMaxHeight
 
     // Keep the transparent area around the dock clickable by other windows.
     mask: Region {
@@ -73,6 +98,9 @@ PanelWindow {
     readonly property var selectedSlot: dockRepeater.itemAt(root.dockItems.findIndex(item => item.key === root.anchorKey))
     readonly property real selectedIconX: content.x + dockRow.x + (selectedSlot ? selectedSlot.x + selectedSlot.width / 2 : dockRow.width / 2)
     readonly property real selectedIconY: content.y + dockRow.y + (selectedSlot ? selectedSlot.y + root.iconSize / 2 : dockRow.height / 2)
+    // Icon under the cursor, for the app-name label.
+    property string hoverKey: ""
+    readonly property var hoverSlot: dockRepeater.itemAt(root.dockItems.findIndex(item => item.key === root.hoverKey))
     readonly property real surfaceX: DockState.position === "right" ? (screen ? screen.width : width) - width - 5 : DockState.position === "left" ? 5 : 0
     readonly property real surfaceY: root.vertical ? Colors.barHeight : (screen ? screen.height : height) - height - 5
 
@@ -150,7 +178,7 @@ PanelWindow {
     }
 
     function newWindowAction(item) {
-        const actions = item && item.entry ? item.entry.actions : []
+        const actions = (item && item.entry && item.entry.actions) || []
         return actions.find(action => /new.*window/i.test(action.id) || /new.*window/i.test(action.name)) || null
     }
 
@@ -573,6 +601,13 @@ PanelWindow {
         border.width: 1
         border.color: Colors.border
 
+        // Passive, so it tracks the cursor even over the icons' own MouseAreas.
+        // The last point is kept on leave, so the icons shrink back in place.
+        HoverHandler {
+            id: dockHover
+            onPointChanged: if (hovered) root.hoverPos = root.vertical ? point.scenePosition.y : point.scenePosition.x
+        }
+
         Grid {
             id: dockRow
             anchors.centerIn: parent
@@ -589,8 +624,11 @@ PanelWindow {
                     required property var modelData
                     required property int index
 
-                    width: root.iconSize
-                    height: root.iconSize
+                    // Grows along the dock so neighbours make room; across it the
+                    // icon overflows away from the screen edge instead.
+                    readonly property real visualSize: root.iconSize * root.magnification(index)
+                    width: root.vertical ? root.iconSize : visualSize
+                    height: root.vertical ? visualSize : root.iconSize
                     z: root.dragKey === modelData.key ? 1 : 0
                     readonly property real displacement: {
                             if (!root.dragKey) return 0
@@ -607,9 +645,11 @@ PanelWindow {
 
                     ClippingRectangle {
                         id: iconVisual
-                        width: root.iconSize
-                        height: root.iconSize
-                        radius: Math.round(root.iconSize * 0.22)
+                        width: iconSlot.visualSize
+                        height: iconSlot.visualSize
+                        x: DockState.position === "right" ? iconSlot.width - width : 0
+                        y: root.vertical ? 0 : iconSlot.height - height
+                        radius: Math.round(width * 0.22)
                         readonly property bool active: iconSlot.modelData.windows.some(window => root.isWindowActive(window))
                         color: active ? Colors.fg : Colors.surface
                         border.width: root.anchorKey === iconSlot.modelData.key ? 1 : 0
@@ -622,7 +662,7 @@ PanelWindow {
 
                         IconImage {
                             anchors.fill: parent
-                            anchors.margins: Math.max(1, Math.round(root.iconSize * 0.04))
+                            anchors.margins: Math.max(1, Math.round(iconVisual.width * 0.04))
                             source: Quickshell.iconPath(iconSlot.modelData.icon, "application-x-executable")
                         }
 
@@ -658,6 +698,12 @@ PanelWindow {
                             hoverEnabled: true
                             cursorShape: root.positionsLocked ? Qt.PointingHandCursor : (pressed ? Qt.ClosedHandCursor : Qt.OpenHandCursor)
                             property real pressRowX: 0
+                            onContainsMouseChanged: {
+                                if (containsMouse)
+                                    root.hoverKey = iconSlot.modelData.key
+                                else if (root.hoverKey === iconSlot.modelData.key)
+                                    root.hoverKey = ""
+                            }
                             property bool dragged: false
 
                             onPressed: mouse => {
@@ -724,6 +770,49 @@ PanelWindow {
                 }
             }
 
+        }
+    }
+
+    // App name beside the hovered icon, macOS-style. Hidden while dragging or
+    // while the window picker / menu is open; keeps the last icon while fading.
+    Rectangle {
+        id: titleTip
+        property Item slot: null
+        readonly property bool shown: root.hoverSlot !== null && !root.dragKey && !root.anchorKey
+        readonly property real slotX: content.x + dockRow.x + (slot ? slot.x : 0)
+        readonly property real slotY: content.y + dockRow.y + (slot ? slot.y : 0)
+        readonly property real visualSize: slot ? slot.visualSize : root.iconSize
+
+        Connections {
+            target: root
+            function onHoverSlotChanged() { if (root.hoverSlot) titleTip.slot = root.hoverSlot }
+        }
+
+        visible: opacity > 0 && slot !== null
+        opacity: shown ? 1 : 0
+        Behavior on opacity {
+            NumberAnimation { duration: 120; easing.type: Easing.OutCubic }
+        }
+
+        x: DockState.position === "left" ? slotX + visualSize + 10
+            : DockState.position === "right" ? slotX + (slot ? slot.width : 0) - visualSize - width - 10
+            : Math.max(0, Math.min(root.width - width, slotX + (slot ? slot.width : 0) / 2 - width / 2))
+        y: root.vertical ? slotY + (slot ? slot.height : 0) / 2 - height / 2
+            : slotY + (slot ? slot.height : 0) - visualSize - height - 10
+        width: titleText.implicitWidth + 20
+        height: titleText.implicitHeight + 10
+        radius: Colors.radius + 4
+        color: Colors.glass
+        border.width: 1
+        border.color: Colors.border
+
+        Text {
+            id: titleText
+            anchors.centerIn: parent
+            text: titleTip.slot ? titleTip.slot.modelData.name : ""
+            font.family: Colors.fontFamily
+            font.pixelSize: Colors.fontSize - 3
+            color: Colors.fg
         }
     }
 }

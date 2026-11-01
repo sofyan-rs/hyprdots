@@ -28,7 +28,7 @@ PanelWindow {
     property bool expanded: false
     // Calendar is the first tab, so it is also where the notch starts after a restart.
     property string tab: "calendar"
-    readonly property var tabs: ["calendar", "media", "shelf", "system", "ai"]
+    readonly property var tabs: ["calendar", "media", "shelf", "phone", "system", "ai"]
     // Pages left of the current tab slide out to the left, the rest to the right.
     // Calendar: the month on screen and the picked day; both reset to today on open.
     property var today: new Date()
@@ -71,6 +71,8 @@ PanelWindow {
         const i = tabs.indexOf(tabId), current = tabs.indexOf(tab)
         return i === current ? 0 : (i < current ? -28 : 28)
     }
+    // Files dropped while the Phone tab is open go to the connected devices instead of the shelf.
+    readonly property bool dropToPhone: expanded && tab === "phone" && DotlinkState.onlineDevices.length > 0
     // Set while a shelf item is being dragged out, so the notch stays open.
     property bool draggingOut: false
     readonly property bool viewingSystem: visible && expanded && tab === "system"
@@ -205,8 +207,8 @@ PanelWindow {
         Rectangle {
             id: body
             property real cornerRadius: root.mode === "expanded" ? 26 : (root.island ? height / 2 : 12)
-            width: root.mode === "expanded" ? 480 : (root.mode === "peek" ? (NotchState.peekKind === "caps" ? 240 : NotchState.peekKind === "color" ? 250 : 370) : (root.idleLyric ? 400 : root.playing ? 250 : 210) + 2 * root.idleExtras)
-            height: root.mode === "expanded" ? (root.tab === "system" ? 240 : root.tab === "ai" ? root.fitHeight(aiPage.implicitHeight) : root.tab === "calendar" ? root.fitHeight(calendarPage.implicitHeight) : root.tab === "media" && !root.player ? root.fitHeight(84) : root.tab === "media" && root.showLyrics ? 176 + lyricsArea.height + 10 : root.tab === "shelf" ? 160 : 176) : 34
+            width: root.mode === "expanded" ? 480 : (root.mode === "peek" ? (NotchState.peekKind === "caps" ? 240 : NotchState.peekKind === "color" ? 250 : NotchState.peekKind === "incoming" ? 460 : 370) : (root.idleLyric ? 400 : root.playing ? 250 : 210) + 2 * root.idleExtras)
+            height: root.mode === "expanded" ? (root.tab === "system" ? 240 : root.tab === "ai" ? root.fitHeight(aiPage.implicitHeight) : root.tab === "calendar" ? root.fitHeight(calendarPage.implicitHeight) : root.tab === "media" && !root.player ? root.fitHeight(84) : root.tab === "media" && root.showLyrics ? 176 + lyricsArea.height + 10 : root.tab === "shelf" ? 160 : root.tab === "phone" ? root.fitHeight(phonePage.implicitHeight) : 176) : 34
             color: root.ink
             clip: true
             topLeftRadius: root.island ? cornerRadius : 0
@@ -251,7 +253,8 @@ PanelWindow {
                 onHoveredChanged: {
                     if (hovered) {
                         collapseTimer.stop()
-                        if (NotchState.expandOnHover) root.expanded = true
+                        // Not over a Dotlink file prompt, so its buttons stay reachable.
+                        if (NotchState.expandOnHover && !(root.mode === "peek" && NotchState.peekKind === "incoming")) root.expanded = true
                     } else {
                         collapseTimer.restart()
                     }
@@ -267,12 +270,13 @@ PanelWindow {
                 onEntered: drag => {
                     if ((!drag.hasUrls && !drag.hasText) || root.draggingOut) { drag.accepted = false; return }
                     collapseTimer.stop()
-                    root.tab = "shelf"
+                    if (!root.dropToPhone) root.tab = "shelf"
                     root.expanded = true
                 }
                 onExited: collapseTimer.restart()
                 onDropped: drop => {
-                    if (drop.hasUrls) NotchState.addFiles(drop.urls)
+                    if (root.dropToPhone && drop.hasUrls) DotlinkState.sendFiles(drop.urls, "")
+                    else if (drop.hasUrls) NotchState.addFiles(drop.urls)
                     else if (drop.hasText) NotchState.addText(drop.text)
                     else return
                     drop.acceptProposedAction()
@@ -424,6 +428,73 @@ PanelWindow {
                 }
             }
 
+            // Peek: a Dotlink transfer started, progressed or ended.
+            RowLayout {
+                readonly property var t: DotlinkState.lastTransfer
+                readonly property string st: t ? t.state.state : ""
+                anchors.fill: parent
+                anchors.leftMargin: 16; anchors.rightMargin: 16
+                spacing: 10
+                opacity: root.mode === "peek" && NotchState.peekKind === "transfer" ? 1 : 0
+                visible: opacity > 0
+                Behavior on opacity { NumberAnimation { duration: 180 } }
+                Text {
+                    text: parent.t && parent.t.outgoing ? "\ue5d8" : "\ue5db"
+                    font.family: Colors.iconFontFamily; font.pixelSize: 18
+                    color: parent.st === "failed" ? Colors.accent : parent.st === "active" ? Colors.accent : root.text1
+                }
+                Text {
+                    Layout.fillWidth: true
+                    text: parent.t ? parent.t.name : ""
+                    elide: Text.ElideMiddle
+                    font.family: Colors.fontFamily; font.pixelSize: 12; font.bold: true
+                    color: root.text1
+                }
+                Rectangle {
+                    visible: parent.st === "active"
+                    Layout.preferredWidth: 70; implicitHeight: 5; radius: 3; color: "#2a2a2a"
+                    Rectangle {
+                        width: parent.width * DotlinkState.progress(parent.parent.t); height: parent.height; radius: 3
+                        color: root.text1
+                        Behavior on width { NumberAnimation { duration: 120 } }
+                    }
+                }
+                Text {
+                    readonly property var t: parent.t
+                    text: !t ? "" : parent.st === "active" ? Math.round(DotlinkState.progress(t) * 100) + "%"
+                        : parent.st === "waiting" ? "Waiting for " + t.device
+                        : parent.st === "done" ? (t.outgoing ? "Sent to " : "Saved from ") + t.device
+                        : "Failed"
+                    font.family: Colors.fontFamily; font.pixelSize: 11
+                    color: parent.st === "failed" ? Colors.accent : root.text2
+                }
+            }
+
+            // Peek: a Dotlink file waits for Accept or Decline; stays until answered.
+            RowLayout {
+                readonly property var ask: DotlinkState.incoming.length > 0 ? DotlinkState.incoming[0] : null
+                anchors.fill: parent
+                anchors.leftMargin: 14; anchors.rightMargin: 6
+                spacing: 8
+                opacity: root.mode === "peek" && NotchState.peekKind === "incoming" ? 1 : 0
+                visible: opacity > 0
+                Behavior on opacity { NumberAnimation { duration: 180 } }
+                Text {
+                    text: "\ue2c4"
+                    font.family: Colors.iconFontFamily; font.pixelSize: 18
+                    color: Colors.accent
+                }
+                Text {
+                    Layout.fillWidth: true
+                    text: parent.ask ? parent.ask.from + "  ·  " + parent.ask.name + (parent.ask.size ? "  ·  " + DotlinkState.formatBytes(parent.ask.size) : "") : ""
+                    elide: Text.ElideMiddle
+                    font.family: Colors.fontFamily; font.pixelSize: 12; font.bold: true
+                    color: root.text1
+                }
+                PillButton { label: "Decline"; onClicked: if (parent.ask) DotlinkState.answer(parent.ask.id, false) }
+                PillButton { label: "Accept"; primary: true; onClicked: if (parent.ask) DotlinkState.answer(parent.ask.id, true) }
+            }
+
             // Peek: volume level or the new track.
             RowLayout {
                 anchors.fill: parent
@@ -501,13 +572,14 @@ PanelWindow {
                             TabButton { icon: "\uebcc"; tabId: "calendar" }
                             TabButton { icon: "\ue405"; tabId: "media" }
                             TabButton { icon: "\ue1a1"; tabId: "shelf"; count: NotchState.shelf.length }
+                            TabButton { icon: "\ue7ba"; tabId: "phone"; count: DotlinkState.incoming.length }
                             TabButton { icon: "\ue322"; tabId: "system" }
                             TabButton { visible: UsageState.anyEnabled; icon: "\uf06c"; tabId: "ai" }
                         }
                     }
                     Text {
                         Layout.leftMargin: 6
-                        text: root.tab === "shelf" ? "Shelf" : root.tab === "system" ? "System" : root.tab === "calendar" ? "Calendar" : root.tab === "ai" ? "AI usage" : (root.player ? (root.player.identity || "Now playing") : "Media")
+                        text: root.tab === "shelf" ? "Shelf" : root.tab === "phone" ? "Phone" : root.tab === "system" ? "System" : root.tab === "calendar" ? "Calendar" : root.tab === "ai" ? "AI usage" : (root.player ? (root.player.identity || "Now playing") : "Media")
                         font.family: Colors.fontFamily; font.pixelSize: 10; color: Colors.accent
                     }
                     Item { Layout.fillWidth: true }
@@ -550,6 +622,15 @@ PanelWindow {
                         }
                     }
                     NotchButton { visible: root.tab === "system"; icon: "\ue89e"; size: 17; onClicked: Quickshell.execDetached(["ghostty", "-e", "btop"]) }
+                    NotchButton { visible: root.tab === "phone" && DotlinkState.onlineDevices.length > 0; icon: "\ue2c6"; size: 17; onClicked: DotlinkState.pickAndSend("") }
+                    NotchButton { visible: root.tab === "phone"; Layout.leftMargin: 10; icon: "\ue89e"; size: 17; onClicked: DotlinkState.openWindow() }
+                    // Send the shelf's files to the connected phone.
+                    NotchButton {
+                        visible: root.tab === "shelf" && DotlinkState.onlineDevices.length > 0 && NotchState.shelf.some(e => typeof e === "string")
+                        Layout.rightMargin: 10
+                        icon: "\ue7ba"; size: 17
+                        onClicked: DotlinkState.sendFiles(NotchState.shelf.filter(e => typeof e === "string"), "")
+                    }
                     NotchButton { visible: root.tab === "shelf"; icon: "\ue14f"; size: 17; onClicked: NotchState.pasteFiles() }
                     NotchButton { visible: root.tab === "shelf" && NotchState.shelf.length > 0; Layout.leftMargin: 10; icon: "\ue16c"; size: 17; onClicked: NotchState.clearShelf() }
                 }
@@ -775,6 +856,189 @@ PanelWindow {
                             x: parent.width * shelfList.visibleArea.xPosition
                             width: parent.width * shelfList.visibleArea.widthRatio
                             height: parent.height; radius: 1; color: root.text2
+                        }
+                    }
+                }
+
+                // Phone: devices linked with Dotlink, their quick actions and the latest transfers.
+                ColumnLayout {
+                    id: phonePage
+                    anchors.left: parent.left; anchors.right: parent.right; anchors.top: parent.top
+                    opacity: root.tab === "phone" ? 1 : 0
+                    visible: opacity > 0
+                    Behavior on opacity { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
+                    transform: Translate { x: root.slideOffset("phone"); Behavior on x { NumberAnimation { duration: 280; easing.type: Easing.OutCubic } } }
+                    spacing: 6
+
+                    // Same card shape as a device row, so the page keeps its rhythm.
+                    Rectangle {
+                        visible: !DotlinkState.running
+                        Layout.fillWidth: true; implicitHeight: 52; radius: 12
+                        color: "#111111"
+                        RowLayout {
+                            anchors.fill: parent; anchors.leftMargin: 8; anchors.rightMargin: 10; spacing: 10
+                            Text {
+                                Layout.preferredWidth: 20
+                                horizontalAlignment: Text.AlignHCenter
+                                text: "\ue327"; font.family: Colors.iconFontFamily; font.pixelSize: 17; color: root.text2
+                            }
+                            ColumnLayout {
+                                Layout.fillWidth: true; spacing: 1
+                                Text { Layout.fillWidth: true; text: "Dotlink isn't running"; elide: Text.ElideRight; font.family: Colors.fontFamily; font.pixelSize: 12; font.bold: true; color: root.text1 }
+                                Text { Layout.fillWidth: true; text: "Start it to link your phone"; elide: Text.ElideRight; font.family: Colors.fontFamily; font.pixelSize: 9; color: root.text2 }
+                            }
+                            PillButton { label: "Start"; primary: true; onClicked: DotlinkState.openWindow() }
+                        }
+                    }
+
+                    // Files waiting for Accept or Decline.
+                    Repeater {
+                        model: DotlinkState.incoming
+                        delegate: Rectangle {
+                            id: askRow
+                            required property var modelData
+                            Layout.fillWidth: true; implicitHeight: 40; radius: 12
+                            color: Qt.alpha(Colors.accent, 0.14)
+                            RowLayout {
+                                anchors.fill: parent; anchors.leftMargin: 12; anchors.rightMargin: 8; spacing: 8
+                                Text { text: "\ue2c4"; font.family: Colors.iconFontFamily; font.pixelSize: 17; color: Colors.accent }
+                                Text {
+                                    Layout.fillWidth: true
+                                    text: askRow.modelData.from + "  ·  " + askRow.modelData.name + (askRow.modelData.size ? "  ·  " + DotlinkState.formatBytes(askRow.modelData.size) : "")
+                                    elide: Text.ElideMiddle
+                                    font.family: Colors.fontFamily; font.pixelSize: 11; font.bold: true; color: root.text1
+                                }
+                                PillButton { label: "Decline"; onClicked: DotlinkState.answer(askRow.modelData.id, false) }
+                                PillButton { label: "Accept"; primary: true; onClicked: DotlinkState.answer(askRow.modelData.id, true) }
+                            }
+                        }
+                    }
+
+                    // Connected devices first; at most four fit.
+                    Repeater {
+                        model: DotlinkState.devices.slice().sort((a, b) => Number(b.online) - Number(a.online)).slice(0, 4)
+                        delegate: Rectangle {
+                            id: devRow
+                            required property var modelData
+                            readonly property var dev: modelData
+                            readonly property bool phone: dev.kind === "phone"
+                            readonly property string cast: DotlinkState.castState(dev.id)
+                            Layout.fillWidth: true; implicitHeight: 44; radius: 12
+                            color: "#111111"
+                            opacity: dev.online ? 1 : 0.5
+                            RowLayout {
+                                anchors.fill: parent; anchors.leftMargin: 8; anchors.rightMargin: 12; spacing: 10
+                                Text {
+                                    Layout.preferredWidth: 20
+                                    horizontalAlignment: Text.AlignHCenter
+                                    text: devRow.phone ? "\ue7ba" : "\ue31e"
+                                    font.family: Colors.iconFontFamily; font.pixelSize: 17
+                                    color: devRow.dev.online ? root.text1 : root.text2
+                                }
+                                ColumnLayout {
+                                    Layout.fillWidth: true; spacing: 1
+                                    Text { Layout.fillWidth: true; text: devRow.dev.name; elide: Text.ElideRight; font.family: Colors.fontFamily; font.pixelSize: 12; font.bold: true; color: root.text1 }
+                                    Text {
+                                        Layout.fillWidth: true
+                                        elide: Text.ElideRight
+                                        font.family: Colors.fontFamily; font.pixelSize: 9
+                                        color: devRow.dev.battery && devRow.dev.battery.level <= 15 && !devRow.dev.battery.charging ? Colors.accent : root.text2
+                                        text: !devRow.dev.online ? "Offline"
+                                            : [devRow.dev.battery ? devRow.dev.battery.level + "%" + (devRow.dev.battery.charging ? " charging" : "") : "",
+                                               devRow.dev.usb ? "USB" : "",
+                                               devRow.cast === "casting" ? "Casting" : devRow.cast === "needs_wifi_debugging" ? "Cast: turn on Wireless debugging"
+                                                   : devRow.cast === "needs_pairing" ? "Cast: pair in Dotlink" : devRow.cast === "failed" ? "Cast failed" : ""]
+                                              .filter(s => s).join("  ·  ") || "Connected"
+                                    }
+                                }
+                                Row {
+                                    visible: devRow.dev.online
+                                    spacing: 14
+                                    NotchButton { icon: "\ue2c6"; size: 17; onClicked: DotlinkState.pickAndSend(devRow.dev.id) }
+                                    NotchButton { icon: "\ue14f"; size: 17; onClicked: DotlinkState.sendClipboard(devRow.dev.id) }
+                                    NotchButton {
+                                        visible: devRow.phone
+                                        readonly property bool on: DotlinkState.cameraFrom === devRow.dev.name
+                                        icon: "\ue04b"; size: 17; active: on
+                                        onClicked: DotlinkState.setMedia("camera", !on, devRow.dev.id)
+                                    }
+                                    NotchButton {
+                                        visible: devRow.phone
+                                        readonly property bool on: DotlinkState.micFrom === devRow.dev.name
+                                        icon: "\ue029"; size: 17; active: on
+                                        onClicked: DotlinkState.setMedia("mic", !on, devRow.dev.id)
+                                    }
+                                    NotchButton {
+                                        visible: devRow.phone
+                                        readonly property bool on: ["casting", "connecting", "installing"].includes(devRow.cast)
+                                        icon: "\ue307"; size: 17; active: on
+                                        onClicked: DotlinkState.setCast(devRow.dev.id, !on)
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    Text {
+                        visible: DotlinkState.running && DotlinkState.devices.length === 0
+                        Layout.fillWidth: true; Layout.preferredHeight: 60
+                        horizontalAlignment: Text.AlignHCenter; verticalAlignment: Text.AlignVCenter
+                        text: "No phone paired yet · open Dotlink to pair one"
+                        font.family: Colors.fontFamily; font.pixelSize: 10; color: root.text2
+                    }
+
+                    Text {
+                        visible: DotlinkState.message !== ""
+                        Layout.fillWidth: true
+                        text: DotlinkState.message
+                        elide: Text.ElideRight
+                        font.family: Colors.fontFamily; font.pixelSize: 9
+                        color: DotlinkState.messageIsError ? Colors.accentLight : root.text2
+                    }
+
+                    // The two latest transfers.
+                    Repeater {
+                        model: DotlinkState.transfers.slice(0, 2)
+                        delegate: RowLayout {
+                            id: tRow
+                            required property var modelData
+                            readonly property var t: modelData
+                            readonly property string st: t.state.state
+                            Layout.fillWidth: true; Layout.leftMargin: 10; Layout.rightMargin: 12
+                            spacing: 8
+                            Text {
+                                text: tRow.t.outgoing ? "\ue5d8" : "\ue5db"
+                                font.family: Colors.iconFontFamily; font.pixelSize: 14
+                                color: tRow.st === "active" || tRow.st === "failed" ? Colors.accent : root.text2
+                            }
+                            Text {
+                                Layout.fillWidth: true
+                                text: tRow.t.name
+                                elide: Text.ElideMiddle
+                                font.family: Colors.fontFamily; font.pixelSize: 10; color: root.text1
+                                MouseArea {
+                                    anchors.fill: parent
+                                    enabled: tRow.st === "done" && !tRow.t.outgoing
+                                    cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
+                                    onClicked: Quickshell.execDetached(["xdg-open", tRow.t.path])
+                                }
+                            }
+                            Rectangle {
+                                visible: tRow.st === "active"
+                                implicitWidth: 60; implicitHeight: 4; radius: 2; color: "#2a2a2a"
+                                Rectangle {
+                                    width: parent.width * DotlinkState.progress(tRow.t); height: parent.height; radius: 2; color: root.text1
+                                    Behavior on width { NumberAnimation { duration: 120 } }
+                                }
+                            }
+                            Text {
+                                text: tRow.st === "active" ? Math.round(DotlinkState.progress(tRow.t) * 100) + "%"
+                                    : tRow.st === "waiting" ? "Waiting"
+                                    : tRow.st === "done" ? (tRow.t.outgoing ? "Sent" : "Saved")
+                                    : "Failed"
+                                font.family: Colors.fontFamily; font.pixelSize: 9
+                                color: tRow.st === "failed" ? Colors.accent : root.text2
+                            }
                         }
                     }
                 }
@@ -1393,15 +1657,33 @@ PanelWindow {
         }
     }
 
+    component PillButton: Rectangle {
+        id: pill
+        property string label: ""
+        property bool primary: false
+        signal clicked()
+        implicitWidth: pillLabel.implicitWidth + 20; implicitHeight: 24; radius: 12
+        color: primary ? (pillMouse.containsMouse ? "#ffffff" : root.text1) : (pillMouse.containsMouse ? "#333333" : "#222222")
+        Text {
+            id: pillLabel
+            anchors.centerIn: parent
+            text: pill.label
+            font.family: Colors.fontFamily; font.pixelSize: 11; font.bold: true
+            color: pill.primary ? root.ink : root.text1
+        }
+        MouseArea { id: pillMouse; anchors.fill: parent; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: pill.clicked() }
+    }
+
     component NotchButton: Text {
         id: btn
         property string icon: ""
         property int size: 24
+        property bool active: false
         signal clicked()
         text: icon
         font.family: Colors.iconFontFamily
         font.pixelSize: size
-        color: btnMouse.containsMouse ? Colors.accent : root.text1
+        color: active || btnMouse.containsMouse ? Colors.accent : root.text1
         opacity: enabled ? 1 : 0.35
         MouseArea { id: btnMouse; anchors.fill: parent; anchors.margins: -6; hoverEnabled: true; cursorShape: Qt.PointingHandCursor; onClicked: btn.clicked() }
     }

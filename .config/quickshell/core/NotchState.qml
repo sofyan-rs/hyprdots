@@ -19,7 +19,8 @@ Singleton {
     property bool lyricsRomaji: false
     property bool settingsLoaded: false
 
-    // Short-lived activity shown in the collapsed notch: "", "media", "volume", "privacy", "caps", "color" or "caffeine".
+    // Short-lived activity shown in the collapsed notch: "", "media", "volume", "privacy", "caps", "color", "caffeine",
+    // "transfer" (a Dotlink file moving) or "incoming" (a Dotlink file waiting for an answer; stays until answered).
     property string peekKind: ""
     signal expandToggleRequested()
     signal tabRequested(string tab)
@@ -105,6 +106,14 @@ Singleton {
     Connections {
         target: CaffeineState
         function onActiveChanged() { root.peek("caffeine") }
+    }
+    Connections {
+        target: DotlinkState
+        function onTransferActivity() { if (root.peekKind !== "incoming") root.peek("transfer") }
+        function onIncomingChanged() {
+            if (DotlinkState.incoming.length > 0) root.peek("incoming")
+            else if (root.peekKind === "incoming") root.peekKind = ""
+        }
     }
 
     // System stats stream only while a notch shows the system tab.
@@ -364,7 +373,8 @@ Singleton {
     }
 
     function peek(kind) {
-        if (!enabled || (kind === "media" && !player) || (kind === "privacy" && privacy.mic.length + privacy.camera.length + privacy.screen.length === 0)) return
+        if (!enabled || (kind === "media" && !player) || (kind === "privacy" && privacy.mic.length + privacy.camera.length + privacy.screen.length === 0)
+            || (kind === "incoming" && DotlinkState.incoming.length === 0)) return
         peekKind = kind
         peekTimer.restart()
     }
@@ -372,7 +382,8 @@ Singleton {
     Timer {
         id: peekTimer
         interval: 2200
-        onTriggered: root.peekKind = ""
+        // A file waiting for an answer comes back once the other peek is over.
+        onTriggered: root.peekKind = DotlinkState.incoming.length > 0 ? "incoming" : ""
     }
 
     Connections {
